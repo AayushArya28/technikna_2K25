@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 
 function Nav() {
   return (
-    <nav className="fixed top-0 left-0 w-full backdrop-blur-md 
+    <nav className="fixed top-0 left-0 w-full 
                     text-red-500 font-bold text-2xl flex justify-between 
                     items-center px-12 py-6 z-50">
       {/* Left Links */}
-      <div className="flex gap-10">
+      <div className="flex gap-12 text-shadow-lg/40">
         <NavLink to="/" label="About Us" jp="私たちに関しては" />
         <NavLink to="/events" label="Events" jp="イベント" />
         <NavLink to="/merchandise" label="Merchandise" jp="商品" />
@@ -16,7 +16,7 @@ function Nav() {
 
       {/* Right Auth */}
       <div className="flex gap-6">
-        <NavLink to="/login" label="Log-In/Sign-Up" jp="ログイン/サインアップ" />
+        {/* <NavLink to="/login" label="Log-In/Sign-Up" jp="ログイン/サインアップ" /> */}
         {/* <NavLink to="/signup" label="Sign Up" jp="" /> */}
       </div>
     </nav>
