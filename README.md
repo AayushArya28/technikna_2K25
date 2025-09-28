@@ -1,19 +1,49 @@
-# React + Vite
+React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is built with React and Vite, providing a fast development environment with Hot Module Replacement (HMR) and ESLint integration.
 
-Currently, two official plugins are available:
+Available Plugins
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Currently, two official Vite plugins for React are supported:
 
-## React Compiler
+@vitejs/plugin-react
+ → uses Babel
+ for Fast Refresh.
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+@vitejs/plugin-react-swc
+ → uses SWC
+ for Fast Refresh.
 
-## Expanding the ESLint configuration
+React Compiler
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The React Compiler is not enabled in this template.
+If you’d like to add it, check out the official installation guide
+.
 
-- To run on your local computer 
-type npm install in the terminal and then npm run dev
+ESLint Configuration
+
+For production-grade applications, we recommend using TypeScript with type-aware linting rules.
+Refer to the React + TypeScript template
+ to integrate TypeScript with typescript-eslint
+.
+
+Running the Project Locally
+
+To run this project on your local machine:
+
+Install dependencies:
+
+npm install
+
+
+Start the development server:
+
+npm run dev
+
+
+By default, the app will be available at:
+
+http://localhost:5173/
+
+
+Happy coding! 🎉
