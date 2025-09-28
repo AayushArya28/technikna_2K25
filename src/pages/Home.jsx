@@ -1,74 +1,85 @@
+import React from 'react';
+import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 import { Link } from "react-router-dom";
 
-function Home() {
+const Home = () => {
   return (
-    <>
-      <section
-        className="h-screen w-full bg-cover bg-center flex items-center justify-center relative"
-        style={{ backgroundImage: "url('/images/bg.jpg')" }}
-      >
-        <span>
-          <h1 className="text-6xl md:text-8xl text-white font-extrabold drop-shadow-lg">
-            TECHNIKA &nbsp;
-          </h1>
-        </span>
-        <span>
-          <h1 className="text-6xl md:text-8xl text-white font-serif drop-shadow-lg">
-            <b>2</b>
-          </h1>
-        </span>
-        <span>
-          <h1 className="text-6xl md:text-8xl text-white font-extrabold drop-shadow-lg">
-            K
-          </h1>
-        </span>
-        <span>
-          <h1 className="text-6xl md:text-8xl text-white font-serif drop-shadow-lg">
-            <b>25</b>
-          </h1>
-        </span>
+    <div className="relative min-h-screen overflow-hidden">
 
-        {/* REGISTER Button */}
-        <Link
-          to="/login"
-          className="absolute bottom-7 right-6 flex items-center justify-center group"
-        >
-          {/* Mobile Image */}
-          <div className="relative block md:hidden w-56">
-            <img
-              src="https://www.bits-oasis.org/svgs/landing/mobileRegisterBtn.svg"
-              alt="Register"
-              className="w-full transition duration-300 group-hover:brightness-75"
-            />
-            <span className="absolute inset-0 flex items-center justify-center text-yellow-400 font-bold text-lg pointer-events-none">
-              REGISTER
+      {/* Background Mountain Image */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="/images/mountain-with-sun.png" 
+          alt="Mount Fuji with Pink Sun" 
+          className="w-full h-full object-cover" 
+        />
+      </div>
+
+      {/* Social Media Icons */}
+      <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-40 flex flex-col space-y-4">
+        <Facebook className="w-6 h-6 text-gray-700 hover:text-blue-600 cursor-pointer transition-colors" />
+        <Twitter className="w-6 h-6 text-gray-700 hover:text-blue-400 cursor-pointer transition-colors" />
+        <Instagram className="w-6 h-6 text-gray-700 hover:text-pink-600 cursor-pointer transition-colors" />
+        <Youtube className="w-6 h-6 text-gray-700 hover:text-red-600 cursor-pointer transition-colors" />
+      </div>
+
+      {/* Samurai Warrior - Bottom Left Corner */}
+      <div className="absolute bottom-0 left-0 z-20">
+        <img
+          src="/images/samurai.png"
+          alt="Samurai Warrior"
+          className="h-96 w-auto object-contain"
+          style={{
+            filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.2))'
+          }}
+        />
+      </div>
+
+      {/* Japanese Castle - Bottom Right Corner */}
+      <div className="absolute bottom-0 right-0 z-20">
+        <img
+          src="/images/castle.png"
+          alt="Japanese Castle"
+          className="h-80 w-auto object-contain"
+          style={{
+            filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.15))'
+          }}
+        />
+      </div>
+
+      {/* Main Title - Centered */}
+      <div className="absolute inset-0 z-30 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-8xl font-black text-black mb-4 tracking-wider drop-shadow-lg">
+            <span className="inline-block transform hover:scale-105 transition-transform duration-300">
+              TECHNIKA
             </span>
-          </div>
-
-          {/* Desktop Image */}
-          <div className="relative hidden md:block w-96">
-            <img
-              src="https://www.bits-oasis.org/svgs/landing/registerBtn.svg"
-              alt="Register"
-              className="w-full transition duration-300 group-hover:brightness-75"
-            />
-            <span className="mb-4 absolute inset-0 flex items-center justify-center text-white font-bold text-4xl pointer-events-none">
-              REGISTER
+          </h1>
+          <h2 className="text-6xl font-black text-black tracking-widest drop-shadow-lg">
+            <span className="inline-block transform hover:scale-105 transition-transform duration-300">
+              2K25
             </span>
-          </div>
-        </Link>
-      </section>
+          </h2>
+        </div>
+      </div>
 
-      <section
-        className="h-screen w-full bg-cover bg-center flex items-center justify-center"
-        style={{ backgroundImage: "url('/images/bg.jpg')" }}
-      >
-        <h1 className="text-6xl md:text-8xl text-white font-extrabold drop-shadow-lg">
-          TECHNIKA 2K25
-        </h1>
-      </section>
-    </>
+      {/* Floating Animation Effects */}
+      <div className="absolute inset-0 pointer-events-none z-25">
+        {[...Array(10)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-pink-400 rounded-full animate-pulse opacity-40"
+            style={{
+              top: `${20 + Math.random() * 60}%`,
+              left: `${10 + Math.random() * 80}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`,
+            }}
+          />
+        ))}
+      </div>
+    </div>
   );
-}
+};
 
 export default Home;
