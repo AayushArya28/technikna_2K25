@@ -42,7 +42,7 @@ function Login() {
       <div className="absolute bottom-0 right-0 w-64 h-64 bg-red-900/20 rounded-full filter blur-3xl opacity-50 animate-pulse animation-delay-4000"></div>
 
       {/* The main login/signup card */}
-      <div className="bg-[#1c1c1c] p-8 rounded-2xl shadow-2xl shadow-red-900/20 w-full max-w-md z-10 border border-gray-800">
+      <div className="my-2 py-2 bg-[#1c1c1c] p-8 rounded-2xl shadow-2xl shadow-red-900/20 w-full max-w-md z-10 border border-gray-800">
         <div className="text-center mb-8">
             <div className="inline-block p-2 bg-gray-900 rounded-full mb-4 border border-gray-700">
                <SamuraiLogo />

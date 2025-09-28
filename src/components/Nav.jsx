@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 function Nav() {
   return (
     <nav className="fixed top-0 left-0 w-full backdrop-blur-md 
-                    text-red-500 font-bold text-3xl flex justify-between 
-                    items-center px-12 py-8 z-50">
+                    text-red-500 font-bold text-2xl flex justify-between 
+                    items-center px-12 py-6 z-50">
       {/* Left Links */}
       <div className="flex gap-10">
         <NavLink to="/" label="About Us" jp="私たちに関しては" />
