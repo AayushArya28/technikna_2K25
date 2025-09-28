@@ -1,8 +1,23 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
+import Login from "./pages/login";
+
+function Events() {
+  return <h1 className="p-20">Events Page</h1>;
+}
+function Merchandise() {
+  return <h1 className="p-20">Merchandise Page</h1>;
+}
+function Members() {
+  return <h1 className="p-20">Members Page</h1>;
+}
+
+function Contact() {
+  return <h1 className="p-20">Contact Page</h1>;
+}
+
+
 
 function App() {
   return (
@@ -11,7 +26,10 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/merchandise" element={<Merchandise />} />
+        <Route path="/members" element={<Members />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>
     </BrowserRouter>
