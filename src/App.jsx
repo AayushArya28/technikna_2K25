@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from './pages/Loading';
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import { useState} from "react";
 
 function Events() {
