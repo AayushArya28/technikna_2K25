@@ -62,7 +62,13 @@ const Home = () => {
       <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-40 flex flex-col space-y-4">
         <Facebook className="w-6 h-6 text-gray-700 hover:text-blue-600 cursor-pointer transition-colors" />
         <Twitter className="w-6 h-6 text-gray-700 hover:text-blue-400 cursor-pointer transition-colors" />
-        <Instagram className="w-6 h-6 text-gray-700 hover:text-pink-600 cursor-pointer transition-colors" />
+        <a
+          href="https://www.instagram.com/technika_bitp/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Instagram className="w-6 h-6 text-gray-700 hover:text-pink-600 cursor-pointer transition-colors" />
+        </a>
         <Youtube className="w-6 h-6 text-gray-700 hover:text-red-600 cursor-pointer transition-colors" />
       </div>
 
