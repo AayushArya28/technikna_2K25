@@ -17,8 +17,6 @@ function Contact() {
   return <h1 className="p-20">Contact Page</h1>;
 }
 
-
-
 function App() {
   return (
     <BrowserRouter>
