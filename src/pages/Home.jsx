@@ -1,17 +1,60 @@
-import React from 'react';
-import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import React from "react";
+import { Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { SplitText } from "gsap/SplitText";
+
+gsap.registerPlugin(useGSAP, SplitText);
 
 const Home = () => {
+  useGSAP(() => {
+    const heroText = new SplitText("#heroText", { type: "chars" });
+    const heroTextTimeline = gsap.timeline({ delay: 0.5 });
+
+    const firstLetter = heroText.chars[0];
+    const otherLetters = heroText.chars.slice(1);
+
+    gsap.set(heroText.chars, { display: "inline-block" });
+
+    const bounds = firstLetter.getBoundingClientRect();
+    const xOffset = window.innerWidth / 2 - (bounds.left + bounds.width / 2);
+
+    gsap.set(firstLetter, { x: xOffset, scale: 100 });
+
+    heroTextTimeline.to(firstLetter, {
+      scale: 1,
+      duration: 2,
+      ease: "power4.out",
+    });
+
+    heroTextTimeline.to(firstLetter, {
+      x: 0,
+      duration: 1,
+    });
+
+    heroTextTimeline.fromTo(
+      otherLetters,
+      { x: 50, autoAlpha: 0 },
+      {
+        x: 0,
+        autoAlpha: 1,
+        duration: 1.5,
+        stagger: 0.2,
+        ease: "power3.out",
+      },
+      "-=0.75"
+    );
+  });
+
   return (
     <div className="relative min-h-screen overflow-hidden">
-
       {/* Background Mountain Image */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="/images/mountain-with-sun.png" 
-          alt="Mount Fuji with Pink Sun" 
-          className="w-full h-full object-cover" 
+        <img
+          src="/images/mountain-with-sun.png"
+          alt="Mount Fuji with Pink Sun"
+          className="w-full h-full object-cover"
         />
       </div>
 
@@ -30,7 +73,7 @@ const Home = () => {
           alt="Samurai Warrior"
           className="h-96 w-auto object-contain"
           style={{
-            filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.2))'
+            filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.2))",
           }}
         />
       </div>
@@ -42,16 +85,19 @@ const Home = () => {
           alt="Japanese Castle"
           className="h-80 w-auto object-contain"
           style={{
-            filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.15))'
+            filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15))",
           }}
         />
       </div>
 
       {/* Main Title - Centered */}
       <div className="absolute inset-0 z-30 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center jp-font">
           <h1 className="text-8xl font-black text-black mb-4 tracking-wider drop-shadow-lg">
-            <span className="inline-block transform hover:scale-105 transition-transform duration-300">
+            <span
+              id="heroText"
+              className="inline-block transform hover:scale-105 transition-transform duration-300 text-center"
+            >
               TECHNIKA
             </span>
           </h1>

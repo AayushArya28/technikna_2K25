@@ -19,8 +19,6 @@ function Contact() {
   return <h1 className="p-20">Contact Page</h1>;
 }
 
-
-
 function App() {
   const [loadingDone, setLoadingDone] = useState(false);
   return (
