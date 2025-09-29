@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Loading from './pages/Loading';
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
 import Login from "./pages/login";
+import { useState} from "react";
 
 function Events() {
   return <h1 className="p-20">Events Page</h1>;
@@ -20,18 +22,23 @@ function Contact() {
 
 
 function App() {
+  const [loadingDone, setLoadingDone] = useState(false);
   return (
     <BrowserRouter>
-      <Nav />
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/events" element={<Events />} />
-        <Route path="/merchandise" element={<Merchandise />} />
-        <Route path="/members" element={<Members />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
+      {!loadingDone && <Loading onFinish={() => setLoadingDone(true)} />}
+      {loadingDone && (
+        <>
+          <Nav />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/merchandise" element={<Merchandise />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </>
+      )}
     </BrowserRouter>
   );
 }
