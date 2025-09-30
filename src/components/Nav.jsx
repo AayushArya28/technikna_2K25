@@ -46,7 +46,7 @@ function Nav() {
 
   return (
     <nav
-      className="mt-10 fixed top-0 left-0 w-full 
+      className="fixed top-10 left-0 w-full
                 text-black font-bold text-3xl flex justify-center 
                 items-center px-12 py-6 z-50"
     >
