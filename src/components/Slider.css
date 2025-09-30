@@ -19,7 +19,7 @@
 body {
   font-size: 1.6rem;
   background: var(--bg);
-  font-family: "Japan Ramen";
+  /* font-family: "Japan Ramen"; */
   background-color: beige;
 }
 .slider{ 

@@ -1,5 +1,6 @@
 import Landing from "./Landing";
 import PreTechnika from "./PreTechnika";
+import Footer from "./Footer";
 
 
 const Home = () => {
@@ -7,6 +8,7 @@ const Home = () => {
     <>
       <Landing/>
       <PreTechnika/>
+      <Footer/>
     </>
   )
 }

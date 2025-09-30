@@ -19,7 +19,7 @@ import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
 
  export function Slider() {
   return (
-    <div className="container">
+    <div className="container text-Japan Ramen">
       <h1 className="heading">Events</h1>
       <Swiper
         effect={'coverflow'}
@@ -43,7 +43,12 @@ import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
         className="swiper_container"
       >
         <SwiperSlide>
-          <img src={slide_image_1} alt="slide_image" />
+          <div>
+            <img src={slide_image_1} alt="slide_image" />
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.
+            </p>
+          </div>
         </SwiperSlide>
         <SwiperSlide>
           <img src={slide_image_2} alt="slide_image" />
