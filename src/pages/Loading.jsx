@@ -9,7 +9,7 @@ function Loading({ onFinish }) {
   const splashSvgRef = useRef(null);
 
   useEffect(() => {
-    fetch("/public/landscape.svg")
+    fetch("/landscape.svg")
       .then(res => res.text())
       .then(svgText => {
         if (svgContainerRef.current) {
