@@ -1,10 +1,13 @@
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { useEffect, useRef } from "react";
 
 gsap.registerPlugin(useGSAP);
 
 function Nav() {
+  const navRef = useRef(null);
+
   useGSAP(() => {
     const navLinks = gsap.utils.toArray(".nav-link");
 
@@ -44,11 +47,44 @@ function Nav() {
     });
   });
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      
+      if (scrollPosition > 50) {
+        // Add translucent background when scrolled down
+        gsap.to(navRef.current, {
+          backgroundColor: "rgba(245, 241, 232, 0.9)",
+          backdropFilter: "blur(12px)",
+          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      } else {
+        // Remove background when at top
+        gsap.to(navRef.current, {
+          backgroundColor: "rgba(245, 241, 232, 0)",
+          backdropFilter: "blur(0px)",
+          boxShadow: "0 0 0 rgba(0, 0, 0, 0)",
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <nav
-      className="fixed top-10 left-0 w-full
+      ref={navRef}
+      className="fixed top-10 left-0 right-0 w-full
                 text-black font-bold text-3xl flex justify-center 
-                items-center px-12 py-6 z-50"
+                items-center px-12 pt-16 pb-6 z-50"
     >
       {/* Centered Links */}
       <div className="flex gap-12 text-shadow-lg/23 font-serif text-xl">
