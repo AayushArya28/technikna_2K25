@@ -2,13 +2,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Loading from './pages/Loading';
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
+import { Events } from "./pages/Events";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
 import { useState} from "react";
 
-function Events() {
-  return <h1 className="p-20">Events Page</h1>;
-}
 function Merchandise() {
   return <h1 className="p-20">Merchandise Page</h1>;
 }
