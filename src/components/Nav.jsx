@@ -91,7 +91,8 @@ function Nav() {
         <NavLink to="/" label="Home" jp="私たちに関しては" />
         <NavLink to="/events" label="Events" jp="イベント" />
         <NavLink to="/merchandise" label="Merchandise" jp="商品" />
-        <NavLink to="/members" label="Members" jp="メンバー" />
+        <NavLink to="/core" label="Core Team" jp="コアチーム" />
+        <NavLink to="/workshop" label="WorkShop" jp="ワークショップ" />
         <NavLink to="/contact" label="Contact Us" jp="連絡先" />
       </div>
     </nav>

@@ -29,7 +29,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer ref={footerRef} className="bg-gray-900 text-white pt-16 pb-8">
+    <footer ref={footerRef} className="bg-[url('/images/footer-bg.jpg')] text-black pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* Left - Logos */}
@@ -40,12 +40,12 @@ export default function Footer() {
           >
             <div className="space-y-6">
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center">
+                <div className="w-16 h-16 text-black rounded-lg flex items-center justify-center">
                   <span className="text-gray-900 font-bold text-lg">BIT</span>
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold">BIT Mesra</h3>
-                  <p className="text-gray-400 text-sm">Excellence in Education</p>
+                  <p className="text-gray-800 text-sm">Excellence in Education</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
@@ -54,7 +54,7 @@ export default function Footer() {
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold">Technika</h3>
-                  <p className="text-gray-400 text-sm">Annual Tech Fest</p>
+                  <p className="text-sm">Annual Tech Fest</p>
                 </div>
               </div>
             </div>
@@ -69,25 +69,25 @@ export default function Footer() {
             <div className="space-y-8">
               {/* Important Links */}
               <div>
-                <h3 className="text-lg font-semibold mb-4 text-gray-300">Important Links</h3>
+                <h3 className="text-lg font-semibold mb-4">Important Links</h3>
                 <ul className="space-y-2">
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block">
+                    <a href="#" className="hover:text-blue-800  transition-colors duration-300 hover:translate-x-1 inline-block">
                       About Us
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block">
+                    <a href="#" className="hover:text-blue-800 transition-colors duration-300 hover:translate-x-1 inline-block">
                       Events
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block">
-                      Gallery
+                    <a href="#" className="hover:text-blue-800  transition-colors duration-300 hover:translate-x-1 inline-block">
+                      Core Team
                     </a>
                   </li>
                   <li>
-                    <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300 hover:translate-x-1 inline-block">
+                    <a href="#" className="hover:text-blue-800 transition-colors duration-300 hover:translate-x-1 inline-block">
                       Contact
                     </a>
                   </li>
@@ -96,21 +96,21 @@ export default function Footer() {
 
               {/* Social Media */}
               <div>
-                <h3 className="text-lg font-semibold mb-4 text-gray-300">Follow Us</h3>
+                <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
                 <div className="flex space-x-4">
-                  <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-600 transition-all duration-300 hover:scale-110">
+                  <a href="#" className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-blue-600 transition-all duration-300 hover:scale-110">
                     <Facebook size={18} />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-400 transition-all duration-300 hover:scale-110">
+                  <a href="#" className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-blue-400 transition-all duration-300 hover:scale-110">
                     <Twitter size={18} />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-pink-600 transition-all duration-300 hover:scale-110">
+                  <a href="#" className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-pink-600 transition-all duration-300 hover:scale-110">
                     <Instagram size={18} />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-700 transition-all duration-300 hover:scale-110">
+                  <a href="#" className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-blue-700 transition-all duration-300 hover:scale-110">
                     <Linkedin size={18} />
                   </a>
-                  <a href="#" className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-red-600 transition-all duration-300 hover:scale-110">
+                  <a href="#" className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-red-600 transition-all duration-300 hover:scale-110">
                     <Youtube size={18} />
                   </a>
                 </div>
@@ -124,7 +124,7 @@ export default function Footer() {
             className="opacity-0 transition-all duration-700 ease-out delay-300"
             style={{ transform: 'translateY(30px)' }}
           >
-            <h3 className="text-lg font-semibold mb-4 text-gray-300">BIT Patna Location</h3>
+            <h3 className="text-lg font-semibold mb-4 hover:text-blue-800 transition-colors duration-300">BIT Patna Location</h3>
             <div className="bg-gray-800 rounded-lg overflow-hidden h-48 mb-4 relative group">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3598.174688276893!2d85.09965931501436!3d25.611938583711956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed58dce6731f59%3A0x4059f39a1ac82c86!2sBirla%20Institute%20Of%20Technology%2C%20Patna!5e0!3m2!1sen!2sin!4v1234567890"
@@ -137,17 +137,17 @@ export default function Footer() {
               ></iframe>
             </div>
             <div className="space-y-2 text-sm">
-              <div className="flex items-start space-x-2 text-gray-400">
+              <div className="flex items-start space-x-2 hover:text-blue-800 transition-colors duration-300">
                 <MapPin size={16} className="mt-1 flex-shrink-0" />
                 <span>BIT Patna, Patna, Bihar, India</span>
               </div>
-              <div className="flex items-center space-x-2 text-gray-400">
+              <div className="flex items-center space-x-2">
                 <Phone size={16} className="flex-shrink-0" />
                 <span>+91 1234567890</span>
               </div>
-              <div className="flex items-center space-x-2 text-gray-400">
+              <div className="flex items-center space-x-2">
                 <Mail size={16} className="flex-shrink-0" />
-                <span>info@bitmesra.ac.in</span>
+                <span>technika@bitmesra.ac.in</span>
               </div>
             </div>
           </div>
@@ -156,14 +156,14 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-gray-400 text-sm">
+            <p className="text-sm hover:text-blue-800 transition-colors duration-300">
               © 2025 BIT Mesra - Technika. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">
+              <a href="#" className="hover:text-blue-800 transition-colors duration-300">
                 Privacy Policy
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors duration-300">
+              <a href="#" className="hover:text-blue-800 transition-colors duration-300">
                 Terms of Service
               </a>
             </div>
