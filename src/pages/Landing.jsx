@@ -109,7 +109,7 @@ const Landing = () => {
           </h1>
           <h2 className="text-6xl font-black text-black tracking-widest drop-shadow-lg">
             <span className="inline-block transform hover:scale-105 transition-transform duration-300">
-              2K25
+              2025
             </span>
           </h2>
         </div>
