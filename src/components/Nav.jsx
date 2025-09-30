@@ -82,9 +82,9 @@ function Nav() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-10 left-0 right-0 w-full
+      className="fixed top-0 left-0 right-0 w-full
                 text-black font-bold text-3xl flex justify-center 
-                items-center px-12 pt-16 pb-6 z-50"
+                items-center px-12 pt-10 pb-5 z-50"
     >
       {/* Centered Links */}
       <div className="flex gap-12 text-shadow-lg/23 font-serif text-xl">
@@ -93,12 +93,6 @@ function Nav() {
         <NavLink to="/merchandise" label="Merchandise" jp="商品" />
         <NavLink to="/members" label="Members" jp="メンバー" />
         <NavLink to="/contact" label="Contact Us" jp="連絡先" />
-      </div>
-
-      {/* Right Auth (hidden but keeps structure) */}
-      <div className="flex gap-6 opacity-0 pointer-events-none">
-        {/* <NavLink to="/login" label="Log-In/Sign-Up" jp="ログイン/サインアップ" /> */}
-        {/* <NavLink to="/signup" label="Sign Up" jp="" /> */}
       </div>
     </nav>
   );
