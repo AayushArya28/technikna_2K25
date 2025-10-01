@@ -145,7 +145,7 @@ export function ContactUs() {
     {
       icon: <Mail className="w-6 h-6" />,
       title: "Email",
-      info: "technika@college.edu",
+      info: "technika@bitmesra.ac.in",
       color: "bg-green-500",
     },
     {
@@ -157,7 +157,7 @@ export function ContactUs() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[url('/images/bg-contus.png')] bg-fixed bg-cover bg-center bg-no-repeat py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div ref={titleRef} className="text-center mb-12">
