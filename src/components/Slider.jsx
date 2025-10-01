@@ -10,14 +10,16 @@ import './Slider.css';
 import slide_image_1 from '../../public/slides/slide1.png';
 import slide_image_2 from '../../public/slides/slide2.png';
 import slide_image_3 from '../../public/slides/slide3.png';
-import slide_image_4 from '../../public/slides/slide4.png';
-import slide_image_5 from '../../public/slides/slide5.png';
-import slide_image_6 from '../../public/slides/slide6.png';
-import slide_image_7 from '../../public/slides/slide7.png';
 
 import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
 
- export function Slider() {
+const slides = [
+  { img: slide_image_1, text: 'Tech Events' },
+  { img: slide_image_2, text: 'Fun Events' },
+  { img: slide_image_3, text: 'Cultural Events' }
+];
+
+export function Slider() {
   return (
     <div className="container text-Japan Ramen">
       <h1 className="heading">Events</h1>
@@ -42,32 +44,14 @@ import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
         modules={[EffectCoverflow, Pagination, Navigation]}
         className="swiper_container"
       >
-        <SwiperSlide>
-          <div>
-            <img src={slide_image_1} alt="slide_image" />
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod.
-            </p>
-          </div>
-        </SwiperSlide>
-        <SwiperSlide>
-          <img src={slide_image_2} alt="slide_image" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img src={slide_image_3} alt="slide_image" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img src={slide_image_4} alt="slide_image" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img src={slide_image_5} alt="slide_image" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img src={slide_image_6} alt="slide_image" />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img src={slide_image_7} alt="slide_image" />
-        </SwiperSlide>
+        {slides.map((slide, index) => (
+          <SwiperSlide key={index}>
+            <div className="slide-card">
+              <img src={slide.img} alt={`slide_image_${index + 1}`} />
+              <div className="slide-text">{slide.text}</div>
+            </div>
+          </SwiperSlide>
+        ))}
 
         <div className="slider-controler">
           <div className="swiper-button-prev slider-arrow">

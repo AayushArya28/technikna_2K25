@@ -19,11 +19,12 @@
 body {
   font-size: 1.6rem;
   background: var(--bg);
-  /* font-family: "Japan Ramen"; */
+  padding: 10px;
+  font-family: "Japan Ramen";
   background-color: beige;
 }
 .slider{ 
-  font-size: 62.5%;
+  font-size: 50.5%;
   scroll-behavior: smooth;
   margin: 50px;
   padding: 50px;
@@ -64,6 +65,7 @@ body {
   align-items: center;
   justify-content: center;
   transition: transform 0.3s ease;
+  pointer-events: all;
 }
 
 @media (max-width: 500px) {
@@ -85,6 +87,7 @@ body {
   height: 100%;
   border-radius: 2rem;
   object-fit: cover;
+  pointer-events: all;
 }
 
 .swiper-slide-shadow-left,
@@ -107,12 +110,40 @@ body {
   align-items:center;
 }
 
+.slide-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.slide-card:hover img {
+  transform: scale(1.1);
+}
+
+.slide-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.slide-card:hover .slide-text {
+  opacity: 1;
+}
 
 .slider-controler .swiper-button-next {
    pointer-events: all;
   left: 58% !important;
   transform: translateX(-58%) !important;
 }
+
 .slider-controler .swiper-button-prev {
    pointer-events: all;
 }
