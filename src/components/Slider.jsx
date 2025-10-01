@@ -10,13 +10,19 @@ import './Slider.css';
 import slide_image_1 from '../../public/slides/slide1.png';
 import slide_image_2 from '../../public/slides/slide2.png';
 import slide_image_3 from '../../public/slides/slide3.png';
+import slide_image_4 from '../../public/slides/slide4.png';
+import slide_image_5 from '../../public/slides/slide5.png';
+import slide_image_6 from '../../public/slides/slide6.png';
 
 import { EffectCoverflow, Pagination, Navigation } from 'swiper/modules';
 
 const slides = [
   { img: slide_image_1, text: 'Tech Events' },
   { img: slide_image_2, text: 'Fun Events' },
-  { img: slide_image_3, text: 'Cultural Events' }
+  { img: slide_image_3, text: 'Cultural Events' },
+  { img: slide_image_4, text: 'Tech Events' },
+  { img: slide_image_5, text: 'Fun Events' },
+  { img: slide_image_6, text: 'Cultural Events' },
 ];
 
 export function Slider() {
