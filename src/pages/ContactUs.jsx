@@ -2,6 +2,25 @@ import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { Mail, Phone, MapPin, Send, User, MessageSquare } from "lucide-react";
 
+// ✅ Import Firebase
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+
+// ✅ Your Firebase Config (replace with your values)
+const firebaseConfig = {
+  apiKey: "AIzaSyB0FJw9g66xrhAnELuaOmwA6ntoxinitP8",
+  authDomain: "technika25-5db19.firebaseapp.com",
+  projectId: "technika25-5db19",
+  storageBucket: "technika25-5db19.firebasestorage.app",
+  messagingSenderId: "826175108264",
+  appId: "1:826175108264:web:8d8321daab71cbeff4fe9d",
+  measurementId: "G-P7M3H0YNT6"
+};
+
+// ✅ Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 export function ContactUs() {
   const [formData, setFormData] = useState({
     name: "",
@@ -68,37 +87,52 @@ export function ContactUs() {
     });
   };
 
-  const handleSubmit = (e) => {
+  // ✅ Updated handleSubmit with Firebase Firestore
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Success animation
-    gsap.to(formRef.current, {
-      scale: 0.95,
-      duration: 0.1,
-      yoyo: true,
-      repeat: 1,
-      onComplete: () => {
-        setSubmitted(true);
-        
-        // Animate success message
-        gsap.fromTo(
-          ".success-message",
-          { scale: 0, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }
-        );
 
-        // Reset form after delay
-        setTimeout(() => {
-          setSubmitted(false);
-          setFormData({
-            name: "",
-            email: "",
-            phone: "",
-            message: "",
-          });
-        }, 3000);
-      },
-    });
+    try {
+      // Save form data to Firestore
+      await addDoc(collection(db, "contacts"), {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        timestamp: new Date(),
+      });
+
+      // Success animation
+      gsap.to(formRef.current, {
+        scale: 0.95,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 1,
+        onComplete: () => {
+          setSubmitted(true);
+
+          // Animate success message
+          gsap.fromTo(
+            ".success-message",
+            { scale: 0, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }
+          );
+
+          // Reset form after delay
+          setTimeout(() => {
+            setSubmitted(false);
+            setFormData({
+              name: "",
+              email: "",
+              phone: "",
+              message: "",
+            });
+          }, 3000);
+        },
+      });
+    } catch (error) {
+      console.error("Error saving contact form data: ", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   const contactInfo = [
