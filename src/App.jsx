@@ -7,7 +7,7 @@ import { ContactUs } from './pages/ContactUs.jsx'
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
 import { useState} from "react";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 
 function Merchandise() {
   return <h1 className="p-20">Merchandise Page</h1>;
