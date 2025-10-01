@@ -3,6 +3,7 @@ import Loading from './pages/Loading';
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
 import { Events } from "./pages/Events";
+import { ContactUs } from './pages/ContactUs.jsx'
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
 import { useState} from "react";
@@ -32,7 +33,7 @@ function App() {
             <Route path="/merchandise" element={<Merchandise />} />
             <Route path="/members" element={<Members />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/contact" element={<ContactUs />} />
           </Routes>
         </>
       )}
