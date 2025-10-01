@@ -8,13 +8,13 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 // ✅ Your Firebase Config (replace with your values)
 const firebaseConfig = {
-  apiKey: "AIzaSyB0FJw9g66xrhAnELuaOmwA6ntoxinitP8",
-  authDomain: "technika25-5db19.firebaseapp.com",
-  projectId: "technika25-5db19",
-  storageBucket: "technika25-5db19.firebasestorage.app",
-  messagingSenderId: "826175108264",
-  appId: "1:826175108264:web:8d8321daab71cbeff4fe9d",
-  measurementId: "G-P7M3H0YNT6"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 // ✅ Initialize Firebase
