@@ -3,6 +3,7 @@ import Loading from "./pages/Loading";
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
 import { Events } from "./pages/Events";
+import { Workshop } from "./pages/Workshop.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
@@ -35,6 +36,7 @@ function App() {
             <Route path="/events" element={<Events />} />
             <Route path="/merchandise" element={<Merchandise />} />
             <Route path="/members" element={<Members />} />
+            <Route path="/workshop" element={<Workshop />} />
             <Route path="/login" element={<Login />} />
             <Route path="/contact" element={<ContactUs />} />
           </Routes>
