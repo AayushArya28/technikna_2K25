@@ -162,13 +162,14 @@ export function Events() {
 
   return (
     <div
-      className="mt-15 min-h-screen p-10"
+      className="mt-15 min-h-screen p-10 overflow-x-hidden"
       style={{
         backgroundImage: "url('/images/event-bg.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
         width: "100vw",
+        maxWidth: "100%", // Prevent horizontal scroll
       }}
     >
       <h1 ref={titleRef} className="text-3xl font-bold text-center mb-8">
