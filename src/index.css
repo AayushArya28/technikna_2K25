@@ -10,3 +10,23 @@
 .jp-font {
   font-family: "Japan Ramen", sans-serif;
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ce2413 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ce2413;
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}

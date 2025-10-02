@@ -50,12 +50,12 @@ function Nav() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
-      
+
       if (scrollPosition > 50) {
         // Add translucent background when scrolled down
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(245, 241, 232, 0.9)",
-          backdropFilter: "blur(12px)",
+          backgroundColor: "rgba(245, 241, 232, 0.2)",
+          backdropFilter: "blur(2px)",
           boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
           duration: 0.3,
           ease: "power2.out",
@@ -73,7 +73,7 @@ function Nav() {
     };
 
     window.addEventListener("scroll", handleScroll);
-    
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -84,13 +84,13 @@ function Nav() {
       ref={navRef}
       className="fixed top-0 left-0 right-0 w-full
                 text-black font-bold text-3xl flex justify-center 
-                items-center px-12 pt-10 pb-5 z-50"
+                items-center px-12 pt-7 pb-2 z-50"
     >
       {/* Centered Links */}
       <div className="flex gap-12 text-shadow-lg/23 font-serif text-xl">
-        <NavLink to="/" label="Home" jp="私たちに関しては" />
+        <NavLink to="/" label="Home" jp="ホーム" />
         <NavLink to="/events" label="Events" jp="イベント" />
-        <NavLink to="/merchandise" label="Merchandise" jp="商品" />
+        <NavLink to="/merchandise" label="Merchandise" jp="グッズ" />
         <NavLink to="/core" label="Core Team" jp="コアチーム" />
         <NavLink to="/workshop" label="WorkShop" jp="ワークショップ" />
         <NavLink to="/contact" label="Contact Us" jp="連絡先" />

@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Loading from './pages/Loading';
+import Loading from "./pages/Loading";
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
 import { Events } from "./pages/Events";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
-import { useState} from "react";
+import { useState } from "react";
 
 function Merchandise() {
   return <h1 className="p-20">Merchandise Page</h1>;
@@ -19,7 +19,7 @@ function Contact() {
 }
 
 function App() {
-  const [loadingDone, setLoadingDone] = useState(false);
+  const [loadingDone, setLoadingDone] = useState(import.meta.env.DEV);
   return (
     <BrowserRouter>
       {!loadingDone && <Loading onFinish={() => setLoadingDone(true)} />}

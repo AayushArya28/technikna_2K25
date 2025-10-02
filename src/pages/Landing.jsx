@@ -4,8 +4,9 @@ import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/SplitText";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(useGSAP, SplitText);
+gsap.registerPlugin(useGSAP, SplitText, ScrollTrigger);
 
 const Landing = () => {
   useGSAP(() => {
@@ -45,21 +46,52 @@ const Landing = () => {
       },
       "-=0.75"
     );
+
+    // Parallax Effect
+    const hero = document.getElementById("hero");
+    const layers = gsap.utils.toArray(".parallax");
+
+    const totalVH = 1;
+    const totalScroll = window.innerHeight * totalVH;
+
+    const zoomFraction = 0.3;
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: hero,
+        start: "top top",
+        end: () => "+=" + totalScroll,
+        scrub: true,
+        pin: true,
+        anticipatePin: 1,
+      },
+    });
+
+    layers.forEach((layer) => {
+      const scale = parseFloat(layer.dataset.scale) || 1;
+      const depth = parseFloat(layer.dataset.depth) || 0;
+      const movement = -(layer.offsetHeight * depth);
+
+      tl.to(layer, { scale, ease: "none", duration: zoomFraction }, 0);
+
+      tl.to(
+        layer,
+        { y: movement, ease: "none", duration: 1 - zoomFraction },
+        zoomFraction
+      );
+    });
+
+    // ensure positions are correct
+    ScrollTrigger.refresh();
   });
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      {/* Background Mountain Image */}
-      <div className="absolute inset-0 z-0">
-        <img
-          src="/images/mountain-with-sun.png"
-          alt="Mount Fuji with Pink Sun"
-          className="w-full h-full object-cover"
-        />
-      </div>
-
+    <div id="hero" className="relative min-h-screen overflow-hidden">
       {/* Social Media Icons */}
-      <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-40 flex flex-col space-y-4">
+      <div
+        data-depth="0.80"
+        className="parallax absolute left-8 top-1/2 transform -translate-y-1/2 z-40 flex flex-col space-y-4"
+      >
         <Facebook className="w-6 h-6 text-gray-700 hover:text-blue-600 cursor-pointer transition-colors" />
         <Twitter className="w-6 h-6 text-gray-700 hover:text-blue-400 cursor-pointer transition-colors" />
         <a
@@ -72,8 +104,25 @@ const Landing = () => {
         <Youtube className="w-6 h-6 text-gray-700 hover:text-red-600 cursor-pointer transition-colors" />
       </div>
 
+      {/* Background Mountain Image */}
+      <div
+        className="parallax absolute inset-0 z-0"
+        data-depth="0.10"
+        data-scale="1.2"
+      >
+        <img
+          src="/images/mountain-with-sun.png"
+          alt="Mount Fuji with Pink Sun"
+          className="h-full w-full object-cover"
+        />
+      </div>
+
       {/* Samurai Warrior - Bottom Left Corner */}
-      <div className="absolute bottom-0 left-0 z-20">
+      <div
+        className="parallax absolute bottom-0 left-0 z-20"
+        data-depth="0.15"
+        data-scale="1.17"
+      >
         <img
           src="/images/samurai.png"
           alt="Samurai Warrior"
@@ -85,19 +134,41 @@ const Landing = () => {
       </div>
 
       {/* Japanese Castle - Bottom Right Corner */}
-      <div className="absolute bottom-0 right-0 z-20">
+      <div
+        className="parallax absolute bottom-[-5rem] right-[-14rem] z-20"
+        data-depth="0.25"
+        data-scale="1.12"
+      >
         <img
           src="/images/castle.png"
           alt="Japanese Castle"
-          className="h-80 w-auto object-contain"
+          className="h-[32rem] w-auto object-contain"
           style={{
             filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15))",
           }}
         />
       </div>
 
+      {/* Ground/Floor Image */}
+      <div
+        className="parallax absolute bottom-0 right-0 z-30 opacity-90"
+        data-depth="0"
+      >
+        <img
+          src="/images/floor.png"
+          alt="Ground"
+          className="w-full h-48 object-cover"
+          style={{
+            filter: "drop-shadow(0 -5px 15px rgba(0,0,0,0.1))",
+          }}
+        />
+      </div>
+
       {/* Main Title - Centered */}
-      <div className="absolute inset-0 z-30 flex items-center justify-center">
+      <div
+        className="parallax absolute inset-0 z-30 flex items-center justify-center"
+        data-depth="0.60"
+      >
         <div className="text-center jp-font">
           <h1 className="text-8xl font-black text-black mb-4 tracking-wider drop-shadow-lg">
             <span
@@ -116,7 +187,10 @@ const Landing = () => {
       </div>
 
       {/* Floating Animation Effects */}
-      <div className="absolute inset-0 pointer-events-none z-25">
+      <div
+        className="parallax absolute inset-0 pointer-events-none z-25"
+        data-depth="0.85"
+      >
         {[...Array(10)].map((_, i) => (
           <div
             key={i}
