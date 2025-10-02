@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth, db } from "../firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Login() {
-    // 🔽 1. All useState hooks go here
     const navigate = useNavigate();
     const [signIn, setSignIn] = useState(true);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [name, setName] = useState(""); // optional
+    const [name, setName] = useState("");
+    const [college, setCollege] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    // 🔽 2. Handler (Firebase removed)
     const handleSubmit = async () => {
         setLoading(true);
         setError("");
+        setSuccess("");
 
         if (!email || !email.includes("@")) {
             setError("Please enter a valid email.");
@@ -31,24 +34,50 @@ export default function Login() {
         }
 
         try {
-            // Add your authentication logic here
             if (signIn) {
-                // Handle sign in
-                setError("");
+                // Sign In
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 setSuccess("Login successful!");
                 setTimeout(() => {
-                    navigate("/dashboard");
+                    navigate("/");
                 }, 1000);
             } else {
-                // Handle sign up
-                setError("");
+                // Sign Up
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                // Add name, college, email, and password to Firestore under 'auth' collection
+                await setDoc(doc(db, "auth", userCredential.user.uid), {
+                    name,
+                    college,
+                    email,
+                    password, // Store password (not recommended for production)
+                    createdAt: new Date()
+                });
                 setSuccess("Account created successfully! You can now login.");
             }
-        } catch (error) {
-            console.error("Authentication error:", error);
-            setError("Authentication failed. Try again.");
+        } catch (err) {
+            if (err.code === "auth/invalid-credential") {
+                setError("Wrong password, try again.");
+            } else {
+                setError(err.message);
+            }
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+        setError("");
+        setSuccess("");
+        if (!email || !email.includes("@")) {
+            setError("Please enter your email above to reset password.");
+            return;
+        }
+        try {
+            await sendPasswordResetEmail(auth, email);
+            setSuccess("Password reset link sent to your email. Check spam if not found");
+        } catch (err) {
+            setError("Failed to send reset link. Please check your email.");
         }
     };
 
@@ -69,6 +98,13 @@ export default function Login() {
                             className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
+                        />
+                        <input
+                            type="text"
+                            placeholder="College"
+                            className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+                            value={college}
+                            onChange={(e) => setCollege(e.target.value)}
                         />
                         <input
                             type="email"
@@ -149,6 +185,7 @@ export default function Login() {
                         <a
                             href="#"
                             className="text-sm text-gray-700 my-3"
+                            onClick={handleForgotPassword}
                         >
                             Forgot your password?
                         </a>
