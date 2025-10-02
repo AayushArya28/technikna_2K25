@@ -98,7 +98,7 @@ function Loading({ onFinish }) {
   };
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-[beige] items-start p-5 gap-2.5">
+    <div className="flex flex-col w-screen h-screen bg-[beige] items-start gap-2.5">
       <div
         ref={svgContainerRef}
         className="flex-1 w-full h-full overflow-hidden"
