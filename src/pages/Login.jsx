@@ -1,149 +1,225 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-// A simple SVG logo that resembles the one in the screenshot
-const SamuraiLogo = () => (
-  <svg className="w-10 h-10 mx-auto text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 15V3m0 12l-4-4m4 4l4-4M3 17h18v2H3zM5 15h14" />
-  </svg>
-);
+export default function Login() {
+    // 🔽 1. All useState hooks go here
+    const navigate = useNavigate();
+    const [signIn, setSignIn] = useState(true);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [name, setName] = useState(""); // optional
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-// SVG icon for showing the password
-const EyeIcon = ({...props}) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-        <circle cx="12" cy="12" r="3" />
-    </svg>
-);
+    // 🔽 2. Handler (Firebase removed)
+    const handleSubmit = async () => {
+        setLoading(true);
+        setError("");
 
-// SVG icon for hiding the password
-const EyeOffIcon = ({...props}) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
-        <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
-        <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
-        <line x1="2" x2="22" y1="2" y2="22" />
-    </svg>
-);
+        if (!email || !email.includes("@")) {
+            setError("Please enter a valid email.");
+            setLoading(false);
+            return;
+        }
 
+        if (!password || password.length < 6) {
+            setError("Please enter a valid password (min 6 characters).");
+            setLoading(false);
+            return;
+        }
 
-function Login() {
-  // State to toggle between Sign In and Sign Up forms
-  const [isSignUp, setIsSignUp] = useState(false);
-  // State for password visibility
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+        try {
+            // Add your authentication logic here
+            if (signIn) {
+                // Handle sign in
+                setError("");
+                setSuccess("Login successful!");
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 1000);
+            } else {
+                // Handle sign up
+                setError("");
+                setSuccess("Account created successfully! You can now login.");
+            }
+        } catch (error) {
+            console.error("Authentication error:", error);
+            setError("Authentication failed. Try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    // Main container with a dark background and centered content
-    <div className="bg-black text-gray-200 min-h-screen flex items-center justify-center p-4 font-sans relative overflow-hidden">
-      
-      {/* Background decorative elements for a futuristic feel */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-red-900/20 rounded-full filter blur-3xl opacity-50 animate-pulse"></div>
-      <div className="absolute bottom-0 right-0 w-64 h-64 bg-red-900/20 rounded-full filter blur-3xl opacity-50 animate-pulse animation-delay-4000"></div>
+    return (
+        <div className="font-ramen bg-[url('/images/login-bg.png')] bg-cover bg-center flex items-center justify-center min-h-screen w-full bg-[#f6f5f7] px-4 py-8">
+            <div className="relative w-[678px] max-w-full min-h-[400px] bg-white rounded-lg shadow-[0_14px_28px_rgba(0,0,0,0.25),_0_10px_10px_rgba(0,0,0,0.22)] overflow-hidden font-[Montserrat]">
+                {/* Sign Up */}
+                <div
+                    className={`absolute top-0 h-full transition-all duration-500 ease-in-out left-0 w-1/2 opacity-0 z-[1] ${!signIn ? "translate-x-full opacity-100 z-[5]" : ""
+                        }`}
+                >
+                    <form className="bg-white flex items-center justify-center flex-col px-[50px] h-full text-center">
 
-      {/* The main login/signup card */}
-      <div className="my-2 py-2 bg-[#1c1c1c] p-8 rounded-2xl shadow-2xl shadow-red-900/20 w-full max-w-md z-10 border border-gray-800">
-        <div className="text-center mb-8">
-            <div className="inline-block p-2 bg-gray-900 rounded-full mb-4 border border-gray-700">
-               <SamuraiLogo />
+                        <h1 className="text-red-700 font-bold m-0 text-xl">Create Account</h1>
+                        <input
+                            type="text"
+                            placeholder="Name"
+                            className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <div className="w-full relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute right-3 top-[50%] translate-y-[-50%] text-sm text-gray-600"
+                            >
+                                {showPassword ? "Show" : <s>Show</s>}
+                            </button>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={handleSubmit}
+                            disabled={loading}
+                            className="rounded-full border border-[#ff9e9e] text-red-700 bg-[#ff9e9e] text-xs font-bold py-3 px-12 uppercase tracking-wider active:scale-95 focus:outline-none"
+                        >
+                            {loading ? "Please wait..." : "Sign Up"}
+                        </button>
+                        {error && (
+                            <p className="text-red-600 text-sm bg-red-100 px-3 py-2 rounded w-full my-2">
+                                {error}
+                            </p>
+                        )}
+                        {success && (
+                            <p className="text-green-600 text-sm bg-green-100 px-3 py-2 rounded w-full my-2">
+                                {success}
+                            </p>
+                        )}
+                    </form>
+                </div>
+
+                {/* Sign In */}
+                <div
+                    className={`absolute top-0 h-full transition-all duration-500 ease-in-out left-0 w-1/2 z-[2] ${!signIn ? "translate-x-full" : ""
+                        }`}
+                >
+                    <form className="bg-white flex items-center justify-center flex-col px-[50px] h-full text-center">
+
+                        <h1 className="text-red-700 font-bold m-0 text-xl">Sign in</h1>
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <div className="w-full relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                                className="absolute right-3 top-[50%] translate-y-[-50%] text-sm text-gray-600"
+                            >
+                                {showPassword ? "Show" : <s>Show</s>}
+                            </button>
+                        </div>
+                        <a
+                            href="#"
+                            className="text-sm text-gray-700 my-3"
+                        >
+                            Forgot your password?
+                        </a>
+                        <button
+                            type="button"
+                            onClick={handleSubmit}
+                            disabled={loading}
+                            className="rounded-full border border-[#ff9e9e] text-red-700 bg-[#ff9e9e] text-xs font-bold py-3 px-12 uppercase tracking-wider active:scale-95 focus:outline-none"
+                        >
+                            {loading ? "Please wait..." : "Sign In"}
+                        </button>
+                        {error && (
+                            <p className="text-red-600 text-sm bg-red-100 px-3 py-2 rounded w-full my-2">
+                                {error}
+                            </p>
+                        )}
+                        {success && (
+                            <p className="text-green-600 text-sm bg-green-100 px-3 py-2 rounded w-full my-2">
+                                {success}
+                            </p>
+                        )}
+                    </form>
+                </div>
+
+                {/* Overlay Container */}
+                <div
+                    className={`absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-500 ease-in-out z-[100] ${!signIn ? "-translate-x-full" : ""
+                        }`}
+                >
+                    <div
+                        className={`bg-[#ff9e9e] text-red-700 bg-no-repeat bg-cover bg-left relative left-[-100%] h-full w-[200%] transition-transform duration-500 ease-in-out ${!signIn ? "translate-x-1/2" : ""
+                            }`}
+                    >
+                        {/* Left Panel */}
+                        <div
+                            className={`absolute flex items-center justify-center flex-col px-10 text-center top-0 h-full w-1/2 transition-transform duration-500 ease-in-out ${!signIn ? "translate-x-0" : "-translate-x-1/5"
+                                }`}
+                        >
+                            <h1 className="font-bold text-2xl">Welcome Back!</h1>
+                            <p className="text-sm font-light leading-5 tracking-wide my-6">
+                                To keep connected with us please login with your personal info
+                            </p>
+                            <button
+                                type="button"
+                                className="rounded-full border border-red-700 bg-transparent text-red-700 text-xs font-bold py-3 px-12 uppercase tracking-wider active:scale-95 focus:outline-none"
+                                onClick={() => setSignIn(true)}
+                            >
+                                Sign In
+                            </button>
+                        </div>
+
+                        {/* Right Panel */}
+                        <div
+                            className={`absolute right-0 flex items-center justify-center flex-col px-10 text-center top-0 h-full w-1/2 transition-transform duration-500 ease-in-out ${!signIn ? "translate-x-1/5" : "translate-x-0"
+                                }`}
+                        >
+                            <h1 className="font-bold text-2xl">HELP SAMURAI!!</h1>
+                            <p className="text-sm font-light leading-5 tracking-wide my-6">
+                                Enter your personal details and start journey with us
+                            </p>
+                            <button
+                                type="button"
+                                className="rounded-full border border-red-700 bg-transparent text-red-700 text-xs font-bold py-3 px-12 uppercase tracking-wider active:scale-95 focus:outline-none"
+                                onClick={() => setSignIn(false)}
+                            >
+                                Sign Up
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-          <h1 className="text-4xl font-bold text-white">
-            <span className="text-red-500">侍</span> Portal
-          </h1>
-          <p className="text-gray-400 mt-2">Honor your path, warrior</p>
         </div>
-
-        {/* Toggle buttons for Sign In and Join Us */}
-        <div className="flex bg-gray-900/50 p-1 rounded-lg mb-6 border border-gray-700">
-          <button
-            onClick={() => setIsSignUp(false)}
-            className={`w-1/2 py-2 rounded-md transition-colors duration-300 font-semibold ${!isSignUp ? 'bg-red-600 text-white shadow-md shadow-red-500/20' : 'hover:bg-gray-700/50 text-gray-400'}`}
-          >
-            Sign In
-          </button>
-          <button
-            onClick={() => setIsSignUp(true)}
-            className={`w-1/2 py-2 rounded-md transition-colors duration-300 font-semibold ${isSignUp ? 'bg-red-600 text-white shadow-md shadow-red-500/20' : 'hover:bg-gray-700/50 text-gray-400'}`}
-          >
-            Join Us
-          </button>
-        </div>
-
-        <form onSubmit={(e) => e.preventDefault()}>
-          {/* Conditional rendering for the "Name" field in the Sign Up form */}
-          {isSignUp && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-400 mb-2" htmlFor="name">
-                Name
-              </label>
-              <input
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
-                type="text"
-                id="name"
-                placeholder="Enter your warrior name"
-              />
-            </div>
-          )}
-          
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-400 mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-            />
-          </div>
-          
-          <div className="mb-4 relative">
-            <label className="block text-sm font-medium text-gray-400 mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              placeholder={isSignUp ? "Create a strong password" : "Enter your password"}
-            />
-             <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 top-6 pr-3 flex items-center text-gray-400 hover:text-white">
-                {showPassword ? <EyeOffIcon/> : <EyeIcon/>}
-             </button>
-          </div>
-
-          {/* Conditional rendering for the "Confirm Password" field */}
-          {isSignUp && (
-            <div className="mb-6 relative">
-              <label className="block text-sm font-medium text-gray-400 mb-2" htmlFor="confirm-password">
-                Confirm Password
-              </label>
-              <input
-                className="w-full bg-gray-800 border border-gray-700 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
-                type={showConfirmPassword ? 'text' : 'password'}
-                id="confirm-password"
-                placeholder="Confirm your password"
-              />
-               <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute inset-y-0 right-0 top-6 pr-3 flex items-center text-gray-400 hover:text-white">
-                {showConfirmPassword ? <EyeOffIcon/> : <EyeIcon/>}
-             </button>
-            </div>
-          )}
-
-          <button
-            type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg shadow-red-600/30"
-          >
-            {isSignUp ? 'Begin Training' : 'Enter the Dojo'}
-          </button>
-        </form>
-
-        <p className="text-center text-xs text-gray-500 mt-8 italic">
-          "The way of the warrior is found in honor" - Ancient Samurai Proverb
-        </p>
-      </div>
-    </div>
-  );
+    );
 }
-
-export default Login;
