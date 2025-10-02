@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import "./Loading.css";
 import DrawSVGPlugin from "gsap/DrawSVGPlugin";
+import "./Loading.css";
 
 gsap.registerPlugin(DrawSVGPlugin);
 
@@ -11,10 +11,11 @@ function Loading({ onFinish }) {
   const splashSvgRef = useRef(null);
 
   useEffect(() => {
-    document.querySelector(".loader") &&
-      document
-        .querySelector(".loader")
-        .style.setProperty("stroke-width", "0.2");
+    const loaderElement = document.querySelector(".loader");
+
+    if (loaderElement) {
+      loaderElement.style.strokeWidth = "0.2";
+    }
 
     gsap.set(".loader", {
       drawSVG: "0%",
@@ -26,6 +27,15 @@ function Loading({ onFinish }) {
       .then((svgText) => {
         if (svgContainerRef.current) {
           svgContainerRef.current.innerHTML = svgText;
+
+          // Make SVG fill container height
+          const svgEl = svgContainerRef.current.querySelector("svg");
+          if (svgEl) {
+            svgEl.style.height = "100%"; // Fill container height
+            svgEl.style.width = "auto";  // Keep aspect ratio
+            svgEl.style.display = "block";
+            svgEl.style.position = "relative";
+          }
 
           const paths = svgContainerRef.current.querySelectorAll("path");
 
@@ -40,13 +50,12 @@ function Loading({ onFinish }) {
 
           const tl = gsap.timeline({
             onComplete: () => {
-              document.querySelector(".loader-text") &&
-                (document.querySelector(".loader-text").textContent = "Start");
+              const loaderText = document.querySelector(".loader-text");
+              if (loaderText) loaderText.textContent = "Start";
 
-              document.querySelector(".loader-group") &&
-                document
-                  .querySelector(".loader-group")
-                  .addEventListener("click", handleEnterClick);
+              const loaderGroup = document.querySelector(".loader-group");
+              if (loaderGroup)
+                loaderGroup.addEventListener("click", handleEnterClick);
             },
           });
 
@@ -61,15 +70,14 @@ function Loading({ onFinish }) {
                 duration: 0.1,
               });
 
-              document.querySelector(".loader-text") &&
-                (document.querySelector(
-                  ".loader-text"
-                ).textContent = `${Math.round(tl.progress() * 100)}%`);
+              const loaderText = document.querySelector(".loader-text");
+              if (loaderText)
+                loaderText.textContent = `${Math.round(tl.progress() * 100)}%`;
             },
           });
         }
       });
-  });
+  }, []);
 
   const handleEnterClick = () => {
     const enterBtn = enterBtnRef.current;
@@ -98,59 +106,61 @@ function Loading({ onFinish }) {
   };
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-[beige] items-start gap-2.5">
+    <div className="relative w-screen h-screen bg-[beige] overflow-hidden">
+      {/* SVG Container covering full height */}
       <div
         ref={svgContainerRef}
-        className="flex-1 w-full h-full overflow-hidden"
+        className="absolute top-0 left-1/2 -translate-x-1/2 h-screen"
         id="svgContainer"
+        style={{ overflow: "visible" }}
       ></div>
 
+      {/* Splash Circles */}
       <svg
         ref={splashSvgRef}
         className="absolute top-0 left-0 w-full h-full pointer-events-none z-40"
       >
         {[...Array(5)].map((_, i) => (
-          <circle key={i} r="0" fill="beige" opacity="0.9" />
+          <circle key={i} r="${i+1}" fill="beige" opacity="0.9" />
         ))}
       </svg>
 
-      <div className="absolute w-full h-full top-0 left-0 flex items-center justify-center">
-        <div className="flex items-center justify-center z-10 h-full w-full bg-transparent">
-          <svg
-            version="1.1"
-            width="256"
-            height="256"
-            viewBox="0 0 16 16"
-            ref={enterBtnRef}
-          >
-            <g className="cursor-pointer loader-group">
-              <rect
-                x="1.9"
-                y="5.9"
-                width="12"
-                height="4"
-                stroke="black"
-                strokeWidth="0"
-                fill="#F5F5DC"
-                ry="3"
-                rx="2"
-                className="loader"
-              />
-              <text
-                x="7.9"
-                y="8.1"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="2"
-                fill="black"
-                fontFamily="Arial, sans-serif"
-                className="select-none loader-text"
-              >
-                0%
-              </text>
-            </g>
-          </svg>
-        </div>
+      {/* Centered Enter Button */}
+      <div className="absolute inset-0 flex items-center justify-center z-10">
+        <svg
+          version="1.1"
+          width="256"
+          height="256"
+          viewBox="0 0 16 16"
+          ref={enterBtnRef}
+        >
+          <g className="cursor-pointer loader-group">
+            <rect
+              x="1.9"
+              y="5.9"
+              width="12"
+              height="4"
+              stroke="black"
+              strokeWidth="0"
+              fill="#F5F5DC"
+              ry="3"
+              rx="2"
+              className="loader"
+            />
+            <text
+              x="7.9"
+              y="8.1"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fontSize="2"
+              fill="black"
+              fontFamily="Arial, sans-serif"
+              className="select-none loader-text"
+            >
+              0%
+            </text>
+          </g>
+        </svg>
       </div>
     </div>
   );
