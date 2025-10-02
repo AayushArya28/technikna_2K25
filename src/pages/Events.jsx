@@ -4,7 +4,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Example event data grouped by category
 const eventCategories = {
   Technical: [
     {
@@ -162,7 +161,16 @@ export function Events() {
   };
 
   return (
-    <div className="mt-15 min-h-screen bg-gray-100 p-10">
+    <div
+      className="mt-15 min-h-screen p-10"
+      style={{
+        backgroundImage: "url('/images/event-bg.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+        width: "100vw",
+      }}
+    >
       <h1 ref={titleRef} className="text-3xl font-bold text-center mb-8">
         Technika Events
       </h1>
@@ -187,6 +195,7 @@ export function Events() {
                   gsap.to(e.currentTarget, {
                     y: -10,
                     boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
+                    scale: 1.05, // GSAP scale animation on hover
                     duration: 0.3,
                     ease: "power2.out",
                   });
@@ -195,6 +204,7 @@ export function Events() {
                   gsap.to(e.currentTarget, {
                     y: 0,
                     boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+                    scale: 1, // Return to original scale
                     duration: 0.3,
                     ease: "power2.out",
                   });
