@@ -3,9 +3,11 @@ import Loading from "./pages/Loading";
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
 import { Events } from "./pages/Events";
+import { ContactUs } from "./pages/ContactUs.jsx";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
 import { useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 
 function Merchandise() {
   return <h1 className="p-20">Merchandise Page</h1>;
@@ -32,7 +34,7 @@ function App() {
             <Route path="/merchandise" element={<Merchandise />} />
             <Route path="/members" element={<Members />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/contact" element={<ContactUs />} />
           </Routes>
         </>
       )}
