@@ -337,7 +337,7 @@ export function ContactUs() {
                 <div className="text-center">
                   <MapPin className="w-16 h-16 mx-auto mb-4 text-purple-600" />
                   <p className="text-lg font-semibold">College Campus</p>
-                  <p>Ranchi, Jharkhand</p>
+                  <p>Patna, Bihar</p>
                   <a
                     href="https://maps.google.com"
                     target="_blank"
