@@ -126,7 +126,7 @@ const marketingTeam = [
 
 const Core = () => {
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className="bg-[url('/images/core2-bg.png')] text-white min-h-screen">
       <div className="mt-25 pt-5 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
           
