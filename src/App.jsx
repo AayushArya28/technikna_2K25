@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import { Events } from "./pages/Events";
 import { Workshop } from "./pages/Workshop.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
+import Core from "./pages/Core.jsx";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
 import { useState } from "react";
@@ -35,7 +36,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/events" element={<Events />} />
             <Route path="/merchandise" element={<Merchandise />} />
-            <Route path="/members" element={<Members />} />
+            <Route path="/core" element={<Core />} />
             <Route path="/workshop" element={<Workshop />} />
             <Route path="/login" element={<Login />} />
             <Route path="/contact" element={<ContactUs />} />
