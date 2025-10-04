@@ -1,6 +1,5 @@
 import Landing from "./Landing";
 import PreTechnika from "./PreTechnika";
-import Footer from "./Footer";
 import { Slider } from "../components/Slider";
 import CircularGallery from "../components/CircularGallery";
 import { useFirstLoad } from "../hooks/useFirstLoad";
@@ -23,7 +22,7 @@ const Home = () => {
         />
       </div>
       {/* <Slider /> */}
-      <Footer />
+      
     </div>
   );
 };

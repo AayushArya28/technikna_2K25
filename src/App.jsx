@@ -25,7 +25,7 @@ function App() {
     { path: "/", Component: Home },
     { path: "/events", Component: Events },
     { path: "/merchandise", Component: Merchandise },
-    { path: "/members", Component: Members },
+    { path: "/core", Component: Core },
     { path: "/workshop", Component: Workshop },
     { path: "/login", Component: Login },
     { path: "/contact", Component: ContactUs },
@@ -69,6 +69,7 @@ function App() {
               ))}
             </Routes>
           </TransitionProvider>
+          <Footer />
         </>
       )}
     </BrowserRouter>
