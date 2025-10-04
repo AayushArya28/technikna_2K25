@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import { Events } from "./pages/Events";
 import { Workshop } from "./pages/Workshop.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
+import { Core } from "./pages/Core.jsx";
+import { Footer } from "./components/Footer.jsx";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
 import { useState } from "react";
@@ -14,10 +16,6 @@ import { TransitionProvider } from "./context/transition.jsx";
 
 function Merchandise() {
   return <h1 className="p-20">Merchandise Page</h1>;
-}
-
-function Members() {
-  return <h1 className="p-20">Members Page</h1>;
 }
 
 function App() {
