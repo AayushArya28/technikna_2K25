@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import { Events } from "./pages/Events";
 import { Workshop } from "./pages/Workshop.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
+import Footer from "./components/Footer.jsx";
 import Core from "./pages/Core.jsx";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
@@ -41,6 +42,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/contact" element={<ContactUs />} />
           </Routes>
+          <Footer />
         </>
       )}
     </BrowserRouter>
