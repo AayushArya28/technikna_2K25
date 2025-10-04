@@ -37,7 +37,6 @@ const sliderData = [
 export function Workshop() {
   const [activeIndex, setActiveIndex] = useState(0);
   const autoSlideRef = useRef(null);
-  const thumbnailRefs = useRef([]);
   const titleRefs = useRef([]);
   const descRefs = useRef([]);
 
@@ -53,23 +52,17 @@ export function Workshop() {
     setActiveIndex(index);
   };
 
-  // Auto-slide
+  // Auto-slide always active
   useEffect(() => {
     autoSlideRef.current = setInterval(nextSlide, 5000);
-    return () => clearInterval(autoSlideRef.current);
+    return () => {
+      clearInterval(autoSlideRef.current);
+    };
   }, []);
 
-  // Reset timer & scroll thumbnail into view + animate text
+  // Animate text on slide change
   useEffect(() => {
-    clearInterval(autoSlideRef.current);
-    autoSlideRef.current = setInterval(nextSlide, 5000);
-
-    const activeThumb = thumbnailRefs.current[activeIndex];
-    if (activeThumb) {
-      activeThumb.scrollIntoView({ behavior: "smooth", inline: "nearest" });
-    }
-
-    // Animate title letters
+    // Title letters animation
     const letters = titleRefs.current[activeIndex]?.querySelectorAll("span");
     if (letters) {
       gsap.fromTo(
@@ -85,7 +78,7 @@ export function Workshop() {
       );
     }
 
-    // Animate description words
+    // Description words animation
     const words = descRefs.current[activeIndex]?.querySelectorAll("span");
     if (words) {
       gsap.fromTo(
@@ -96,14 +89,13 @@ export function Workshop() {
           opacity: 1,
           duration: 0.5,
           stagger: 0.03,
-          delay: 0.3, // start after title animation
+          delay: 0.3,
           ease: "power3.out",
         }
       );
     }
   }, [activeIndex]);
 
-  // Helpers to split text
   const splitLetters = (text) =>
     text.split("").map((char, i) => (
       <span key={i} className="inline-block">
@@ -176,7 +168,6 @@ export function Workshop() {
         {sliderData.map((slide, index) => (
           <div
             key={index}
-            ref={(el) => (thumbnailRefs.current[index] = el)}
             onClick={() => goToSlide(index)}
             className={`relative flex-shrink-0 w-[120px] sm:w-[150px] h-[180px] sm:h-[220px] transition duration-500 rounded-lg overflow-hidden cursor-pointer ${
               index === activeIndex ? "brightness-150" : "brightness-50"
