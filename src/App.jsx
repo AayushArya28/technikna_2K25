@@ -11,7 +11,7 @@ import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
 import { useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
-import TransitionComponent from "./components/transition.jsx";
+import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
 
 function Merchandise() {
