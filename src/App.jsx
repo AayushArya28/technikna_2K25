@@ -5,42 +5,67 @@ import Home from "./pages/Home";
 import { Events } from "./pages/Events";
 import { Workshop } from "./pages/Workshop.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
-import Core from "./pages/Core.jsx";
+import { Core } from "./pages/Core.jsx";
+import Merchandise from "./pages/Merchandise.jsx";
+import { Footer } from "./components/Footer.jsx";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
 import { useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import TransitionComponent from "./components/Transition.jsx";
+import { TransitionProvider } from "./context/transition.jsx";
 
-function Merchandise() {
-  return <h1 className="p-20">Merchandise Page</h1>;
-}
-function Members() {
-  return <h1 className="p-20">Members Page</h1>;
-}
-
-function Contact() {
-  return <h1 className="p-20">Contact Page</h1>;
-}
 
 function App() {
+  const routes = [
+    { path: "/", Component: Home },
+    { path: "/events", Component: Events },
+    { path: "/merchandise", Component : Merchandise },
+    { path: "/core", Component: Core },
+    { path: "/workshop", Component: Workshop },
+    { path: "/login", Component: Login },
+    { path: "/contact", Component: ContactUs },
+  ];
+
   // Skipping loading screen in development mode, comment this line and uncomment the next to enable loading screen while working on it
-  // const [loadingDone, setLoadingDone] = useState(import.meta.env.DEV);
-  const [loadingDone, setLoadingDone] = useState(false);
+  const [loadingDone, setLoadingDone] = useState(import.meta.env.DEV);
+  // const [loadingDone, setLoadingDone] = useState(false);
+
   return (
     <BrowserRouter>
       {!loadingDone && <Loading onFinish={() => setLoadingDone(true)} />}
       {loadingDone && (
         <>
           <Nav />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/merchandise" element={<Merchandise />} />
-            <Route path="/core" element={<Core />} />
-            <Route path="/workshop" element={<Workshop />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/contact" element={<ContactUs />} />
-          </Routes>
+          <TransitionProvider>
+            <Routes>
+              {routes.map(({ path, Component }) => (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    <TransitionComponent>
+                      <>
+                        <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-[100] overflow-hidden">
+                          <img
+                            src="/images/left-door.jpg"
+                            className="absolute top-0 left-0 w-auto min-w-[50vw] min-h-screen h-auto object-right door left-door translate-x-[-100%]"
+                          />
+                          <img
+                            src="/images/right-door.jpg"
+                            className="absolute top-0 left-[50%] w-auto min-w-[50vw] min-h-screen h-auto object-left door right-door translate-x-[100%]"
+                          />
+                        </div>
+                        {Component && <Component />}
+                      </>
+                    </TransitionComponent>
+                  }
+                  exact
+                />
+              ))}
+            </Routes>
+          </TransitionProvider>
+          <Footer />
         </>
       )}
     </BrowserRouter>

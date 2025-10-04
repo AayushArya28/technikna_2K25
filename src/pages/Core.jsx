@@ -1,4 +1,4 @@
-import ChromaGrid from '../components/ChromaGrid'
+import ChromaGrid from "../components/ChromaGrid";
 
 // Management Team
 const managementTeam = [
@@ -9,7 +9,7 @@ const managementTeam = [
     handle: "@sarahjohnson",
     borderColor: "#3B82F6",
     gradient: "linear-gradient(145deg, #3B82F6, #000)",
-    url: "https://github.com/sarahjohnson"
+    url: "https://github.com/sarahjohnson",
   },
   {
     image: "https://i.pravatar.cc/300?img=2",
@@ -18,7 +18,7 @@ const managementTeam = [
     handle: "@mikechen",
     borderColor: "#10B981",
     gradient: "linear-gradient(180deg, #10B981, #000)",
-    url: "https://linkedin.com/in/mikechen"
+    url: "https://linkedin.com/in/mikechen",
   },
   {
     image: "https://i.pravatar.cc/300?img=12",
@@ -27,8 +27,8 @@ const managementTeam = [
     handle: "@emmadavis",
     borderColor: "#8B5CF6",
     gradient: "linear-gradient(210deg, #8B5CF6, #000)",
-    url: "https://linkedin.com/in/emmadavis"
-  }
+    url: "https://linkedin.com/in/emmadavis",
+  },
 ];
 
 // Web Development Team
@@ -40,7 +40,7 @@ const webTeam = [
     handle: "@alexrivera",
     borderColor: "#F59E0B",
     gradient: "linear-gradient(165deg, #F59E0B, #000)",
-    url: "https://github.com/alexrivera"
+    url: "https://github.com/alexrivera",
   },
   {
     image: "https://i.pravatar.cc/300?img=4",
@@ -49,7 +49,7 @@ const webTeam = [
     handle: "@jordanblake",
     borderColor: "#06B6D4",
     gradient: "linear-gradient(135deg, #06B6D4, #000)",
-    url: "https://github.com/jordanblake"
+    url: "https://github.com/jordanblake",
   },
   {
     image: "https://i.pravatar.cc/300?img=5",
@@ -58,7 +58,7 @@ const webTeam = [
     handle: "@caseypark",
     borderColor: "#EF4444",
     gradient: "linear-gradient(195deg, #EF4444, #000)",
-    url: "https://github.com/caseypark"
+    url: "https://github.com/caseypark",
   },
   {
     image: "https://i.pravatar.cc/300?img=15",
@@ -67,8 +67,8 @@ const webTeam = [
     handle: "@rileymartinez",
     borderColor: "#10B981",
     gradient: "linear-gradient(225deg, #10B981, #000)",
-    url: "https://github.com/rileymartinez"
-  }
+    url: "https://github.com/rileymartinez",
+  },
 ];
 
 // Design Team
@@ -80,7 +80,7 @@ const designTeam = [
     handle: "@morganlee",
     borderColor: "#EC4899",
     gradient: "linear-gradient(145deg, #EC4899, #000)",
-    url: "https://behance.net/morganlee"
+    url: "https://behance.net/morganlee",
   },
   {
     image: "https://i.pravatar.cc/300?img=7",
@@ -89,7 +89,7 @@ const designTeam = [
     handle: "@taylorkim",
     borderColor: "#A855F7",
     gradient: "linear-gradient(180deg, #A855F7, #000)",
-    url: "https://dribbble.com/taylorkim"
+    url: "https://dribbble.com/taylorkim",
   },
   {
     image: "https://i.pravatar.cc/300?img=9",
@@ -98,8 +98,8 @@ const designTeam = [
     handle: "@averythompson",
     borderColor: "#F97316",
     gradient: "linear-gradient(165deg, #F97316, #000)",
-    url: "https://dribbble.com/averythompson"
-  }
+    url: "https://dribbble.com/averythompson",
+  },
 ];
 
 // Marketing Team
@@ -111,7 +111,7 @@ const marketingTeam = [
     handle: "@jamiewilson",
     borderColor: "#14B8A6",
     gradient: "linear-gradient(210deg, #14B8A6, #000)",
-    url: "https://linkedin.com/in/jamiewilson"
+    url: "https://linkedin.com/in/jamiewilson",
   },
   {
     image: "https://i.pravatar.cc/300?img=11",
@@ -120,16 +120,15 @@ const marketingTeam = [
     handle: "@drewanderson",
     borderColor: "#F59E0B",
     gradient: "linear-gradient(195deg, #F59E0B, #000)",
-    url: "https://linkedin.com/in/drewanderson"
-  }
+    url: "https://linkedin.com/in/drewanderson",
+  },
 ];
 
-const Core = () => {
+export const Core = () => {
   return (
     <div className="bg-[url('/images/core2-bg.png')] text-white min-h-screen">
       <div className="mt-25 pt-5 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
-          
           {/* Management Team Section */}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
@@ -138,7 +137,7 @@ const Core = () => {
             <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
               Leadership driving our vision forward
             </p>
-            <ChromaGrid 
+            <ChromaGrid
               items={managementTeam}
               radius={300}
               damping={0.45}
@@ -155,7 +154,7 @@ const Core = () => {
             <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
               Building exceptional digital experiences
             </p>
-            <ChromaGrid 
+            <ChromaGrid
               items={webTeam}
               radius={300}
               damping={0.45}
@@ -172,7 +171,7 @@ const Core = () => {
             <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
               Crafting beautiful and intuitive interfaces
             </p>
-            <ChromaGrid 
+            <ChromaGrid
               items={designTeam}
               radius={300}
               damping={0.45}
@@ -189,7 +188,7 @@ const Core = () => {
             <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
               Spreading our message to the world
             </p>
-            <ChromaGrid 
+            <ChromaGrid
               items={marketingTeam}
               radius={300}
               damping={0.45}
@@ -197,11 +196,10 @@ const Core = () => {
               ease="power3.out"
             />
           </section>
-
         </div>
       </div>
     </div>
   );
-}
+};
 
-export default Core
+export default Core;

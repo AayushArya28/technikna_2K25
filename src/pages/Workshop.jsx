@@ -45,7 +45,9 @@ export function Workshop() {
   };
 
   const prevSlide = () => {
-    setActiveIndex((prev) => (prev - 1 + sliderData.length) % sliderData.length);
+    setActiveIndex(
+      (prev) => (prev - 1 + sliderData.length) % sliderData.length
+    );
   };
 
   const goToSlide = (index) => {
@@ -127,9 +129,7 @@ export function Workshop() {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-            <div
-              className="absolute left-5 sm:left-10 top-1/4 sm:top-1/5 w-[90%] sm:w-[500px] z-20"
-            >
+            <div className="absolute left-5 sm:left-10 top-1/4 sm:top-1/5 w-[90%] sm:w-[500px] z-20">
               <h2
                 ref={(el) => (titleRefs.current[index] = el)}
                 className="text-4xl sm:text-[40px] md:text-[60px] font-bold leading-tight"
