@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { gsap } from "gsap";
 import {
   Facebook,
   Twitter,
@@ -17,7 +18,7 @@ export function Footer() {
   const mapRef = useRef(null);
 
   useEffect(() => {
-    // Simple fade-in animation on scroll
+    // Fade-in animation on scroll
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -37,6 +38,24 @@ export function Footer() {
     return () => observer.disconnect();
   }, []);
 
+  const handleSocialMouseEnter = (e) => {
+    gsap.to(e.currentTarget, {
+      scale: 1.2,
+      rotation: 360,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+  };
+
+  const handleSocialMouseLeave = (e) => {
+    gsap.to(e.currentTarget, {
+      scale: 1,
+      rotation: 0,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  };
+
   return (
     <footer
       ref={footerRef}
@@ -51,20 +70,34 @@ export function Footer() {
             style={{ transform: "translateY(30px)" }}
           >
             <div className="space-y-6">
+              {/* BIT Patna Logo */}
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 text-black rounded-lg flex items-center justify-center">
-                  <span className="text-gray-900 font-bold text-lg">BIT</span>
+                <div className="w-16 h-16 rounded-lg flex items-center justify-center overflow-hidden bg-white p-2">
+                  <img
+                    src="/images/bit-patna-logo.png"
+                    alt="BIT Patna Logo"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold">BIT Mesra</h3>
-                  <p className="text-gray-800 text-sm">
-                    Excellence in Education
-                  </p>
+                  <p className="text-gray-800 text-sm">Excellence in Education</p>
                 </div>
               </div>
+
+              {/* Technika Logo */}
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">TK</span>
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center overflow-hidden p-2">
+                  <img
+                    src="/images/technika-logo.png"
+                    alt="Technika Logo"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                      e.target.parentElement.innerHTML =
+                        '<span class="text-white font-bold text-lg">TK</span>';
+                    }}
+                  />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold">Technika</h3>
@@ -88,7 +121,7 @@ export function Footer() {
                   <li>
                     <a
                       href="#"
-                      className="hover:text-blue-800  transition-colors duration-300 hover:translate-x-1 inline-block"
+                      className="hover:text-blue-800 transition-colors duration-300 hover:translate-x-1 inline-block"
                     >
                       About Us
                     </a>
@@ -104,7 +137,7 @@ export function Footer() {
                   <li>
                     <a
                       href="#"
-                      className="hover:text-blue-800  transition-colors duration-300 hover:translate-x-1 inline-block"
+                      className="hover:text-blue-800 transition-colors duration-300 hover:translate-x-1 inline-block"
                     >
                       Core Team
                     </a>
@@ -126,31 +159,41 @@ export function Footer() {
                 <div className="flex space-x-4">
                   <a
                     href="#"
-                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-blue-600 transition-all duration-300 hover:scale-110"
+                    onMouseEnter={handleSocialMouseEnter}
+                    onMouseLeave={handleSocialMouseLeave}
+                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-[#1877F2] transition-colors duration-300 text-white"
                   >
                     <Facebook size={18} />
                   </a>
                   <a
                     href="#"
-                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-blue-400 transition-all duration-300 hover:scale-110"
+                    onMouseEnter={handleSocialMouseEnter}
+                    onMouseLeave={handleSocialMouseLeave}
+                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-[#1DA1F2] transition-colors duration-300 text-white"
                   >
                     <Twitter size={18} />
                   </a>
                   <a
                     href="#"
-                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-pink-600 transition-all duration-300 hover:scale-110"
+                    onMouseEnter={handleSocialMouseEnter}
+                    onMouseLeave={handleSocialMouseLeave}
+                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-[#E4405F] transition-colors duration-300 text-white"
                   >
                     <Instagram size={18} />
                   </a>
                   <a
                     href="#"
-                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-blue-700 transition-all duration-300 hover:scale-110"
+                    onMouseEnter={handleSocialMouseEnter}
+                    onMouseLeave={handleSocialMouseLeave}
+                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-[#0A66C2] transition-colors duration-300 text-white"
                   >
                     <Linkedin size={18} />
                   </a>
                   <a
                     href="#"
-                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-red-600 transition-all duration-300 hover:scale-110"
+                    onMouseEnter={handleSocialMouseEnter}
+                    onMouseLeave={handleSocialMouseLeave}
+                    className="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center hover:bg-[#FF0000] transition-colors duration-300 text-white"
                   >
                     <Youtube size={18} />
                   </a>
@@ -177,6 +220,7 @@ export function Footer() {
                 allowFullScreen=""
                 loading="lazy"
                 className="grayscale group-hover:grayscale-0 transition-all duration-500"
+                title="BIT Patna Location"
               ></iframe>
             </div>
             <div className="space-y-2 text-sm">
@@ -184,11 +228,11 @@ export function Footer() {
                 <MapPin size={16} className="mt-1 flex-shrink-0" />
                 <span>BIT Patna, Patna, Bihar, India</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 hover:text-blue-800 transition-colors duration-300">
                 <Phone size={16} className="flex-shrink-0" />
                 <span>+91 1234567890</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 hover:text-blue-800 transition-colors duration-300">
                 <Mail size={16} className="flex-shrink-0" />
                 <span>technika@bitmesra.ac.in</span>
               </div>

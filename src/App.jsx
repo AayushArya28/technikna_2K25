@@ -6,6 +6,7 @@ import { Events } from "./pages/Events";
 import { Workshop } from "./pages/Workshop.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
 import { Core } from "./pages/Core.jsx";
+import Merchandise from "./pages/Merchandise.jsx";
 import { Footer } from "./components/Footer.jsx";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
@@ -14,15 +15,12 @@ import { Analytics } from "@vercel/analytics/react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
 
-function Merchandise() {
-  return <h1 className="p-20">Merchandise Page</h1>;
-}
 
 function App() {
   const routes = [
     { path: "/", Component: Home },
     { path: "/events", Component: Events },
-    { path: "/merchandise", Component: Merchandise },
+    { path: "/merchandise", Component : Merchandise },
     { path: "/core", Component: Core },
     { path: "/workshop", Component: Workshop },
     { path: "/login", Component: Login },
