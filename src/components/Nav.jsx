@@ -1,14 +1,49 @@
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import StaggeredMenu from './StaggeredMenu';
 
 gsap.registerPlugin(useGSAP);
 
 function Nav() {
   const navRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(false);
 
+  // Menu items for mobile - matching PC nav exactly
+  const menuItems = [
+    { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
+    { label: 'Events', ariaLabel: 'View events', link: '/events' },
+    { label: 'Merchandise', ariaLabel: 'Browse merchandise', link: '/merchandise' },
+    { label: 'Core Team', ariaLabel: 'Meet the core team', link: '/core' },
+    { label: 'WorkShop', ariaLabel: 'Explore workshops', link: '/workshop' },
+    { label: 'Contact Us', ariaLabel: 'Get in touch', link: '/contact' }
+  ];
+
+  const socialItems = [
+    { label: 'Twitter', link: 'https://twitter.com' },
+    { label: 'GitHub', link: 'https://github.com' },
+    { label: 'LinkedIn', link: 'https://linkedin.com' }
+  ];
+
+  // Check screen size on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  // Desktop nav animations
   useGSAP(() => {
+    if (isMobile) return;
+
     const navLinks = gsap.utils.toArray(".nav-link");
 
     navLinks.forEach((link) => {
@@ -45,14 +80,16 @@ function Nav() {
         });
       });
     });
-  });
+  }, [isMobile]);
 
+  // Scroll effect for desktop nav
   useEffect(() => {
+    if (isMobile) return;
+
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
 
       if (scrollPosition > 50) {
-        // Add translucent background when scrolled down
         gsap.to(navRef.current, {
           backgroundColor: "rgba(245, 241, 232, 0.2)",
           backdropFilter: "blur(2px)",
@@ -61,7 +98,6 @@ function Nav() {
           ease: "power2.out",
         });
       } else {
-        // Remove background when at top
         gsap.to(navRef.current, {
           backgroundColor: "rgba(245, 241, 232, 0)",
           backdropFilter: "blur(0px)",
@@ -77,8 +113,33 @@ function Nav() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isMobile]);
 
+  // Mobile view
+  if (isMobile) {
+    return (
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100vh', zIndex: 9999 }}>
+        <StaggeredMenu
+          position="right"
+          items={menuItems}
+          socialItems={socialItems}
+          displaySocials={true}
+          displayItemNumbering={true}
+          menuButtonColor="#000"
+          openMenuButtonColor="#000"
+          changeMenuColorOnOpen={false}
+          colors={['#B19EEF', '#5227FF']}
+          logoUrl="/images/favicon.png"
+          accentColor="#ff6b6b"
+          fontSize="1.0rem"
+          onMenuOpen={() => console.log('Menu opened')}
+          onMenuClose={() => console.log('Menu closed')}
+        />
+      </div>
+    );
+  }
+
+  // Desktop view
   return (
     <nav
       ref={navRef}
