@@ -25,15 +25,13 @@ const eventCategories = {
     {
       id: 3,
       title: "Treasure Hunt",
-      description:
-        "Find hidden clues across campus and win exciting prizes!",
+      description: "Find hidden clues across campus and win exciting prizes!",
       image: "/slides/slide1.png",
     },
     {
       id: 4,
       title: "Gaming Tournament",
-      description:
-        "Compete in your favorite games and showcase your skills.",
+      description: "Compete in your favorite games and showcase your skills.",
       image: "/slides/slide2.png",
     },
   ],

@@ -8,44 +8,46 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(useGSAP, SplitText, ScrollTrigger);
 
-const Landing = () => {
+const Landing = ({ animate }) => {
   useGSAP(() => {
-    const heroText = new SplitText("#heroText", { type: "chars" });
-    const heroTextTimeline = gsap.timeline({ delay: 0.5 });
+    if (animate) {
+      const heroText = new SplitText("#heroText", { type: "chars" });
+      const heroTextTimeline = gsap.timeline({ delay: 0.5 });
 
-    const firstLetter = heroText.chars[0];
-    const otherLetters = heroText.chars.slice(1);
+      const firstLetter = heroText.chars[0];
+      const otherLetters = heroText.chars.slice(1);
 
-    gsap.set(heroText.chars, { display: "inline-block" });
+      gsap.set(heroText.chars, { display: "inline-block" });
 
-    const bounds = firstLetter.getBoundingClientRect();
-    const xOffset = window.innerWidth / 2 - (bounds.left + bounds.width / 2);
+      const bounds = firstLetter.getBoundingClientRect();
+      const xOffset = window.innerWidth / 2 - (bounds.left + bounds.width / 2);
 
-    gsap.set(firstLetter, { x: xOffset, scale: 100 });
+      gsap.set(firstLetter, { x: xOffset, scale: 100 });
 
-    heroTextTimeline.to(firstLetter, {
-      scale: 1,
-      duration: 2,
-      ease: "power4.out",
-    });
+      heroTextTimeline.to(firstLetter, {
+        scale: 1,
+        duration: 2,
+        ease: "power4.out",
+      });
 
-    heroTextTimeline.to(firstLetter, {
-      x: 0,
-      duration: 1,
-    });
-
-    heroTextTimeline.fromTo(
-      otherLetters,
-      { x: 50, autoAlpha: 0 },
-      {
+      heroTextTimeline.to(firstLetter, {
         x: 0,
-        autoAlpha: 1,
-        duration: 1.5,
-        stagger: 0.2,
-        ease: "power3.out",
-      },
-      "-=0.75"
-    );
+        duration: 1,
+      });
+
+      heroTextTimeline.fromTo(
+        otherLetters,
+        { x: 50, autoAlpha: 0 },
+        {
+          x: 0,
+          autoAlpha: 1,
+          duration: 1.5,
+          stagger: 0.2,
+          ease: "power3.out",
+        },
+        "-=0.75"
+      );
+    }
 
     // Parallax Effect
     const hero = document.getElementById("hero");
@@ -184,34 +186,34 @@ const Landing = () => {
             </span>
           </h2>
           {/* REGISTER Button */}
-        <Link
-          to="/login"
-          className="absolute bottom-7 right-6 flex items-center justify-center group"
-        >
-          {/* Mobile Image */}
-          <div className="relative block md:hidden w-56">
-            <img
-              src="https://www.bits-oasis.org/svgs/landing/mobileRegisterBtn.svg"
-              alt="Register"
-              className="w-full transition duration-300 group-hover:brightness-75"
-            />
-            <span className="absolute inset-0 flex items-center justify-center text-yellow-400 font-bold text-lg pointer-events-none">
-              REGISTER
-            </span>
-          </div>
+          <Link
+            to="/login"
+            className="absolute bottom-7 right-6 flex items-center justify-center group"
+          >
+            {/* Mobile Image */}
+            <div className="relative block md:hidden w-56">
+              <img
+                src="https://www.bits-oasis.org/svgs/landing/mobileRegisterBtn.svg"
+                alt="Register"
+                className="w-full transition duration-300 group-hover:brightness-75"
+              />
+              <span className="absolute inset-0 flex items-center justify-center text-yellow-400 font-bold text-lg pointer-events-none">
+                REGISTER
+              </span>
+            </div>
 
-          {/* Desktop Image */}
-          <div className="relative hidden md:block w-96">
-            <img
-              src="https://www.bits-oasis.org/svgs/landing/registerBtn.svg"
-              alt="Register"
-              className="w-full transition duration-300 group-hover:brightness-75"
-            />
-            <span className="mb-4 absolute inset-0 flex items-center justify-center text-white font-bold text-4xl pointer-events-none">
-              REGISTER
-            </span>
-          </div>
-        </Link>
+            {/* Desktop Image */}
+            <div className="relative hidden md:block w-96">
+              <img
+                src="https://www.bits-oasis.org/svgs/landing/registerBtn.svg"
+                alt="Register"
+                className="w-full transition duration-300 group-hover:brightness-75"
+              />
+              <span className="mb-4 absolute inset-0 flex items-center justify-center text-white font-bold text-4xl pointer-events-none">
+                REGISTER
+              </span>
+            </div>
+          </Link>
         </div>
       </div>
 
