@@ -2,10 +2,10 @@ import { useEffect, useMemo, useRef, useCallback } from 'react';
 import { useGesture } from '@use-gesture/react';
 
 const DEFAULT_IMAGES = [
-  {
-    src: '',
-    alt: 'Abstract art'
-  },
+  // {
+  //   src: '',
+  //   alt: 'Abstract art'
+  // },
   {
     src: '/slides/slide1.png',
     alt: 'Modern sculpture'

@@ -33,11 +33,12 @@
   --primary: #131316;
   --white: beige;
   --bg: beige;
+  padding:10px;
 }
 
 .container {
   max-width: 124rem;
-  padding: 4rem 1rem;
+  padding: 4rem 4rem;
   margin: 0 auto;
 }
 

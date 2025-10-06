@@ -13,15 +13,15 @@ const Home = () => {
       <div style={{ width: "98vw", height: "100vh" }}>
         <PreTechnika />
       </div>
-      <div className="mb-15" style={{ height: "600px", position: "relative" }}>
+      {/* <div className="mb-15" style={{ height: "600px", position: "relative" }}>
         <CircularGallery
           bend={3}
-          textColor="#ffffff"
+          textColor="beige"
           borderRadius={0.05}
           scrollEase={0.02}
         />
-      </div>
-      {/* <Slider /> */}
+      </div> */}
+      <Slider />
       
     </div>
   );
