@@ -121,7 +121,7 @@ function Loading({ onFinish }) {
         className="absolute top-0 left-0 w-full h-full pointer-events-none z-40"
       >
         {[...Array(5)].map((_, i) => (
-          <circle key={i} r="i+1" fill="beige" opacity="0.9" />
+          <circle key={i} r="${i+1}" fill="beige" opacity="0.9" />
         ))}
       </svg>
 

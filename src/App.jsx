@@ -10,51 +10,30 @@ import Merchandise from "./pages/Merchandise.jsx";
 import { Footer } from "./components/Footer.jsx";
 import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Analytics } from "@vercel/analytics/react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
+
 
 function App() {
   const routes = [
     { path: "/", Component: Home },
     { path: "/events", Component: Events },
-    { path: "/merchandise", Component: Merchandise },
+    { path: "/merchandise", Component : Merchandise },
     { path: "/core", Component: Core },
     { path: "/workshop", Component: Workshop },
     { path: "/login", Component: Login },
     { path: "/contact", Component: ContactUs },
   ];
 
+  // Skipping loading screen in development mode, comment this line and uncomment the next to enable loading screen while working on it
+  // const [loadingDone, setLoadingDone] = useState(import.meta.env.DEV);
   const [loadingDone, setLoadingDone] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  //Loading page on mobile
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  //Loading the page only for once
-  useEffect(() => {
-    const hasLoadedBefore = localStorage.getItem("hasLoadedBefore");
-    if (hasLoadedBefore) {
-      setLoadingDone(true);
-    }
-  }, []);
-
-  const handleLoadingFinish = () => {
-    setLoadingDone(true);
-    localStorage.setItem("hasLoadedBefore", "true");
-  };
 
   return (
     <BrowserRouter>
-      {!loadingDone && <Loading onFinish={handleLoadingFinish} />}
+      {!loadingDone && <Loading onFinish={() => setLoadingDone(true)} />}
       {loadingDone && (
         <>
           <Nav />
