@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
-import StaggeredMenu from './StaggeredMenu';
+import StaggeredMenu from "./StaggeredMenu";
 
 gsap.registerPlugin(useGSAP);
 
@@ -12,18 +12,19 @@ function Nav() {
 
   // Menu items for mobile - matching PC nav exactly
   const menuItems = [
-    { label: 'Home', ariaLabel: 'Go to home page', link: '/' },
-    { label: 'Events', ariaLabel: 'View events', link: '/events' },
-    { label: 'Merchandise', ariaLabel: 'Browse merchandise', link: '/merchandise' },
-    { label: 'Core Team', ariaLabel: 'Meet the core team', link: '/core' },
-    { label: 'WorkShop', ariaLabel: 'Explore workshops', link: '/workshop' },
-    { label: 'Contact Us', ariaLabel: 'Get in touch', link: '/contact' }
+    { label: "Home", ariaLabel: "Go to home page", link: "/" },
+    { label: "Events", ariaLabel: "View events", link: "/events" },
+    { label: "Merchandise", ariaLabel: "Browse merchandise", link: "/merchandise", },
+    { label: "Core Team", ariaLabel: "Meet the core team", link: "/core" },
+    { label: "WorkShop", ariaLabel: "Explore workshops", link: "/workshop" },
+    { label: 'Developers', ariaLabel: 'Learn about Devs', link: '/devs' },
+    { label: "Contact Us", ariaLabel: "Get in touch", link: "/contact" },
   ];
 
   const socialItems = [
-    { label: 'Twitter', link: 'https://twitter.com' },
-    { label: 'GitHub', link: 'https://github.com' },
-    { label: 'LinkedIn', link: 'https://linkedin.com' }
+    { label: "Twitter", link: "https://twitter.com" },
+    { label: "GitHub", link: "https://github.com" },
+    { label: "LinkedIn", link: "https://linkedin.com" },
   ];
 
   // Check screen size on mount and resize
@@ -33,10 +34,10 @@ function Nav() {
     };
 
     checkMobile();
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
 
     return () => {
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener("resize", checkMobile);
     };
   }, []);
 
@@ -118,10 +119,20 @@ function Nav() {
   // Mobile view
   if (isMobile) {
     return (
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100vh',zIndex: 99999,
-pointerEvents: 'auto',
-overflow: 'hidden',
-  }}>
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          width: "100%",
+          height: "100vh",
+          zIndex: 9998,
+          pointerEvents: "auto",
+          overflow: "hidden",
+        }}
+      >
         <StaggeredMenu
           position="right"
           items={menuItems}
@@ -131,12 +142,12 @@ overflow: 'hidden',
           menuButtonColor="#000"
           openMenuButtonColor="#000"
           changeMenuColorOnOpen={false}
-          colors={['#B19EEF', '#5227FF']}
+          colors={["#B19EEF", "#5227FF"]}
           logoUrl="/images/favicon.png"
           accentColor="#ff6b6b"
           fontSize="1.0rem"
-          onMenuOpen={() => console.log('Menu opened')}
-          onMenuClose={() => console.log('Menu closed')}
+          onMenuOpen={() => console.log("Menu opened")}
+          onMenuClose={() => console.log("Menu closed")}
         />
       </div>
     );
@@ -157,6 +168,7 @@ overflow: 'hidden',
         <NavLink to="/merchandise" label="Merchandise" jp="グッズ" />
         <NavLink to="/core" label="Core Team" jp="コアチーム" />
         <NavLink to="/workshop" label="WorkShop" jp="ワークショップ" />
+        <NavLink to="/devs" label="Developers" jp="開発者" />
         <NavLink to="/contact" label="Contact Us" jp="連絡先" />
       </div>
     </nav>
