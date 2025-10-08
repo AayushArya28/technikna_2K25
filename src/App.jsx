@@ -8,12 +8,12 @@ import { ContactUs } from "./pages/ContactUs.jsx";
 import { Core } from "./pages/Core.jsx";
 import Merchandise from "./pages/Merchandise.jsx";
 import { Footer } from "./components/Footer.jsx";
-import PreTechnika from "./pages/PreTechnika";
 import Login from "./pages/Login";
+import Devs from "./pages/Devs";
 import { useState } from "react";
-import { Analytics } from "@vercel/analytics/react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
+import { Analytics } from "@vercel/analytics/react";
 
 
 function App() {
@@ -25,6 +25,7 @@ function App() {
     { path: "/workshop", Component: Workshop },
     { path: "/login", Component: Login },
     { path: "/contact", Component: ContactUs },
+    { path: "/devs", Component: Devs },
   ];
 
   // Skipping loading screen in development mode, comment this line and uncomment the next to enable loading screen while working on it
