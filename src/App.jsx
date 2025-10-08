@@ -48,11 +48,11 @@ function App() {
                         <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-[9999] overflow-hidden">
                           <img
                             src="/images/left-door.jpg"
-                            className="absolute top-0 left-0 w-auto min-w-[50vw] min-h-screen h-auto object-right door left-door translate-x-[-100%]"
+                            className="absolute top-0 left-0 w-[50vw] h-full object-cover object-right door left-door translate-x-[-100%]"
                           />
                           <img
                             src="/images/right-door.jpg"
-                            className="absolute top-0 left-[50%] w-auto min-w-[50vw] min-h-screen h-auto object-left door right-door translate-x-[100%]"
+                            className="absolute top-0 left-[50%] w-[50vw] h-full object-cover object-left door right-door translate-x-[100%]"
                           />
                         </div>
                         {Component && <Component />}
