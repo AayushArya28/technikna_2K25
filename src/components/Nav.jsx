@@ -14,13 +14,10 @@ function Nav() {
   const menuItems = [
     { label: "Home", ariaLabel: "Go to home page", link: "/" },
     { label: "Events", ariaLabel: "View events", link: "/events" },
-    {
-      label: "Merchandise",
-      ariaLabel: "Browse merchandise",
-      link: "/merchandise",
-    },
+    { label: "Merchandise", ariaLabel: "Browse merchandise", link: "/merchandise", },
     { label: "Core Team", ariaLabel: "Meet the core team", link: "/core" },
     { label: "WorkShop", ariaLabel: "Explore workshops", link: "/workshop" },
+    { label: 'Developers', ariaLabel: 'Learn about Devs', link: '/devs' },
     { label: "Contact Us", ariaLabel: "Get in touch", link: "/contact" },
   ];
 
@@ -171,6 +168,7 @@ function Nav() {
         <NavLink to="/merchandise" label="Merchandise" jp="グッズ" />
         <NavLink to="/core" label="Core Team" jp="コアチーム" />
         <NavLink to="/workshop" label="WorkShop" jp="ワークショップ" />
+        <NavLink to="/devs" label="Developers" jp="開発者" />
         <NavLink to="/contact" label="Contact Us" jp="連絡先" />
       </div>
     </nav>
