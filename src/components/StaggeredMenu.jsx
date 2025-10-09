@@ -6,8 +6,6 @@ export const StaggeredMenu = ({
   position = "right",
   colors = ["#B19EEF", "#5227FF"],
   items = [],
-  socialItems = [],
-  displaySocials = true,
   displayItemNumbering = true,
   className,
   logoUrl = "/src/assets/logos/reactbits-gh-white.svg",
@@ -18,7 +16,6 @@ export const StaggeredMenu = ({
   accentColor = "#5227FF",
   onMenuOpen,
   onMenuClose,
-  fontSize,
 }) => {
   const [open, setOpen] = useState(false);
   const openRef = useRef(false);
@@ -502,7 +499,7 @@ export const StaggeredMenu = ({
                     <Link
                       className="sm-panel-item relative text-black font-semibold text-[4rem] cursor-pointer leading-none tracking-[-2px] uppercase transition-[background,color] duration-150 ease-linear inline-block no-underline pr-[1.4em]"
                       to={it.link}
-                      style={{ fontSize: '3rem' }} 
+                      style={{ fontSize: "2.5rem" }}
                       aria-label={it.ariaLabel}
                       data-index={idx + 1}
                       onClick={closeMenu}
@@ -526,34 +523,6 @@ export const StaggeredMenu = ({
                 </li>
               )}
             </ul>
-
-            {displaySocials && socialItems && socialItems.length > 0 && (
-              <div
-                className="sm-socials mt-auto pt-8 flex flex-col gap-3"
-                aria-label="Social links"
-              >
-                <h3 className="sm-socials-title m-0 text-base font-medium [color:var(--sm-accent,#ff0000)]">
-                  Socials
-                </h3>
-                <ul
-                  className="sm-socials-list list-none m-0 p-0 flex flex-row items-center gap-4 flex-wrap"
-                  role="list"
-                >
-                  {socialItems.map((s, i) => (
-                    <li key={s.label + i} className="sm-socials-item">
-                      <a
-                        href={s.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="sm-socials-link text-[1.2rem] font-medium text-[#111] no-underline relative inline-block py-[2px] transition-[color,opacity] duration-300 ease-linear"
-                      >
-                        {s.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         </aside>
       </div>
