@@ -121,8 +121,8 @@ const Landing = ({ animate }) => {
 
       {/* Samurai Warrior - Bottom Left Corner */}
       <div
-        className="parallax absolute bottom-0 left-0 z-20"
-        data-depth="0.15"
+        className="parallax absolute bottom-[-5rem] md:bottom-0 left-[-10rem] md:left-0 z-20"
+        data-depth="0.17"
         data-scale="1.17"
       >
         <img
@@ -137,8 +137,8 @@ const Landing = ({ animate }) => {
 
       {/* Japanese Castle - Bottom Right Corner */}
       <div
-        className="parallax absolute bottom-[-5rem] right-[-14rem] z-20"
-        data-depth="0.25"
+        className="parallax absolute bottom-[-10rem] md:bottom-[-5rem] right-[-14rem] z-20"
+        data-depth="0.20"
         data-scale="1.12"
       >
         <img
