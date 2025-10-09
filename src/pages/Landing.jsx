@@ -92,7 +92,7 @@ const Landing = ({ animate }) => {
       {/* Social Media Icons */}
       <div
         data-depth="0.80"
-        className="parallax absolute left-8 top-1/2 transform -translate-y-1/2 z-40 flex flex-col space-y-4"
+        className="parallax absolute left-4 md:left-8 top-1/2 transform -translate-y-1/2 z-40 flex flex-col space-y-4"
       >
         <Facebook className="w-6 h-6 text-gray-700 hover:text-blue-600 cursor-pointer transition-colors" />
         <Twitter className="w-6 h-6 text-gray-700 hover:text-blue-400 cursor-pointer transition-colors" />
@@ -128,7 +128,7 @@ const Landing = ({ animate }) => {
         <img
           src="/images/samurai.png"
           alt="Samurai Warrior"
-          className="h-96 w-auto object-contain"
+          className="h-96 w-auto object-contain scale-[0.7] md:scale-100"
           style={{
             filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.2))",
           }}
@@ -144,7 +144,7 @@ const Landing = ({ animate }) => {
         <img
           src="/images/castle.png"
           alt="Japanese Castle"
-          className="h-[32rem] w-auto object-contain"
+          className="h-[32rem] w-auto object-contain scale-[0.8] md:scale-100"
           style={{
             filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15))",
           }}
@@ -172,7 +172,7 @@ const Landing = ({ animate }) => {
         data-depth="0.60"
       >
         <div className="text-center jp-font">
-          <h1 className="text-8xl font-black text-black mb-4 tracking-wider drop-shadow-lg">
+          <h1 className="text-5xl md:text-8xl font-black text-black mb-4 tracking-wider drop-shadow-lg">
             <span
               id="heroText"
               className="inline-block transform hover:scale-105 transition-transform duration-300 text-center"
@@ -180,7 +180,7 @@ const Landing = ({ animate }) => {
               TECHNIKA
             </span>
           </h1>
-          <h2 className="text-6xl font-black text-black tracking-widest drop-shadow-lg">
+          <h2 className="text-3xl md:text-6xl font-black text-black tracking-widest drop-shadow-lg">
             <span className="inline-block transform hover:scale-105 transition-transform duration-300">
               2025
             </span>
@@ -210,7 +210,7 @@ const Landing = ({ animate }) => {
                   alt="Register"
                   className="w-full transition duration-300 group-hover:brightness-75"
                 />
-                <span className="mb-4 absolute inset-0 flex items-center justify-center text-white font-bold text-4xl pointer-events-none">
+                <span className="mb-3 absolute inset-0 flex items-center justify-center text-white font-bold text-4xl pointer-events-none">
                   REGISTER
                 </span>
               </div>
