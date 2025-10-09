@@ -10,9 +10,9 @@ const Devs = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 place-items-center">
         <div className="w-full flex justify-center">
           <ProfileCard
-            name="Javi A. Torres"
+            name="Krish Agrawal"
             title="Software Engineer"
-            handle="javicodes"
+            handle="krishagrawal"
             status="Online"
             contactText="Contact Me"
             avatarUrl="/path/to/avatar.jpg"

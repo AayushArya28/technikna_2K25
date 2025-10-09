@@ -153,6 +153,7 @@ export function ContactUs() {
       title: "Location",
       info: "College Campus, Ranchi",
       color: "bg-purple-500",
+      link:"https://maps.app.goo.gl/Ck8LjZcoWbXz8nPCA"
     },
   ];
 
@@ -197,7 +198,21 @@ export function ContactUs() {
                 {item.icon}
               </div>
               <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-              <p className="text-gray-600">{item.info}</p>
+              <p className="text-gray-600">
+                {item.link ? (
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    {item.info}
+                  </a>
+                ) : (
+                  item.info
+                )}
+              </p>
+
             </div>
           ))}
         </div>
@@ -333,21 +348,16 @@ export function ContactUs() {
             </h2>
             <div className="flex-1 bg-gray-200 rounded-lg overflow-hidden relative min-h-[300px]">
               {/* Placeholder map */}
-              <div className="absolute inset-0 flex items-center justify-center text-gray-500">
-                <div className="text-center">
-                  <MapPin className="w-16 h-16 mx-auto mb-4 text-purple-600" />
-                  <p className="text-lg font-semibold">College Campus</p>
-                  <p>Patna, Bihar</p>
-                  <a
-                    href="https://maps.google.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-                  >
-                    View on Maps
-                  </a>
-                </div>
-              </div>
+               <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3598.174688276893!2d85.09965931501436!3d25.611938583711956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed58dce6731f59%3A0x4059f39a1ac82c86!2sBirla%20Institute%20Of%20Technology%2C%20Patna!5e0!3m2!1sen!2sin!4v1234567890"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                className="grayscale group-hover:grayscale-0 transition-all duration-500"
+                title="BIT Patna Location"
+              ></iframe>
             </div>
 
             {/* Social Media Links */}
