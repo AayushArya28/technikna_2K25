@@ -107,17 +107,19 @@ function Nav() {
 
       if (scrollPosition > 50) {
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(245, 241, 232, 0.2)",
-          backdropFilter: "blur(2px)",
-          boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "rgba(255, 255, 255, 0.25)",
+          backdropFilter: "blur(20px)",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
           duration: 0.3,
           ease: "power2.out",
         });
       } else {
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(245, 241, 232, 0)",
+          backgroundColor: "rgba(255, 255, 255, 0)",
           backdropFilter: "blur(0px)",
           boxShadow: "0 0 0 rgba(0, 0, 0, 0)",
+          borderBottom: "1px solid rgba(0, 0, 0, 0)",
           duration: 0.3,
           ease: "power2.out",
         });
