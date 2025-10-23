@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
@@ -10,16 +10,30 @@ function Nav() {
   const navRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
+
+  // Scroll to top whenever the route changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
+  // Function to scroll to top when navigating
+  const handleNavClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'instant'
+    });
+  };
 
   // Menu items for mobile - matching PC nav exactly
   const menuItems = [
-    { label: "Home", ariaLabel: "Go to home page", link: "/" },
-    { label: "Events", ariaLabel: "View events", link: "/events" },
-    { label: "Merchandise", ariaLabel: "Browse merchandise", link: "/merchandise", },
-    { label: "Core Team", ariaLabel: "Meet the core team", link: "/core" },
-    { label: "WorkShop", ariaLabel: "Explore workshops", link: "/workshop" },
-    { label: 'Developers', ariaLabel: 'Learn about Devs', link: '/devs' },
-    { label: "Contact Us", ariaLabel: "Get in touch", link: "/contact" },
+    { label: "Home", ariaLabel: "Go to home page", link: "/", onClick: handleNavClick },
+    { label: "Events", ariaLabel: "View events", link: "/events", onClick: handleNavClick },
+    { label: "Merchandise", ariaLabel: "Browse merchandise", link: "/merchandise", onClick: handleNavClick },
+    { label: "Core Team", ariaLabel: "Meet the core team", link: "/core", onClick: handleNavClick },
+    { label: "WorkShop", ariaLabel: "Explore workshops", link: "/workshop", onClick: handleNavClick },
+    { label: 'Developers', ariaLabel: 'Learn about Devs', link: '/devs', onClick: handleNavClick },
+    { label: "Contact Us", ariaLabel: "Get in touch", link: "/contact", onClick: handleNavClick },
   ];
 
   const socialItems = [
@@ -169,22 +183,22 @@ function Nav() {
     >
       {/* Centered Links */}
       <div className="flex gap-12 text-shadow-lg/23 font-serif text-xl">
-        <NavLink to="/" label="Home" jp="ホーム" />
-        <NavLink to="/events" label="Events" jp="イベント" />
-        <NavLink to="/merchandise" label="Merchandise" jp="グッズ" />
-        <NavLink to="/core" label="Core Team" jp="コアチーム" />
-        <NavLink to="/workshop" label="WorkShop" jp="ワークショップ" />
-        <NavLink to="/devs" label="Developers" jp="開発者" />
-        <NavLink to="/contact" label="Contact Us" jp="連絡先" />
+        <NavLink to="/" label="Home" jp="ホーム" onClick={handleNavClick} />
+        <NavLink to="/events" label="Events" jp="イベント" onClick={handleNavClick} />
+        <NavLink to="/merchandise" label="Merchandise" jp="グッズ" onClick={handleNavClick} />
+        <NavLink to="/core" label="Core Team" jp="コアチーム" onClick={handleNavClick} />
+        <NavLink to="/workshop" label="WorkShop" jp="ワークショップ" onClick={handleNavClick} />
+        <NavLink to="/devs" label="Developers" jp="開発者" onClick={handleNavClick} />
+        <NavLink to="/contact" label="Contact Us" jp="連絡先" onClick={handleNavClick} />
       </div>
     </nav>
   );
 }
 
 /* Reusable NavLink component */
-function NavLink({ to, label, jp }) {
+function NavLink({ to, label, jp, onClick }) {
   return (
-    <Link to={to} className="nav-link text-center">
+    <Link to={to} className="nav-link text-center" onClick={onClick}>
       <span className="en-label block">{label}</span>
       <span className="jp-label inline-block text-sm text-black whitespace-nowrap opacity-0">
         {jp}
