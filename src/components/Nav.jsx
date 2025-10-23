@@ -9,6 +9,7 @@ gsap.registerPlugin(useGSAP);
 function Nav() {
   const navRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Menu items for mobile - matching PC nav exactly
   const menuItems = [
@@ -128,9 +129,8 @@ function Nav() {
           bottom: 0,
           width: "100%",
           height: "100vh",
-          zIndex: 9998,
-          pointerEvents: "auto",
-          overflow: "hidden",
+          zIndex: isMenuOpen ? 9998 : 50,
+          pointerEvents: isMenuOpen ? "auto" : "none",
         }}
       >
         <StaggeredMenu
@@ -146,8 +146,14 @@ function Nav() {
           logoUrl="/images/favicon.png"
           accentColor="#ff6b6b"
           fontSize="1.0rem"
-          onMenuOpen={() => console.log("Menu opened")}
-          onMenuClose={() => console.log("Menu closed")}
+          onMenuOpen={() => {
+            console.log("Menu opened");
+            setIsMenuOpen(true);
+          }}
+          onMenuClose={() => {
+            console.log("Menu closed");
+            setIsMenuOpen(false);
+          }}
         />
       </div>
     );
