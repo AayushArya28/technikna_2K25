@@ -19,16 +19,10 @@ export const AboutTechnika = () => {
           <Fade triggerOnce={true} direction="left" delay={200} duration={800}>
             <div className="space-y-6">
               <p className="text-lg text-gray-700 leading-relaxed">
-                Technika is the annual technical festival of the National Institute of Technology Patna, 
-                one of the most prestigious technical institutions in India. It is a celebration of 
-                innovation, creativity, and technical excellence that brings together brilliant minds 
-                from across the nation.
+                Technika is the annual technical festival of Birla Institute of Technology, Patna, one of the leading technical institutions in India. It stands as a celebration of innovation, creativity, and hands-on engineering excellence, bringing together talented minds from across the country.
               </p>
               <p className="text-lg text-gray-700 leading-relaxed">
-                With a legacy spanning years, Technika has become a platform where students showcase 
-                their technical prowess through competitions, workshops, exhibitions, and guest lectures 
-                by industry leaders. From robotics to coding marathons, from design challenges to 
-                entrepreneurship summits, Technika encompasses every facet of technology and innovation.
+                Carrying forward a strong legacy, Technika has evolved into a dynamic platform where students demonstrate their skills through a wide range of competitions, workshops, exhibitions, and expert sessions by industry professionals. From robotics challenges to coding sprints, from design showcases to entrepreneurship forums—Technika captures every dimension of technology, invention, and forward-thinking ideas.
               </p>
               <div className="grid grid-cols-3 gap-4 pt-4">
                 <div className="text-center p-4 rounded-lg shadow-md" style={{ backgroundColor: '#ffffff' }}>
@@ -96,14 +90,14 @@ export const AboutBitPatna = () => {
           <Fade triggerOnce={true} direction="right" delay={300} duration={800}>
             <div className="space-y-6">
               <p className="text-lg text-gray-700 leading-relaxed">
-                Birla Institute of Technology, Patna Campus (BIT Patna) is one of the extension centers of BIT Mesra, 
-                established to foster quality technical education and innovation in Eastern India. Located in the 
+                Birla Institute of Technology, Patna Campus (BIT Patna) is one of the extension centers of BIT Mesra,
+                established to foster quality technical education and innovation in Eastern India. Located in the
                 historic city of Patna, it carries forward BIT Mesra’s legacy of excellence and academic rigor.
               </p>
               <p className="text-lg text-gray-700 leading-relaxed">
-                The campus offers a dynamic environment with modern infrastructure, experienced faculty, and a 
-                vibrant student community engaged in cutting-edge research, entrepreneurship, and cultural activities. 
-                BIT Patna emphasizes holistic growth — nurturing not only technical expertise but also leadership, 
+                The campus offers a dynamic environment with modern infrastructure, experienced faculty, and a
+                vibrant student community engaged in cutting-edge research, entrepreneurship, and cultural activities.
+                BIT Patna emphasizes holistic growth — nurturing not only technical expertise but also leadership,
                 creativity, and community values.
               </p>
               <div className="grid grid-cols-2 gap-4 pt-4">

@@ -3,13 +3,14 @@ import Loading from "./pages/Loading";
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
 import { Events } from "./pages/Events";
-import { Workshop } from "./pages/Workshop.jsx";
+// import { Workshop } from "./pages/Workshop.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
 import { Core } from "./pages/Core.jsx";
 import Merchandise from "./pages/Merchandise.jsx";
 import { Footer } from "./components/Footer.jsx";
 import Login from "./pages/Login";
 import Devs from "./pages/Devs";
+import Alumni from "./pages/Alumni";
 import { useState } from "react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
@@ -21,10 +22,11 @@ function App() {
     { path: "/events", Component: Events },
     { path: "/merchandise", Component: Merchandise },
     { path: "/core", Component: Core },
-    { path: "/workshop", Component: Workshop },
+    // { path: "/workshop", Component: Workshop },
     { path: "/login", Component: Login },
     { path: "/contact", Component: ContactUs },
     { path: "/devs", Component: Devs },
+    { path: "/alumni", Component: Alumni },
   ];
 
   // Skipping loading screen in development mode, comment this line and uncomment the next to enable loading screen while working on it

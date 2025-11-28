@@ -244,7 +244,7 @@ export function Footer() {
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm hover:text-blue-800 transition-colors duration-300">
-              © 2025 BIT Mesra - Technika. All rights reserved.
+              © 2026 BIT Mesra - Technika. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
               <a

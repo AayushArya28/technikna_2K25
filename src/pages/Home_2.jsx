@@ -64,7 +64,7 @@ function Home() {
         style={{ backgroundImage: "url('/images/bg.jpg')" }}
       >
         <h1 className="text-6xl md:text-8xl text-white font-extrabold drop-shadow-lg">
-          TECHNIKA 2K25
+          TECHNIKA 2K26
         </h1>
       </section>
     </>
