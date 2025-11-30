@@ -137,10 +137,22 @@ export function ContactUs() {
 
   const contactInfo = [
     {
-      icon: <Phone className="w-6 h-6" />,
-      title: "Phone",
-      info: "+91 123 456 7890",
+      icon: <User className="w-6 h-6" />,
+      title: "Publicity Head",
+      info: "Shikhar Rai (+91 79857 67003)",
       color: "bg-blue-500",
+    },
+    {
+      icon: <User className="w-6 h-6" />,
+      title: "Venue Head",
+      info: "Parag (+91 81302 15822)",
+      color: "bg-indigo-500",
+    },
+    {
+      icon: <User className="w-6 h-6" />,
+      title: "Event Head",
+      info: "Suyash Sinha (+91 70707 47693)",
+      color: "bg-pink-500",
     },
     {
       icon: <Mail className="w-6 h-6" />,
@@ -151,9 +163,9 @@ export function ContactUs() {
     {
       icon: <MapPin className="w-6 h-6" />,
       title: "Location",
-      info: "College Campus, Ranchi",
+      info: "BIT Patna, Patna",
       color: "bg-purple-500",
-      link:"https://maps.app.goo.gl/Ck8LjZcoWbXz8nPCA"
+      link: "https://maps.app.goo.gl/Ck8LjZcoWbXz8nPCA",
     },
   ];
 
@@ -171,12 +183,12 @@ export function ContactUs() {
         </div>
 
         {/* Contact Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="flex flex-wrap justify-center gap-6 mb-12">
           {contactInfo.map((item, index) => (
             <div
               key={index}
               ref={(el) => (contactCardsRef.current[index] = el)}
-              className="bg-white rounded-lg shadow-lg p-6 text-center cursor-pointer"
+              className="bg-white rounded-lg shadow-lg p-6 text-center cursor-pointer w-full md:w-[30%]"
               onMouseEnter={(e) => {
                 gsap.to(e.currentTarget, {
                   y: -10,
@@ -348,7 +360,7 @@ export function ContactUs() {
             </h2>
             <div className="flex-1 bg-gray-200 rounded-lg overflow-hidden relative min-h-[300px]">
               {/* Placeholder map */}
-               <iframe
+              <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3598.174688276893!2d85.09965931501436!3d25.611938583711956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed58dce6731f59%3A0x4059f39a1ac82c86!2sBirla%20Institute%20Of%20Technology%2C%20Patna!5e0!3m2!1sen!2sin!4v1234567890"
                 width="100%"
                 height="100%"
