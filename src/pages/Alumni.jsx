@@ -1,27 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
-import { User, Mail, Phone, Calendar, Shirt, Tag, CreditCard } from "lucide-react";
-
-// ✅ Import Firebase
-import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-
-// ✅ Your Firebase Config (replace with your values)
-const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-};
-
-// ✅ Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { User, Mail, Phone, Calendar, Shirt, Tag, CreditCard, LogIn, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { auth } from "../firebase";
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
 
 const Alumni = () => {
+    const [user, setUser] = useState(null);
+    const [loadingAuth, setLoadingAuth] = useState(true);
     const [formData, setFormData] = useState({
         name: "",
         yearOfPassing: "",
@@ -30,7 +16,11 @@ const Alumni = () => {
         size: "",
         merchName: "",
     });
-    const [submitted, setSubmitted] = useState(false);
+    const [status, setStatus] = useState("IDLE"); // IDLE, SUBMITTING, SUCCESS, ERROR
+    const [errorMessage, setErrorMessage] = useState("");
+    const [paymentStatus, setPaymentStatus] = useState(null); // null, PENDING, SUCCESS, FAILED
+    const [checkingStatus, setCheckingStatus] = useState(false);
+    const [registrationDetails, setRegistrationDetails] = useState(null);
 
     const titleRef = useRef(null);
     const contentRef = useRef(null);
@@ -64,6 +54,36 @@ const Alumni = () => {
         );
     }, []);
 
+    // Monitor Auth State
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+            if (currentUser) {
+                setFormData((prev) => ({ ...prev, email: currentUser.email }));
+                // Check status immediately on login
+                checkPaymentStatus(currentUser);
+            }
+            setLoadingAuth(false);
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const navigate = useNavigate();
+
+    const handleLoginRedirect = () => {
+        navigate("/login");
+    };
+
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            setFormData((prev) => ({ ...prev, email: "" }));
+            setPaymentStatus(null);
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
+
     const handleInputChange = (e) => {
         setFormData({
             ...formData,
@@ -73,47 +93,81 @@ const Alumni = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setStatus("SUBMITTING");
+        setErrorMessage("");
+
+        if (!user) {
+            setStatus("ERROR");
+            setErrorMessage("You must be logged in to register.");
+            return;
+        }
 
         try {
-            // Save form data to Firestore
-            await addDoc(collection(db, "alumni_registrations"), {
-                ...formData,
-                timestamp: new Date(),
+            const token = await user.getIdToken();
+            const response = await fetch("http://localhost:5000/alumni/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify(formData),
             });
 
-            // Success animation
-            gsap.to(formRef.current, {
-                scale: 0.95,
-                duration: 0.1,
-                yoyo: true,
-                repeat: 1,
-                onComplete: () => {
-                    setSubmitted(true);
+            const data = await response.json();
 
-                    // Animate success message
-                    gsap.fromTo(
-                        ".success-message",
-                        { scale: 0, opacity: 0 },
-                        { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }
-                    );
+            if (!response.ok) {
+                throw new Error(data.message || "Registration failed");
+            }
 
-                    // Reset form after delay
-                    setTimeout(() => {
-                        setSubmitted(false);
-                        setFormData({
-                            name: "",
-                            yearOfPassing: "",
-                            phone: "",
-                            email: "",
-                            size: "",
-                            merchName: "",
-                        });
-                    }, 3000);
+            if (data.status === "SUCCESS") {
+                setPaymentStatus("SUCCESS");
+                setStatus("SUCCESS");
+            } else if (data.paymentUrl) {
+                window.location.href = data.paymentUrl;
+            } else {
+                throw new Error("Invalid response from server");
+            }
+
+        } catch (error) {
+            console.error("Error registering alumni: ", error);
+            setStatus("ERROR");
+            setErrorMessage(error.message || "Something went wrong. Please try again.");
+        }
+    };
+
+    const checkPaymentStatus = async (currentUser = user) => {
+        if (!currentUser) return;
+        setCheckingStatus(true);
+        try {
+            const token = await currentUser.getIdToken();
+            const response = await fetch("http://localhost:5000/alumni/status", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
                 },
             });
+
+            if (response.status === 404) {
+                // Not registered yet
+                setPaymentStatus(null);
+                setRegistrationDetails(null);
+                return;
+            }
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setPaymentStatus(data.status); // SUCCESS, PENDING
+                if (data.status === 'SUCCESS' && data.details) {
+                    setRegistrationDetails(data.details);
+                }
+            } else {
+                console.error("Failed to fetch status:", data);
+            }
         } catch (error) {
-            console.error("Error saving alumni registration: ", error);
-            alert("Something went wrong. Please try again.");
+            console.error("Error checking status:", error);
+        } finally {
+            setCheckingStatus(false);
         }
     };
 
@@ -164,157 +218,252 @@ const Alumni = () => {
                             Register Now
                         </h2>
 
-                        {!submitted ? (
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                                    <div className="relative">
-                                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                        <input
-                                            type="text"
-                                            name="name"
-                                            required
-                                            value={formData.name}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                            placeholder="Your Full Name"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Year of Passing</label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                        <input
-                                            type="number"
-                                            name="yearOfPassing"
-                                            required
-                                            value={formData.yearOfPassing}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                            placeholder="YYYY"
-                                            min="2000"
-                                            max="2026"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone No</label>
-                                    <div className="relative">
-                                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                        <input
-                                            type="tel"
-                                            name="phone"
-                                            required
-                                            value={formData.phone}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                            placeholder="+91 123 456 7890"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                    <div className="relative">
-                                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                        <input
-                                            type="email"
-                                            name="email"
-                                            required
-                                            value={formData.email}
-                                            onChange={handleInputChange}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                            placeholder="your.email@example.com"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">T-Shirt Size</label>
-                                        <div className="relative">
-                                            <Shirt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                            <select
-                                                name="size"
-                                                required
-                                                value={formData.size}
-                                                onChange={handleInputChange}
-                                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
-                                            >
-                                                <option value="">Select Size</option>
-                                                <option value="S">S</option>
-                                                <option value="M">M</option>
-                                                <option value="L">L</option>
-                                                <option value="XL">XL</option>
-                                                <option value="XXL">XXL</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Name on Merch</label>
-                                        <div className="relative">
-                                            <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                            <input
-                                                type="text"
-                                                name="merchName"
-                                                required
-                                                value={formData.merchName}
-                                                onChange={handleInputChange}
-                                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                                                placeholder="Name to print"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-bold text-lg flex items-center justify-center hover:bg-blue-700 transition-colors mt-6 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                                    onMouseEnter={(e) => {
-                                        gsap.to(e.currentTarget, {
-                                            scale: 1.02,
-                                            duration: 0.2,
-                                        });
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        gsap.to(e.currentTarget, {
-                                            scale: 1,
-                                            duration: 0.2,
-                                        });
-                                    }}
-                                >
-                                    <CreditCard className="w-6 h-6 mr-2" />
-                                    Pay Now
-                                </button>
-                            </form>
-                        ) : (
-                            <div className="success-message flex flex-col items-center justify-center h-96">
-                                <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
-                                    <svg
-                                        className="w-12 h-12 text-white"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={3}
-                                            d="M5 13l4 4L19 7"
-                                        />
-                                    </svg>
-                                </div>
-                                <h3 className="text-3xl font-bold text-gray-900 mb-3">
-                                    Registration Successful!
-                                </h3>
-                                <p className="text-gray-600 text-center text-lg max-w-xs">
-                                    Redirecting to payment gateway...
-                                </p>
+                        {loadingAuth ? (
+                            <div className="flex justify-center items-center h-64">
+                                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
                             </div>
+                        ) : !user ? (
+                            <div className="flex flex-col items-center justify-center h-64 space-y-4">
+                                <p className="text-gray-600 text-center">Please sign in to register.</p>
+                                <button
+                                    onClick={handleLoginRedirect}
+                                    className="flex items-center bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-lg shadow-sm hover:bg-gray-50 transition-all font-medium"
+                                >
+                                    <LogIn className="w-6 h-6 mr-3" />
+                                    Sign In / Register
+                                </button>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="mb-6 flex items-center justify-between bg-blue-50 p-4 rounded-lg">
+                                    <div className="flex items-center">
+                                        <img src={user.photoURL} alt={user.displayName} className="w-10 h-10 rounded-full mr-3" />
+                                        <div>
+                                            <p className="text-sm font-semibold text-gray-900">{user.displayName}</p>
+                                            <p className="text-xs text-gray-600">{user.email}</p>
+                                        </div>
+                                    </div>
+                                    <button onClick={handleLogout} className="text-sm text-red-600 hover:text-red-800 font-medium">
+                                        Sign Out
+                                    </button>
+                                </div>
+
+                                {paymentStatus === "SUCCESS" ? (
+                                    <div className="success-message flex flex-col items-center justify-center h-full text-center p-6">
+                                        <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
+                                            <CheckCircle className="w-12 h-12 text-white" />
+                                        </div>
+                                        <h3 className="text-3xl font-bold text-gray-900 mb-3">
+                                            Registration Complete!
+                                        </h3>
+                                        <p className="text-gray-600 text-lg mb-6">
+                                            You are all set for Technika ’26.
+                                        </p>
+
+                                        {registrationDetails && (
+                                            <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 w-full max-w-md mb-6 text-left shadow-sm">
+                                                <h4 className="text-lg font-semibold text-blue-900 mb-4 border-b border-blue-200 pb-2">Registration Details</h4>
+                                                <div className="space-y-3">
+                                                    <div className="flex justify-between">
+                                                        <span className="text-gray-600">Name:</span>
+                                                        <span className="font-medium text-gray-900">{registrationDetails.name}</span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="text-gray-600">Merch Name:</span>
+                                                        <span className="font-medium text-gray-900">{registrationDetails.merchName}</span>
+                                                    </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="text-gray-600">T-Shirt Size:</span>
+                                                        <span className="font-medium text-gray-900">{registrationDetails.size}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="bg-green-50 border border-green-200 rounded-lg px-6 py-3">
+                                            <p className="text-green-800 font-semibold">
+                                                Status: <span className="uppercase">PAID & VERIFIED</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <form onSubmit={handleSubmit} className="space-y-4">
+                                        {paymentStatus === 'PENDING' && (
+                                            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                                                <div className="flex">
+                                                    <div className="flex-shrink-0">
+                                                        <AlertCircle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+                                                    </div>
+                                                    <div className="ml-3">
+                                                        <p className="text-sm text-yellow-700">
+                                                            Payment is pending. Please complete your payment to finalize registration.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                                            <div className="relative">
+                                                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    required
+                                                    value={formData.name}
+                                                    onChange={handleInputChange}
+                                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                                    placeholder="Your Full Name"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Year of Passing</label>
+                                            <div className="relative">
+                                                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <input
+                                                    type="number"
+                                                    name="yearOfPassing"
+                                                    required
+                                                    value={formData.yearOfPassing}
+                                                    onChange={handleInputChange}
+                                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                                    placeholder="YYYY"
+                                                    min="1950"
+                                                    max="2026"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Phone No</label>
+                                            <div className="relative">
+                                                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <input
+                                                    type="tel"
+                                                    name="phone"
+                                                    required
+                                                    value={formData.phone}
+                                                    onChange={handleInputChange}
+                                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                                    placeholder="+91 123 456 7890"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                            <div className="relative">
+                                                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <input
+                                                    type="email"
+                                                    name="email"
+                                                    required
+                                                    value={formData.email}
+                                                    readOnly
+                                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed focus:outline-none"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">T-Shirt Size</label>
+                                                <div className="relative">
+                                                    <Shirt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                    <select
+                                                        name="size"
+                                                        required
+                                                        value={formData.size}
+                                                        onChange={handleInputChange}
+                                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
+                                                    >
+                                                        <option value="">Select Size</option>
+                                                        <option value="S">S</option>
+                                                        <option value="M">M</option>
+                                                        <option value="L">L</option>
+                                                        <option value="XL">XL</option>
+                                                        <option value="XXL">XXL</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Name on Merch</label>
+                                                <div className="relative">
+                                                    <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                    <input
+                                                        type="text"
+                                                        name="merchName"
+                                                        required
+                                                        value={formData.merchName}
+                                                        onChange={handleInputChange}
+                                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                                        placeholder="Name to print"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {status === "ERROR" && (
+                                            <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg flex items-start">
+                                                <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+                                                {errorMessage}
+                                            </div>
+                                        )}
+
+                                        <button
+                                            type="submit"
+                                            disabled={status === "SUBMITTING"}
+                                            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-bold text-lg flex items-center justify-center hover:bg-blue-700 transition-colors mt-6 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed"
+                                            onMouseEnter={(e) => {
+                                                if (status !== "SUBMITTING") {
+                                                    gsap.to(e.currentTarget, { scale: 1.02, duration: 0.2 });
+                                                }
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (status !== "SUBMITTING") {
+                                                    gsap.to(e.currentTarget, { scale: 1, duration: 0.2 });
+                                                }
+                                            }}
+                                        >
+                                            {status === "SUBMITTING" ? (
+                                                <>
+                                                    <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+                                                    Processing...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <CreditCard className="w-6 h-6 mr-2" />
+                                                    Pay Now
+                                                </>
+                                            )}
+                                        </button>
+
+                                        <div className="mt-4 pt-4 border-t border-gray-200">
+                                            <button
+                                                type="button"
+                                                onClick={checkPaymentStatus}
+                                                disabled={checkingStatus}
+                                                className="w-full text-blue-600 font-medium text-sm hover:text-blue-800 transition-colors flex items-center justify-center"
+                                            >
+                                                {checkingStatus ? (
+                                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                ) : (
+                                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                                )}
+                                                Refresh Status
+                                            </button>
+                                            {paymentStatus && paymentStatus !== "SUCCESS" && (
+                                                <p className="text-center text-sm mt-2 text-gray-600">
+                                                    Status: <span className="font-semibold">{paymentStatus}</span>
+                                                </p>
+                                            )}
+                                        </div>
+                                    </form>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
