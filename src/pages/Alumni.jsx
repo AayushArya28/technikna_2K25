@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-// MODIFIED: Added query, where, getDocs, collection to search by email
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 
 const PaymentStatus = {
@@ -78,20 +77,16 @@ const Alumni = () => {
       if (currentUser) {
         setFormData((prev) => ({ ...prev, email: currentUser.email }));
 
-        // MODIFIED: Search Firestore by Email to find the name
-        // This is more robust than relying on matching IDs
         let foundName = currentUser.displayName;
 
         if (!foundName) {
           try {
             const db = getFirestore();
             const authCollection = collection(db, "auth");
-            // Query: Select * from auth where email == user.email
             const q = query(authCollection, where("email", "==", currentUser.email));
             const querySnapshot = await getDocs(q);
 
             if (!querySnapshot.empty) {
-              // Get the name from the first matching document
               const userData = querySnapshot.docs[0].data();
               if (userData.name) {
                 foundName = userData.name;
@@ -167,7 +162,12 @@ const Alumni = () => {
         setPaymentStatus(PaymentStatus.Confirmed);
         setStatus("success");
       } else if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;
+        // MODIFICATION: Open in new tab instead of redirecting
+        window.open(data.paymentUrl, "_blank");
+        
+        // Update UI to show pending state so user knows what's happening
+        setStatus("IDLE"); // Stop spinner
+        setPaymentStatus(PaymentStatus.PendingPayment); // Show yellow alert
       } else {
         throw new Error("Invalid response from server");
       }
@@ -217,7 +217,6 @@ const Alumni = () => {
     }
   };
 
-  // Helper to get the display letter safely
   const getDisplayLetter = () => {
     if (dbName) return dbName.charAt(0).toUpperCase();
     if (user && user.email) return user.email.charAt(0).toUpperCase();
@@ -304,12 +303,10 @@ const Alumni = () => {
               <>
                 <div className="mb-6 flex items-center justify-between bg-blue-50 p-4 rounded-lg">
                   <div className="flex items-center">
-                    {/* MODIFIED: Uses logic to fallback to email char if name is missing */}
                     <div className="w-10 h-10 rounded-full mr-3 bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-sm">
                       {getDisplayLetter()}
                     </div>
                     <div>
-                      {/* MODIFIED: Display Name from DB or fallback to email prefix */}
                       <p className="text-sm font-bold text-gray-900">
                         {dbName || user.email.split("@")[0]}
                       </p>
