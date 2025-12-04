@@ -15,7 +15,9 @@ import {
   Loader2,
 } from "lucide-react";
 import { auth } from "../firebase";
-import { GoogleAuthProvider, onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+// MODIFIED: Added query, where, getDocs, collection to search by email
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
 
 const PaymentStatus = {
   Confirmed: "confirmed",
@@ -28,6 +30,7 @@ const BASE_API_URL = "https://api.technika.co";
 
 const Alumni = () => {
   const [user, setUser] = useState(null);
+  const [dbName, setDbName] = useState(""); 
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
@@ -37,9 +40,9 @@ const Alumni = () => {
     size: "",
     merchName: "",
   });
-  const [status, setStatus] = useState("IDLE"); // IDLE, SUBMITTING, success, ERROR
+  const [status, setStatus] = useState("IDLE");
   const [errorMessage, setErrorMessage] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState(null); // null, pending, success, failed
+  const [paymentStatus, setPaymentStatus] = useState(null);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [registrationDetails, setRegistrationDetails] = useState(null);
 
@@ -47,26 +50,19 @@ const Alumni = () => {
   const contentRef = useRef(null);
   const formRef = useRef(null);
 
-  // Initial animations on mount
   useEffect(() => {
     const tl = gsap.timeline();
-
-    // Title animation
     tl.fromTo(
       titleRef.current,
       { opacity: 0, y: -50 },
       { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
     );
-
-    // Content animation
     tl.fromTo(
       contentRef.current,
       { opacity: 0, x: -50 },
       { opacity: 1, x: 0, duration: 0.8, ease: "power2.out" },
       "-=0.5"
     );
-
-    // Form animation
     tl.fromTo(
       formRef.current,
       { opacity: 0, x: 50 },
@@ -75,13 +71,38 @@ const Alumni = () => {
     );
   }, []);
 
-  // Monitor Auth State
+  // Monitor Auth State & Fetch Name from DB
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         setFormData((prev) => ({ ...prev, email: currentUser.email }));
-        // Check status immediately on login
+
+        // MODIFIED: Search Firestore by Email to find the name
+        // This is more robust than relying on matching IDs
+        let foundName = currentUser.displayName;
+
+        if (!foundName) {
+          try {
+            const db = getFirestore();
+            const authCollection = collection(db, "auth");
+            // Query: Select * from auth where email == user.email
+            const q = query(authCollection, where("email", "==", currentUser.email));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+              // Get the name from the first matching document
+              const userData = querySnapshot.docs[0].data();
+              if (userData.name) {
+                foundName = userData.name;
+              }
+            }
+          } catch (error) {
+            console.error("Error fetching user details:", error);
+          }
+        }
+        
+        setDbName(foundName || ""); 
         checkPaymentStatus(currentUser);
       }
       setLoadingAuth(false);
@@ -100,6 +121,7 @@ const Alumni = () => {
       await signOut(auth);
       setFormData((prev) => ({ ...prev, email: "" }));
       setPaymentStatus(null);
+      setDbName("");
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -172,7 +194,6 @@ const Alumni = () => {
       });
 
       if (response.status === 404) {
-        // Not registered yet
         setPaymentStatus(null);
         setRegistrationDetails(null);
         return;
@@ -182,7 +203,7 @@ const Alumni = () => {
       console.log(data);
 
       if (response.ok) {
-        setPaymentStatus(data.status); // success, pending
+        setPaymentStatus(data.status);
         if (data.status === "success" && data.details) {
           setRegistrationDetails(data.details);
         }
@@ -196,10 +217,16 @@ const Alumni = () => {
     }
   };
 
+  // Helper to get the display letter safely
+  const getDisplayLetter = () => {
+    if (dbName) return dbName.charAt(0).toUpperCase();
+    if (user && user.email) return user.email.charAt(0).toUpperCase();
+    return "A";
+  };
+
   return (
     <div className="min-h-screen bg-[url('/images/bg-contus.png')] bg-fixed bg-cover bg-center bg-no-repeat py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div ref={titleRef} className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 font-serif">
             Alumni Registration – Technika ’26
@@ -207,7 +234,6 @@ const Alumni = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Content Section */}
           <div
             ref={contentRef}
             className="bg-white/90 backdrop-blur-sm rounded-lg shadow-xl p-8 h-fit"
@@ -248,7 +274,6 @@ const Alumni = () => {
             </p>
           </div>
 
-          {/* Registration Form */}
           <div
             ref={formRef}
             className="bg-white rounded-lg shadow-xl p-8 relative"
@@ -279,14 +304,14 @@ const Alumni = () => {
               <>
                 <div className="mb-6 flex items-center justify-between bg-blue-50 p-4 rounded-lg">
                   <div className="flex items-center">
-                    <img
-                      src={user.photoURL}
-                      alt={user.displayName}
-                      className="w-10 h-10 rounded-full mr-3"
-                    />
+                    {/* MODIFIED: Uses logic to fallback to email char if name is missing */}
+                    <div className="w-10 h-10 rounded-full mr-3 bg-blue-600 flex items-center justify-center text-white font-bold text-xl shadow-sm">
+                      {getDisplayLetter()}
+                    </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">
-                        {user.displayName}
+                      {/* MODIFIED: Display Name from DB or fallback to email prefix */}
+                      <p className="text-sm font-bold text-gray-900">
+                        {dbName || user.email.split("@")[0]}
                       </p>
                       <p className="text-xs text-gray-600">{user.email}</p>
                     </div>
@@ -339,7 +364,7 @@ const Alumni = () => {
                       </div>
                     )}
 
-                    <div className="bg-green-50 border border-green-200 rounded-lg px-6 py-3">
+                    <div className="bg-green-50 border border-green-200 rounded-lg px-6 py-3 mb-6">
                       <p className="text-green-800 font-semibold">
                         Status:{" "}
                         <span className="uppercase">PAID & VERIFIED</span>
