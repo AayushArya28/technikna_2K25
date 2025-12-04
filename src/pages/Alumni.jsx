@@ -17,6 +17,12 @@ import {
 import { auth } from "../firebase";
 import { GoogleAuthProvider, onAuthStateChanged, signOut } from "firebase/auth";
 
+const PaymentStatus = {
+  Confirmed: "confirmed",
+  Failed: "failed",
+  PendingPayment: "pending_payment",
+};
+
 const Alumni = () => {
   const [user, setUser] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
@@ -28,9 +34,9 @@ const Alumni = () => {
     size: "",
     merchName: "",
   });
-  const [status, setStatus] = useState("IDLE"); // IDLE, SUBMITTING, SUCCESS, ERROR
+  const [status, setStatus] = useState("IDLE"); // IDLE, SUBMITTING, success, ERROR
   const [errorMessage, setErrorMessage] = useState("");
-  const [paymentStatus, setPaymentStatus] = useState(null); // null, PENDING, SUCCESS, FAILED
+  const [paymentStatus, setPaymentStatus] = useState(null); // null, pending, success, failed
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [registrationDetails, setRegistrationDetails] = useState(null);
 
@@ -78,7 +84,7 @@ const Alumni = () => {
       setLoadingAuth(false);
     });
     return () => unsubscribe();
-  });
+  }, []);
 
   const navigate = useNavigate();
 
@@ -132,9 +138,9 @@ const Alumni = () => {
         throw new Error(data.message || "Registration failed");
       }
 
-      if (data.status === "success") {
-        setPaymentStatus("SUCCESS");
-        setStatus("SUCCESS");
+      if (data.status === PaymentStatus.Confirmed) {
+        setPaymentStatus(PaymentStatus.Confirmed);
+        setStatus("success");
       } else if (data.paymentUrl) {
         window.location.href = data.paymentUrl;
       } else {
@@ -154,7 +160,8 @@ const Alumni = () => {
     setCheckingStatus(true);
     try {
       const token = await currentUser.getIdToken();
-      const response = await fetch("http://localhost:3000/alumini/status", {
+      // const response = await fetch("http://localhost:3000/alumini/status", {
+      const response = await fetch("https://api.technika.co/alumni/status", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -170,9 +177,10 @@ const Alumni = () => {
       }
 
       const data = await response.json();
+      console.log(data);
 
       if (response.ok) {
-        setPaymentStatus(data.status); // SUCCESS, PENDING
+        setPaymentStatus(data.status); // success, pending
         if (data.status === "success" && data.details) {
           setRegistrationDetails(data.details);
         }
@@ -289,7 +297,7 @@ const Alumni = () => {
                   </button>
                 </div>
 
-                {paymentStatus === "SUCCESS" ? (
+                {paymentStatus === PaymentStatus.Confirmed ? (
                   <div className="success-message flex flex-col items-center justify-center h-full text-center p-6">
                     <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
                       <CheckCircle className="w-12 h-12 text-white" />
@@ -338,7 +346,7 @@ const Alumni = () => {
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    {paymentStatus === "PENDING" && (
+                    {paymentStatus === PaymentStatus.PendingPayment && (
                       <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
                         <div className="flex">
                           <div className="flex-shrink-0">
@@ -524,12 +532,15 @@ const Alumni = () => {
                         )}
                         Refresh Status
                       </button>
-                      {paymentStatus && paymentStatus !== "SUCCESS" && (
-                        <p className="text-center text-sm mt-2 text-gray-600">
-                          Status:{" "}
-                          <span className="font-semibold">{paymentStatus}</span>
-                        </p>
-                      )}
+                      {paymentStatus &&
+                        paymentStatus !== PaymentStatus.Confirmed && (
+                          <p className="text-center text-sm mt-2 text-gray-600">
+                            Status:{" "}
+                            <span className="font-semibold">
+                              {paymentStatus}
+                            </span>
+                          </p>
+                        )}
                     </div>
                   </form>
                 )}

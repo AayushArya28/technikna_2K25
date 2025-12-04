@@ -30,8 +30,8 @@ function App() {
   ];
 
   // Skipping loading screen in development mode, comment this line and uncomment the next to enable loading screen while working on it
-  // const [loadingDone, setLoadingDone] = useState(import.meta.env.DEV || false);
-  const [loadingDone, setLoadingDone] = useState(false);
+  const [loadingDone, setLoadingDone] = useState(import.meta.env.DEV || false);
+  // const [loadingDone, setLoadingDone] = useState(false);
 
   return (
     <BrowserRouter>
