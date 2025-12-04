@@ -23,6 +23,9 @@ const PaymentStatus = {
   PendingPayment: "pending_payment",
 };
 
+// const BASE_API_URL = "http://localhost:3000";
+const BASE_API_URL = "https://api.technika.co";
+
 const Alumni = () => {
   const [user, setUser] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
@@ -122,7 +125,7 @@ const Alumni = () => {
 
     try {
       const token = await user.getIdToken();
-      const response = await fetch("http://localhost:3000/alumni/register", {
+      const response = await fetch(BASE_API_URL + "/alumni/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -160,8 +163,7 @@ const Alumni = () => {
     setCheckingStatus(true);
     try {
       const token = await currentUser.getIdToken();
-      // const response = await fetch("http://localhost:3000/alumini/status", {
-      const response = await fetch("https://api.technika.co/alumni/status", {
+      const response = await fetch(BASE_API_URL + "/alumni/status", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
