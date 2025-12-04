@@ -39,29 +39,22 @@ export default function Login() {
 
     try {
       if (signIn) {
-        // Sign In
-        const userCredential = await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
+        await signInWithEmailAndPassword(auth, email, password);
         setSuccess("Login successful!");
         setTimeout(() => {
           navigate("/");
         }, 1000);
       } else {
-        // Sign Up
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
           password
         );
-        // Add name, college, email, and password to Firestore under 'auth' collection
         await setDoc(doc(db, "auth", userCredential.user.uid), {
           name,
           college,
           email,
-          password, // Store password (not recommended for production)
+          password, // kept same as your original (not recommended in production)
           createdAt: new Date(),
         });
         setSuccess("Account created successfully! You can now login.");
@@ -96,36 +89,45 @@ export default function Login() {
   };
 
   return (
-    <div className="font-ramen bg-[url('/images/login-bg.png')] bg-cover bg-center flex items-center justify-center min-h-screen w-full bg-[#f6f5f7] px-4 py-8">
-      <div className="relative w-[678px] max-w-full min-h-[400px] bg-white rounded-lg shadow-[0_14px_28px_rgba(0,0,0,0.25),_0_10px_10px_rgba(0,0,0,0.22)] overflow-hidden font-[Montserrat]">
-        {/* Sign Up */}
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#050509] bg-[url('/images/login-samurai-bg.jpg')] bg-cover bg-center bg-fixed px-4 py-10 pt-[100px]">
+      <div className="relative w-full max-w-4xl md:max-w-5xl min-h-[420px] sm:min-h-[460px] bg-black/80 border border-red-500/40 rounded-2xl shadow-[0_24px_60px_rgba(0,0,0,0.9)] overflow-hidden font-[Montserrat] text-gray-100 backdrop-blur-xl">
+        {/* ================= SIGN UP PANEL ================= */}
         <div
-          className={`absolute top-0 h-full transition-all duration-500 ease-in-out left-0 w-1/2 opacity-0 z-[1] ${
-            !signIn ? "translate-x-full opacity-100 z-[5]" : ""
+          className={`absolute top-0 left-0 h-full w-1/2 transition-all duration-500 ease-in-out
+          ${
+            signIn
+              ? "opacity-0 pointer-events-none z-[1]"
+              : "translate-x-full opacity-100 pointer-events-auto z-[5]"
           }`}
         >
-          <form className="bg-white flex items-center justify-center flex-col px-[50px] h-full text-center">
-            <h1 className="text-red-700 font-bold m-0 text-xl">
+          <form
+            className="bg-transparent flex items-center justify-center flex-col px-6 sm:px-[50px] h-full text-center"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
+            <h1 className="text-red-400 font-bold text-lg sm:text-xl mb-2">
               Create Account
             </h1>
             <input
               type="text"
               placeholder="Name"
-              className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+              className="bg-slate-900/70 border border-white/10 text-gray-100 placeholder-gray-400 rounded-md py-2.5 sm:py-3 px-3 sm:px-4 my-2 w-full focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <input
               type="text"
               placeholder="College"
-              className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+              className="bg-slate-900/70 border border-white/10 text-gray-100 placeholder-gray-400 rounded-md py-2.5 sm:py-3 px-3 sm:px-4 my-2 w-full focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base"
               value={college}
               onChange={(e) => setCollege(e.target.value)}
             />
             <input
               type="email"
               placeholder="Email"
-              className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+              className="bg-slate-900/70 border border-white/10 text-gray-100 placeholder-gray-400 rounded-md py-2.5 sm:py-3 px-3 sm:px-4 my-2 w-full focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -135,50 +137,60 @@ export default function Login() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+                className="bg-slate-900/70 border border-white/10 text-gray-100 placeholder-gray-400 rounded-md py-2.5 sm:py-3 px-3 sm:px-4 my-2 w-full focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-[50%] translate-y-[-50%] text-sm text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs text-gray-300"
               >
-                {showPassword ? "Show" : <s>Show</s>}
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
 
             <button
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               disabled={loading}
-              className="rounded-full border border-[#ff9e9e] text-red-700 bg-[#ff9e9e] text-xs font-bold py-3 px-12 uppercase tracking-wider active:scale-95 focus:outline-none"
+              className="mt-2 rounded-full border border-red-500/70 text-white bg-red-600/90 text-xs sm:text-sm font-bold py-2.5 sm:py-3 px-10 sm:px-12 uppercase tracking-wider active:scale-95 focus:outline-none hover:bg-red-500 transition-colors disabled:opacity-60"
             >
               {loading ? "Please wait..." : "Sign Up"}
             </button>
-            {error && (
-              <p className="text-red-600 text-sm bg-red-100 px-3 py-2 rounded w-full my-2">
+            {error && !signIn && (
+              <p className="text-red-300 text-[11px] sm:text-xs bg-red-900/60 border border-red-500/40 px-3 py-2 rounded w-full my-2 text-left">
                 {error}
               </p>
             )}
-            {success && (
-              <p className="text-green-600 text-sm bg-green-100 px-3 py-2 rounded w-full my-2">
+            {success && !signIn && (
+              <p className="text-emerald-300 text-[11px] sm:text-xs bg-emerald-900/60 border border-emerald-500/40 px-3 py-2 rounded w-full my-2 text-left">
                 {success}
               </p>
             )}
           </form>
         </div>
 
-        {/* Sign In */}
+        {/* ================= SIGN IN PANEL ================= */}
         <div
-          className={`absolute top-0 h-full transition-all duration-500 ease-in-out left-0 w-1/2 z-[2] ${
-            !signIn ? "translate-x-full" : ""
+          className={`absolute top-0 left-0 h-full w-1/2 transition-all duration-500 ease-in-out
+          ${
+            signIn
+              ? "opacity-100 pointer-events-auto z-[2]"
+              : "translate-x-full opacity-0 pointer-events-none z-0"
           }`}
         >
-          <form className="bg-white flex items-center justify-center flex-col px-[50px] h-full text-center">
-            <h1 className="text-red-700 font-bold m-0 text-xl">Sign in</h1>
+          <form
+            className="bg-transparent flex items-center justify-center flex-col px-6 sm:px-[50px] h-full text-center"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
+            <h1 className="text-red-400 font-bold text-lg sm:text-xl mb-2">
+              Sign in
+            </h1>
             <input
               type="email"
               placeholder="Email"
-              className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+              className="bg-slate-900/70 border border-white/10 text-gray-100 placeholder-gray-400 rounded-md py-2.5 sm:py-3 px-3 sm:px-4 my-2 w-full focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -188,87 +200,89 @@ export default function Login() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-gray-200 border-none py-3 px-4 my-2 w-full"
+                className="bg-slate-900/70 border border-white/10 text-gray-100 placeholder-gray-400 rounded-md py-2.5 sm:py-3 px-3 sm:px-4 my-2 w-full focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-3 top-[50%] translate-y-[-50%] text-sm text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] sm:text-xs text-gray-300"
               >
-                {showPassword ? "Show" : <s>Show</s>}
+                {showPassword ? "Hide" : "Show"}
               </button>
             </div>
-            <a
-              href="#"
-              className="text-sm text-gray-700 my-3"
+            <button
+              className="text-[11px] sm:text-xs text-gray-300 hover:text-red-300 my-2"
               onClick={handleForgotPassword}
             >
               Forgot your password?
-            </a>
+            </button>
             <button
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
               disabled={loading}
-              className="rounded-full border border-[#ff9e9e] text-red-700 bg-[#ff9e9e] text-xs font-bold py-3 px-12 uppercase tracking-wider active:scale-95 focus:outline-none"
+              className="rounded-full border border-red-500/70 text-white bg-red-600/90 text-xs sm:text-sm font-bold py-2.5 sm:py-3 px-10 sm:px-12 uppercase tracking-wider active:scale-95 focus:outline-none hover:bg-red-500 transition-colors disabled:opacity-60"
             >
               {loading ? "Please wait..." : "Sign In"}
             </button>
-            {error && (
-              <p className="text-red-600 text-sm bg-red-100 px-3 py-2 rounded w-full my-2">
+            {error && signIn && (
+              <p className="text-red-300 text-[11px] sm:text-xs bg-red-900/60 border border-red-500/40 px-3 py-2 rounded w-full my-2 text-left">
                 {error}
               </p>
             )}
-            {success && (
-              <p className="text-green-600 text-sm bg-green-100 px-3 py-2 rounded w-full my-2">
+            {success && signIn && (
+              <p className="text-emerald-300 text-[11px] sm:text-xs bg-emerald-900/60 border border-emerald-500/40 px-3 py-2 rounded w-full my-2 text-left">
                 {success}
               </p>
             )}
           </form>
         </div>
 
-        {/* Overlay Container */}
+        {/* ================= OVERLAY (ANIMATION) ================= */}
         <div
           className={`absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-500 ease-in-out z-[100] ${
             !signIn ? "-translate-x-full" : ""
           }`}
         >
           <div
-            className={`bg-[#ff9e9e] text-red-700 bg-no-repeat bg-cover bg-left relative left-[-100%] h-full w-[200%] transition-transform duration-500 ease-in-out ${
+            className={`bg-gradient-to-br from-red-800 via-red-600 to-red-900 text-white bg-no-repeat bg-cover bg-left relative left-[-100%] h-full w-[200%] transition-transform duration-500 ease-in-out ${
               !signIn ? "translate-x-1/2" : ""
             }`}
           >
-            {/* Left Panel */}
+            {/* Left overlay (for sign-in view) */}
             <div
-              className={`absolute flex items-center justify-center flex-col px-10 text-center top-0 h-full w-1/2 transition-transform duration-500 ease-in-out ${
+              className={`absolute flex items-center justify-center flex-col px-6 sm:px-10 text-center top-0 h-full w-1/2 transition-transform duration-500 ease-in-out ${
                 !signIn ? "translate-x-0" : "-translate-x-1/5"
               }`}
             >
-              <h1 className="font-bold text-2xl">Welcome Back!</h1>
-              <p className="text-sm font-light leading-5 tracking-wide my-6">
-                To keep connected with us please login with your personal info
+              <h1 className="font-bold text-2xl sm:text-3xl">
+                Welcome Back!
+              </h1>
+              <p className="text-xs sm:text-sm font-light leading-5 tracking-wide my-4 sm:my-6 text-red-100 max-w-xs">
+                To keep connected with us please login with your personal info.
               </p>
               <button
                 type="button"
-                className="rounded-full border border-red-700 bg-transparent text-red-700 text-xs font-bold py-3 px-12 uppercase tracking-wider active:scale-95 focus:outline-none"
+                className="rounded-full border border-white/80 bg-transparent text-white text-xs sm:text-sm font-bold py-2.5 sm:py-3 px-10 sm:px-12 uppercase tracking-wider active:scale-95 focus:outline-none hover:bg-white/10"
                 onClick={() => setSignIn(true)}
               >
                 Sign In
               </button>
             </div>
 
-            {/* Right Panel */}
+            {/* Right overlay (for sign-up view) */}
             <div
-              className={`absolute right-0 flex items-center justify-center flex-col px-10 text-center top-0 h-full w-1/2 transition-transform duration-500 ease-in-out ${
+              className={`absolute right-0 flex items-center justify-center flex-col px-6 sm:px-10 text-center top-0 h-full w-1/2 transition-transform duration-500 ease-in-out ${
                 !signIn ? "translate-x-1/5" : "translate-x-0"
               }`}
             >
-              <h1 className="font-bold text-2xl">HELP SAMURAI!!</h1>
-              <p className="text-sm font-light leading-5 tracking-wide my-6">
-                Enter your personal details and start journey with us
+              <h1 className="font-bold text-2xl sm:text-3xl">
+                HELP SAMURAI!!
+              </h1>
+              <p className="text-xs sm:text-sm font-light leading-5 tracking-wide my-4 sm:my-6 text-red-100 max-w-xs">
+                Enter your personal details and start journey with us.
               </p>
               <button
                 type="button"
-                className="rounded-full border border-red-700 bg-transparent text-red-700 text-xs font-bold py-3 px-12 uppercase tracking-wider active:scale-95 focus:outline-none"
+                className="rounded-full border border-white/80 bg-transparent text-white text-xs sm:text-sm font-bold py-2.5 sm:py-3 px-10 sm:px-12 uppercase tracking-wider active:scale-95 focus:outline-none hover:bg-white/10"
                 onClick={() => setSignIn(false)}
               >
                 Sign Up

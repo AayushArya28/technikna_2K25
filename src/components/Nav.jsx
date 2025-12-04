@@ -166,8 +166,8 @@ function Nav() {
           socialItems={socialItems}
           displaySocials={true}
           displayItemNumbering={true}
-          menuButtonColor="#000"
-          openMenuButtonColor="#000"
+          menuButtonColor="#fff"
+          openMenuButtonColor="#fff"
           changeMenuColorOnOpen={false}
           colors={["#B19EEF", "#5227FF"]}
           logoUrl="/images/favicon.png"
@@ -191,8 +191,8 @@ function Nav() {
     <nav
       ref={navRef}
       className="fixed top-0 left-0 right-0 w-full
-                font-bold text-3xl flex justify-center 
-                items-center px-12 pt-7 pb-2 z-50"
+            font-bold text-3xl flex justify-center 
+            items-center px-8 pt-4 pb-1 z-50"
       style={{ backgroundColor: "rgba(0, 0, 0, 0.15)" }}
     >
       {/* Centered Links */}
