@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Japan Ramen";
+  src: url("./fonts/japan-ramen.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "KumbhSans";
+  src: url("./fonts/kumbhsans.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal;
+}
+
+.jp-font {
+  font-family: "Japan Ramen", sans-serif;
+}
+
+.ks-font {
+  font-family: "KumbhSans", sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ff001e transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ff001e;
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::selection{
+  background-color: rgba(255, 0, 30,0.37);
+  color: #cfcfcf;
+}
