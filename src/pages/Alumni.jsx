@@ -29,15 +29,15 @@ const BASE_API_URL = "https://api.technika.co";
 
 const Alumni = () => {
   const [user, setUser] = useState(null);
-  const [dbName, setDbName] = useState(""); 
+  const [dbName, setDbName] = useState("");
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     yearOfPassing: "",
     phone: "",
     email: "",
-    size: "",
-    merchName: "",
+
+
   });
   const [status, setStatus] = useState("IDLE");
   const [errorMessage, setErrorMessage] = useState("");
@@ -96,8 +96,8 @@ const Alumni = () => {
             console.error("Error fetching user details:", error);
           }
         }
-        
-        setDbName(foundName || ""); 
+
+        setDbName(foundName || "");
         checkPaymentStatus(currentUser);
       }
       setLoadingAuth(false);
@@ -164,7 +164,7 @@ const Alumni = () => {
       } else if (data.paymentUrl) {
         // MODIFICATION: Open in new tab instead of redirecting
         window.open(data.paymentUrl, "_blank");
-        
+
         // Update UI to show pending state so user knows what's happening
         setStatus("IDLE"); // Stop spinner
         setPaymentStatus(PaymentStatus.PendingPayment); // Show yellow alert
@@ -345,18 +345,6 @@ const Alumni = () => {
                               {registrationDetails.name}
                             </span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Merch Name:</span>
-                            <span className="font-medium text-gray-900">
-                              {registrationDetails.merchName}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">T-Shirt Size:</span>
-                            <span className="font-medium text-gray-900">
-                              {registrationDetails.size}
-                            </span>
-                          </div>
                         </div>
                       </div>
                     )}
@@ -461,48 +449,6 @@ const Alumni = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          T-Shirt Size
-                        </label>
-                        <div className="relative">
-                          <Shirt className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                          <select
-                            name="size"
-                            required
-                            value={formData.size}
-                            onChange={handleInputChange}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all appearance-none bg-white"
-                          >
-                            <option value="">Select Size</option>
-                            <option value="S">S</option>
-                            <option value="M">M</option>
-                            <option value="L">L</option>
-                            <option value="XL">XL</option>
-                            <option value="XXL">XXL</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Name on Merch
-                        </label>
-                        <div className="relative">
-                          <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                          <input
-                            type="text"
-                            name="merchName"
-                            required
-                            value={formData.merchName}
-                            onChange={handleInputChange}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                            placeholder="Name to print"
-                          />
-                        </div>
-                      </div>
-                    </div>
 
                     {status === "ERROR" && (
                       <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg flex items-start">
