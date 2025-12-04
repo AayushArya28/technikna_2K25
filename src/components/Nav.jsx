@@ -99,6 +99,14 @@ function Nav() {
     });
   }, [isMobile]);
 
+  // Ensure nav starts slightly translucent on mount
+  useEffect(() => {
+    if (!navRef.current) return;
+    gsap.set(navRef.current, {
+      backgroundColor: "rgba(0, 0, 0, 0.15)",
+    });
+  }, []);
+
   // Scroll effect for desktop nav
   useEffect(() => {
     if (isMobile) return;
@@ -108,19 +116,13 @@ function Nav() {
 
       if (scrollPosition > 50) {
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(0, 0, 0, 0)",
-          backdropFilter: "blur(20px)",
-          //boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
-          //borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
+          backgroundColor: "rgba(0, 0, 0, 0.35)",
           duration: 0.3,
           ease: "power2.out",
         });
       } else {
         gsap.to(navRef.current, {
-          backgroundColor: "rgba(255, 255, 255, 0)",
-          backdropFilter: "blur(0px)",
-          boxShadow: "0 0 0 rgba(0, 0, 0, 0)",
-          borderBottom: "1px solid rgba(0, 0, 0, 0)",
+          backgroundColor: "rgba(0, 0, 0, 0.15)",
           duration: 0.3,
           ease: "power2.out",
         });
@@ -128,11 +130,19 @@ function Nav() {
     };
 
     window.addEventListener("scroll", handleScroll);
+    // Run once to apply correct initial state on mount
+    handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [isMobile]);
+
+  // Reset nav to slight translucence on route change
+  useEffect(() => {
+    if (!navRef.current) return;
+    gsap.set(navRef.current, { backgroundColor: "rgba(0,0,0,0.15)" });
+  }, [location.pathname]);
 
   // Mobile view
   if (isMobile) {
@@ -181,11 +191,12 @@ function Nav() {
     <nav
       ref={navRef}
       className="fixed top-0 left-0 right-0 w-full
-                text-black font-bold text-3xl flex justify-center 
+                font-bold text-3xl flex justify-center 
                 items-center px-12 pt-7 pb-2 z-50"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.15)" }}
     >
       {/* Centered Links */}
-      <div className="flex gap-25 text-white text-lg ks-font select-none">
+      <div className="flex gap-25 text-white/80 text-lg ks-font select-none font-bold">
         <NavLink to="/" label="Home" jp="ホーム" onClick={handleNavClick} />
         <NavLink to="/events" label="Events" jp="イベント" onClick={handleNavClick} />
         <NavLink to="/merchandise" label="Merchandise" jp="グッズ" onClick={handleNavClick} />

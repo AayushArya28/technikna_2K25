@@ -160,7 +160,7 @@ export function Events() {
 
   return (
     <div
-      className="mt-25 min-h-screen p-10 overflow-x-hidden"
+      className="pt-25 min-h-screen p-10 overflow-x-hidden"
       style={{
         backgroundImage:"url('/images/event.png')",
         backgroundSize: "cover",

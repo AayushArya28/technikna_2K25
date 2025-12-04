@@ -46,3 +46,9 @@
   background-color: rgba(255, 0, 30,0.37);
   color: #cfcfcf;
 }
+
+/* Ensure the global background is dark so transparent nav shows correctly */
+html, body {
+  background-color: #141414;
+  min-height: 100%;
+}

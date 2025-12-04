@@ -176,7 +176,7 @@ export default function Merchandise() {
   };
 
   return (
-    <div className="mt-25 min-h-screen bg-gradient-to-br from-black via-neutral-900 to-zinc-800 text-white px-6 sm:px-10 lg:px-16 py-16">
+    <div className="pt-25 min-h-screen bg-gradient-to-br from-black via-neutral-900 to-zinc-800 text-white px-6 sm:px-10 lg:px-16 py-16">
       {/* PAGE HEADING */}
       <h1
         ref={headingRef}

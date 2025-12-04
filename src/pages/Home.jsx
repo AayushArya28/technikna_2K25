@@ -19,7 +19,7 @@ const Home = () => {
       <div className="relative z-0 mt-12 mb-20">
         <Fade triggerOnce={true} direction="up" delay={200}>
           <div className="m-10 lg:w-5/12 flex flex-col justify-start">
-            <h1 className="text-5xl lg:text-4xl font-light leading-tight">
+            <h1 className="text-5xl lg:text-4xl font-light leading-tight text-white">
               Previous Technika
             </h1>
             <p className="text-sm tracking-wider text-gray-500 mb-6">
