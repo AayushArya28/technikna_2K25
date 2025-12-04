@@ -76,6 +76,7 @@ const sections = [
   },
 ];
 
+/*
 export default function Merchandise() {
   const [active, setActive] = useState("ux-strategy");
   const contentRef = useRef(null);
@@ -175,51 +176,14 @@ export default function Merchandise() {
     setActive(sectionId);
   };
 
+  return null;
+}
+*/
+
+export default function Merchandise() {
   return (
-    <div className="pt-25 min-h-screen bg-gradient-to-br from-black via-neutral-900 to-zinc-800 text-white px-6 sm:px-10 lg:px-16 py-16">
-      {/* PAGE HEADING */}
-      <h1
-        ref={headingRef}
-        className="text-5xl sm:text-6xl font-extrabold text-center mb-16 tracking-wide bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent"
-      >
-        Merchandise
-      </h1>
-
-      {/* MAIN CONTENT AREA */}
-      <div ref={containerRef} className="flex flex-col lg:flex-row items-stretch justify-center gap-10">
-        {/* LEFT SIDE CONTENT */}
-        <div
-          ref={contentRef}
-          className="flex-1 bg-gradient-to-b from-neutral-900/50 to-black/70 rounded-3xl p-10 shadow-2xl backdrop-blur-lg border border-white/10"
-        >
-          {sections.find((s) => s.id === active)?.content}
-        </div>
-
-        {/* RIGHT SIDE MENU */}
-        <div className="flex flex-col gap-5 w-full lg:w-1/3">
-          {sections.map((section, index) => (
-            <button
-              key={section.id}
-              ref={el => buttonsRef.current[index] = el}
-              onClick={() => handleButtonClick(section.id, index)}
-              onMouseEnter={() => handleButtonHover(index, true)}
-              onMouseLeave={() => handleButtonHover(index, false)}
-              className={`text-left px-6 py-5 rounded-2xl transition-all duration-300 font-semibold text-xl tracking-wide ${
-                active === section.id
-                  ? "bg-white/20 border border-white/30 text-white"
-                  : "bg-white/5 text-gray-300 hover:bg-white/10"
-              }`}
-            >
-              <div className="flex justify-between items-center">
-                <span>{section.title}</span>
-                <span className="text-2xl">
-                  {active === section.id ? "✕" : "+"}
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="pt-25 min-h-screen flex items-center justify-center bg-black">
+      <img src="/images/coming-soon.jpg" alt="Coming Soon" className="max-w-xs sm:max-w-sm md:max-w-md opacity-90" />
     </div>
   );
 }

@@ -1,12 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
-import { Mail, Phone, MapPin, Send, User, MessageSquare } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  User,
+  MessageSquare,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Youtube,
+} from "lucide-react";
 
-// ✅ Import Firebase
+// Firebase
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 
-// ✅ Your Firebase Config (replace with your values)
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -17,7 +28,6 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// ✅ Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -35,45 +45,41 @@ export function ContactUs() {
   const contactCardsRef = useRef([]);
   const mapRef = useRef(null);
 
-  // Initial animations on mount
+  // Animations
   useEffect(() => {
     const tl = gsap.timeline();
 
-    // Title animation
     tl.fromTo(
       titleRef.current,
-      { opacity: 0, y: -50 },
+      { opacity: 0, y: -40 },
       { opacity: 1, y: 0, duration: 1, ease: "power3.out" }
     );
 
-    // Contact cards stagger animation
     tl.fromTo(
       contactCardsRef.current,
-      { opacity: 0, x: -50, scale: 0.9 },
+      { opacity: 0, x: -40, scale: 0.9 },
       {
         opacity: 1,
         x: 0,
         scale: 1,
         duration: 0.6,
-        stagger: 0.2,
-        ease: "back.out(1.2)",
+        stagger: 0.18,
+        ease: "back.out(1.4)",
       },
       "-=0.5"
     );
 
-    // Form animation
     tl.fromTo(
       formRef.current,
-      { opacity: 0, x: 50 },
+      { opacity: 0, x: 40 },
       { opacity: 1, x: 0, duration: 0.8, ease: "power2.out" },
       "-=0.4"
     );
 
-    // Map animation
     if (mapRef.current) {
       tl.fromTo(
         mapRef.current,
-        { opacity: 0, y: 50 },
+        { opacity: 0, y: 40 },
         { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
         "-=0.6"
       );
@@ -81,27 +87,21 @@ export function ContactUs() {
   }, []);
 
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
-  // ✅ Updated handleSubmit with Firebase Firestore
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Save form data to Firestore
       await addDoc(collection(db, "contacts"), {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        message: formData.message,
+        ...formData,
         timestamp: new Date(),
       });
 
-      // Success animation
       gsap.to(formRef.current, {
         scale: 0.95,
         duration: 0.1,
@@ -110,14 +110,12 @@ export function ContactUs() {
         onComplete: () => {
           setSubmitted(true);
 
-          // Animate success message
           gsap.fromTo(
             ".success-message",
             { scale: 0, opacity: 0 },
             { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(2)" }
           );
 
-          // Reset form after delay
           setTimeout(() => {
             setSubmitted(false);
             setFormData({
@@ -140,7 +138,7 @@ export function ContactUs() {
       icon: <User className="w-6 h-6" />,
       title: "Publicity Head",
       info: "Shikhar Rai (+91 79857 67003)",
-      color: "bg-blue-500",
+      color: "bg-sky-500",
     },
     {
       icon: <User className="w-6 h-6" />,
@@ -158,93 +156,127 @@ export function ContactUs() {
       icon: <Mail className="w-6 h-6" />,
       title: "Email",
       info: "technika@bitmesra.ac.in",
-      color: "bg-green-500",
+      color: "bg-emerald-500",
     },
     {
       icon: <MapPin className="w-6 h-6" />,
       title: "Location",
       info: "BIT Patna, Patna",
-      color: "bg-purple-500",
+      color: "bg-violet-500",
       link: "https://maps.app.goo.gl/Ck8LjZcoWbXz8nPCA",
     },
   ];
 
+  // Same hover animation as footer social buttons
+  const handleSocialMouseEnter = (e) => {
+    gsap.to(e.currentTarget, {
+      scale: 1.2,
+      rotation: 360,
+      duration: 0.4,
+      ease: "power2.out",
+    });
+  };
+
+  const handleSocialMouseLeave = (e) => {
+    gsap.to(e.currentTarget, {
+      scale: 1,
+      rotation: 0,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-[url('/images/bg-contus.png')] bg-fixed bg-cover bg-center bg-no-repeat py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <div
+      className="
+        relative min-h-screen
+        bg-[url('/images/bg-contact.png')]
+        bg-cover bg-center bg-fixed bg-no-repeat
+        pt-25 pb-16 px-4 sm:px-6 lg:px-8
+        text-gray-100
+      "
+    >
+      <div className="relative max-w-7xl mx-auto">
         {/* Header */}
         <div ref={titleRef} className="text-center mb-12">
-          <h1 className="mt-15 text-4xl font-bold text-gray-900 mb-4">
+          <p className="text-sm tracking-[0.3em] uppercase text-red-300 mb-2">
+            Contact Technika
+          </p>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
             Get In Touch
           </h1>
-          <p className="text-lg text-gray-600">
-            Have questions about Technika? We'd love to hear from you!
+          <p className="text-lg text-gray-200 max-w-2xl mx-auto">
+            Have questions about Technika, events or collaborations? Send us a
+            message and the core team will get back to you.
           </p>
         </div>
 
-        {/* Contact Cards */}
+        {/* Contact cards */}
         <div className="flex flex-wrap justify-center gap-6 mb-12">
           {contactInfo.map((item, index) => (
             <div
               key={index}
               ref={(el) => (contactCardsRef.current[index] = el)}
-              className="bg-white rounded-lg shadow-lg p-6 text-center cursor-pointer w-full md:w-[30%]"
+              className="w-full md:w-[30%] max-w-sm cursor-pointer"
               onMouseEnter={(e) => {
                 gsap.to(e.currentTarget, {
-                  y: -10,
-                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
-                  duration: 0.3,
+                  y: -8,
+                  duration: 0.25,
+                  boxShadow: "0 18px 40px rgba(0,0,0,0.7)",
                 });
               }}
               onMouseLeave={(e) => {
                 gsap.to(e.currentTarget, {
                   y: 0,
-                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-                  duration: 0.3,
+                  duration: 0.25,
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
                 });
               }}
             >
-              <div
-                className={`${item.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-white`}
-              >
-                {item.icon}
+              <div className="rounded-xl border border-white/15 bg-black/55 backdrop-blur-sm shadow-[0_16px_40px_rgba(0,0,0,0.75)] p-6 text-center">
+                <div
+                  className={`${item.color} w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-white shadow-[0_0_22px_rgba(248,113,113,0.35)]`}
+                >
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-2 text-white">
+                  {item.title}
+                </h3>
+                <p className="text-gray-200">
+                  {item.link ? (
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-red-200 hover:text-red-300 hover:underline"
+                    >
+                      {item.info}
+                    </a>
+                  ) : (
+                    item.info
+                  )}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-              <p className="text-gray-600">
-                {item.link ? (
-                  <a
-                    href={item.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {item.info}
-                  </a>
-                ) : (
-                  item.info
-                )}
-              </p>
-
             </div>
           ))}
         </div>
 
-        {/* Form and Map Section */}
+        {/* Form + Map */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Contact Form */}
+          {/* Form */}
           <div
             ref={formRef}
-            className="bg-white rounded-lg shadow-lg p-8 relative"
+            className="rounded-2xl overflow-hidden border border-white/15 bg-black/60 backdrop-blur-sm shadow-[0_22px_50px_rgba(0,0,0,0.85)] p-8"
           >
-            <h2 className="text-2xl font-bold mb-6 flex items-center">
-              <MessageSquare className="w-6 h-6 mr-2 text-blue-600" />
+            <h2 className="text-2xl font-bold mb-6 flex items-center text-white">
+              <MessageSquare className="w-6 h-6 mr-2 text-red-400" />
               Send us a Message
             </h2>
 
             {!submitted ? (
-              <div className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-100 mb-2">
                     <User className="w-4 h-4 inline mr-2" />
                     Name
                   </label>
@@ -253,13 +285,13 @@ export function ContactUs() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-2 rounded-lg bg-black/60 border border-white/20 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
                     placeholder="Your name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-100 mb-2">
                     <Mail className="w-4 h-4 inline mr-2" />
                     Email
                   </label>
@@ -268,13 +300,13 @@ export function ContactUs() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-2 rounded-lg bg-black/60 border border-white/20 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
                     placeholder="your.email@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-100 mb-2">
                     <Phone className="w-4 h-4 inline mr-2" />
                     Phone
                   </label>
@@ -283,13 +315,13 @@ export function ContactUs() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    className="w-full px-4 py-2 rounded-lg bg-black/60 border border-white/20 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
                     placeholder="+91 123 456 7890"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-100 mb-2">
                     Message
                   </label>
                   <textarea
@@ -297,34 +329,34 @@ export function ContactUs() {
                     value={formData.message}
                     onChange={handleInputChange}
                     rows="4"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+                    className="w-full px-4 py-2 rounded-lg bg-black/60 border border-white/20 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all resize-none"
                     placeholder="Tell us what's on your mind..."
                   />
                 </div>
 
                 <button
-                  onClick={handleSubmit}
-                  className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center justify-center hover:bg-blue-700 transition-colors"
+                  type="submit"
+                  className="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-semibold flex items-center justify-center hover:bg-red-700 transition-colors shadow-[0_0_22px_rgba(248,113,113,0.4)]"
                   onMouseEnter={(e) => {
                     gsap.to(e.currentTarget, {
-                      scale: 1.02,
-                      duration: 0.2,
+                      scale: 1.03,
+                      duration: 0.18,
                     });
                   }}
                   onMouseLeave={(e) => {
                     gsap.to(e.currentTarget, {
                       scale: 1,
-                      duration: 0.2,
+                      duration: 0.18,
                     });
                   }}
                 >
                   <Send className="w-5 h-5 mr-2" />
                   Send Message
                 </button>
-              </div>
+              </form>
             ) : (
               <div className="success-message flex flex-col items-center justify-center h-64">
-                <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-4">
+                <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(16,185,129,0.7)]">
                   <svg
                     className="w-10 h-10 text-white"
                     fill="none"
@@ -339,27 +371,27 @@ export function ContactUs() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                <h3 className="text-2xl font-bold text-white mb-2">
                   Message Sent!
                 </h3>
-                <p className="text-gray-600 text-center">
+                <p className="text-gray-200 text-center">
                   Thank you for reaching out. We'll get back to you soon!
                 </p>
               </div>
             )}
           </div>
 
-          {/* Map Section */}
+          {/* Map + socials */}
           <div
             ref={mapRef}
-            className="bg-white rounded-lg shadow-lg p-8 flex flex-col"
+            className="rounded-2xl overflow-hidden border border-white/15 bg-black/60 backdrop-blur-sm shadow-[0_22px_50px_rgba(0,0,0,0.85)] p-8 flex flex-col"
           >
-            <h2 className="text-2xl font-bold mb-6 flex items-center">
-              <MapPin className="w-6 h-6 mr-2 text-purple-600" />
+            <h2 className="text-2xl font-bold mb-6 flex items-center text-white">
+              <MapPin className="w-6 h-6 mr-2 text-red-400" />
               Find Us
             </h2>
-            <div className="flex-1 bg-gray-200 rounded-lg overflow-hidden relative min-h-[300px]">
-              {/* Placeholder map */}
+
+            <div className="group flex-1 bg-black/40 rounded-lg overflow-hidden relative min-h-[300px] border border-white/15">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3598.174688276893!2d85.09965931501436!3d25.611938583711956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed58dce6731f59%3A0x4059f39a1ac82c86!2sBirla%20Institute%20Of%20Technology%2C%20Patna!5e0!3m2!1sen!2sin!4v1234567890"
                 width="100%"
@@ -372,32 +404,24 @@ export function ContactUs() {
               ></iframe>
             </div>
 
-            {/* Social Media Links */}
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
+            <div className="mt-6 pt-6 border-t border-white/15">
+              <h3 className="text-lg font-semibold mb-4 text-white">
+                Follow Us
+              </h3>
               <div className="flex space-x-4">
-                {["facebook", "twitter", "instagram", "linkedin"].map(
-                  (social) => (
-                    <button
-                      key={social}
-                      className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors"
-                      onMouseEnter={(e) => {
-                        gsap.to(e.currentTarget, {
-                          scale: 1.2,
-                          rotation: 360,
-                          duration: 0.4,
-                        });
-                      }}
-                      onMouseLeave={(e) => {
-                        gsap.to(e.currentTarget, {
-                          scale: 1,
-                          rotation: 0,
-                          duration: 0.4,
-                        });
-                      }}
+                {[Facebook, Twitter, Instagram, Linkedin, Youtube].map(
+                  (Icon, idx) => (
+                    <a
+                      key={idx}
+                      href="#"
+                      onMouseEnter={handleSocialMouseEnter}
+                      onMouseLeave={handleSocialMouseLeave}
+                      className="w-10 h-10 bg-black/60 border border-white/25 rounded-full flex items-center justify-center 
+                                 hover:bg-red-600 transition-colors duration-300 text-gray-200 hover:text-white
+                                 shadow-[0_0_16px_rgba(248,113,113,0.3)]"
                     >
-                      {social[0].toUpperCase()}
-                    </button>
+                      <Icon size={18} />
+                    </a>
                   )
                 )}
               </div>
@@ -408,3 +432,5 @@ export function ContactUs() {
     </div>
   );
 }
+
+export default ContactUs;
