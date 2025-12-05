@@ -103,7 +103,6 @@ const Landing = ({ animate }) => {
         >
           <Instagram className="w-6 h-6 text-gray-700 hover:text-pink-600 cursor-pointer transition-colors" />
         </a>
-        <Youtube className="w-6 h-6 text-gray-700 hover:text-red-600 cursor-pointer transition-colors" />
       </div>
 
       {/* Background Mountain Image */}
@@ -143,12 +142,13 @@ const Landing = ({ animate }) => {
       </div>
 
       <div
-        className="absolute left-[calc(50vw-225px)] bottom-12 z-99 select-none"
+        className="absolute bottom-12 z-99 select-none left-1/2 -translate-x-1/2"
       >
         <img
           src="/images/samuraihero.png"
           alt="Mount Fuji with Pink Sun"
-          width={'450px'}
+          className="mx-auto"
+          width={'380px'}
         />
       </div>
 
@@ -207,9 +207,9 @@ const Landing = ({ animate }) => {
         <div className="text-center jp-font -mt-50">
           <h1 className="text-[clamp(2rem,11vw,9rem)] font-black text-white mb-4 tracking-wider drop-shadow-lg">
             <span
-               id="heroText"
-  className=" inline-block  md:tracking-[20px] sm:tracking-[10px] transform hover:scale-105 transition-transform duration-300 text-center select-none"
->
+              id="heroText"
+              className=" inline-block  md:tracking-[20px] sm:tracking-[10px] transform hover:scale-105 transition-transform duration-300 text-center select-none"
+            >
               TECHNIKA
             </span>
           </h1>
@@ -219,67 +219,67 @@ const Landing = ({ animate }) => {
             </span>
           </h2> */}
           {/* REGISTER Button */}
-          
+
         </div>
-        
+
       </div>
       <div
-  className="parallax absolute  left-1/2 -translate-x-1/2 bottom-10
+        className="parallax absolute  left-1/2 -translate-x-1/2 bottom-10
              flex items-center justify-center group z-10000"
-  data-depth="0.30"
->
-  <Link to="/login">
+        data-depth="0.30"
+      >
+        <Link to="/login">
 
-    {/* Mobile Button */}
-    <div className="relative block md:hidden w-auto  justify-center mr-2">
-      <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
+          {/* Mobile Button */}
+          <div className="relative block md:hidden w-auto  justify-center mr-2">
+            <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
         font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
         transition duration-200 transform
         hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
         hover:scale-95">
-        Register Now
-      </button>
-    </div>
+              Register Now
+            </button>
+          </div>
 
-    {/* Desktop Button */}
-    <div className="parallax relative hidden md:flex justify-center w-auto mr-3">
-      <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
+          {/* Desktop Button */}
+          <div className="parallax relative hidden md:flex justify-center w-auto mr-3">
+            <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
         font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
         transition duration-200 transform
         hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
         hover:scale-95">
-        Register Now
-      </button>
-    </div>
+              Register Now
+            </button>
+          </div>
 
-  </Link>
+        </Link>
 
-  <Link to="/explore">
+        <Link to="/explore">
 
-    {/* Mobile Button */}
-    <div className="relative block md:hidden w-auto  justify-center ml-2">
-      <button className="mb-3 bg-[rgba(0,0,0,0)] border-white border-2 text-white text-[1.3rem] ks-font tracking-[1.2px] 
+          {/* Mobile Button */}
+          <div className="relative block md:hidden w-auto  justify-center ml-2">
+            <button className="mb-3 bg-[rgba(0,0,0,0)] border-white border-2 text-white text-[1.3rem] ks-font tracking-[1.2px] 
         font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
         transition duration-200 transform
         hover:shadow-[0_0_30px_6px_rgba(255,255,255,0.5)]
         hover:scale-95">
-        Explore
-      </button>
-    </div>
+              Explore
+            </button>
+          </div>
 
-    {/* Desktop Button */}
-    <div className="parallax relative hidden md:flex justify-center w-auto ml-3">
-      <button className="mb-3 bg-[rgba(0,0,0,0)] border-white border-2 text-white text-[1.3rem] ks-font tracking-[1.2px] 
+          {/* Desktop Button */}
+          <div className="parallax relative hidden md:flex justify-center w-auto ml-3">
+            <button className="mb-3 bg-[rgba(0,0,0,0)] border-white border-2 text-white text-[1.3rem] ks-font tracking-[1.2px] 
         font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
         transition duration-200 transform
         hover:shadow-[0_0_30px_6px_rgba(255,255,255,0.5)]
         hover:scale-95">
-        Explore
-      </button>
-    </div>
+              Explore
+            </button>
+          </div>
 
-  </Link>
-</div>
+        </Link>
+      </div>
 
       {/* Floating Animation Effects */}
       {/* <div
