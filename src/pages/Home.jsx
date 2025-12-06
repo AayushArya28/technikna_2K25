@@ -35,7 +35,7 @@ const Home = () => {
       <AboutPatna />
 
       {/* Sponsors Section */}
-      <div className="relative z-0 mt-20 mb-20">
+      {/* <div className="relative z-0 mt-20 mb-20">
         <Fade
           triggerOnce={true}
           direction="up"
@@ -63,7 +63,7 @@ const Home = () => {
         >
           <RollingGallery autoplay={true} pauseOnHover={true} />
         </Fade>
-      </div>
+      </div> */}
 
       {/* <div style={{ width: "98vw", height: "100vh" }}>
         <PreTechnika />
