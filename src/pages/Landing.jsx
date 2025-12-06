@@ -119,16 +119,15 @@ const Landing = ({ animate }) => {
       </div> */}
 
       {/* Soft red background glow */}
-      <div className="absolute w-110 h-110 rounded-full bg-[rgb(255,0,30)] top-1/2 left-1/2 
+      <div className="absolute rounded-full bg-[rgb(255,0,30)] top-1/2 left-1/2 
                 -translate-x-1/2 -translate-y-1/2
-                      shadow-[0_0_15.42px_rgb(255,0,30),0_0_80.84px_rgb(255,0,30),0_0_387.93px_rgba(255,0,30,0.7)]">
+                      shadow-[0_0_15.42px_rgb(255,0,30),0_0_80.84px_rgb(255,0,30),0_0_387.93px_rgba(255,0,30,0.7)]"
+                      style={{width:"clamp(250px, 40vw, 500px)",
+                              height:"clamp(250px, 40vw, 500px)"
+                      }}>
       </div>
 
       {/* Background Image */}
-
-
-      {/* Main circle with glow */}
-
       <div
         className="parallax absolute bottom-0 z-0 select-none"
         data-depth="0.10"
@@ -141,14 +140,15 @@ const Landing = ({ animate }) => {
         />
       </div>
 
+    {/* Mount Fuji with Pink Sun - Bottom Center */}
       <div
         className="absolute bottom-12 z-99 select-none left-1/2 -translate-x-1/2"
       >
         <img
           src="/images/samuraihero.png"
           alt="Mount Fuji with Pink Sun"
-          className="mx-auto"
-          width={'380px'}
+          className="mx-auto no-max-width"
+          style={{ width: "clamp(380px, 55vw, 440px)" }}
         />
       </div>
 
@@ -205,7 +205,7 @@ const Landing = ({ animate }) => {
         data-depth="0.60"
       >
         <div className="text-center jp-font -mt-50">
-          <h1 className="text-[clamp(2rem,11vw,9rem)] font-black text-white mb-4 tracking-wider drop-shadow-lg">
+          <h1 className="text-[clamp(3rem,11vw,9rem)] font-black text-white mb-4 tracking-wider drop-shadow-lg">
             <span
               id="heroText"
               className=" inline-block  md:tracking-[20px] sm:tracking-[10px] transform hover:scale-105 transition-transform duration-300 text-center select-none"
@@ -236,7 +236,7 @@ const Landing = ({ animate }) => {
         font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
         transition duration-200 transform
         hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
-        hover:scale-95">
+        active:scale-90">
               Register Now
             </button>
           </div>
@@ -247,7 +247,7 @@ const Landing = ({ animate }) => {
         font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
         transition duration-200 transform
         hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
-        hover:scale-95">
+        active:scale-90">
               Register Now
             </button>
           </div>
@@ -262,7 +262,7 @@ const Landing = ({ animate }) => {
         font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
         transition duration-200 transform
         hover:shadow-[0_0_30px_6px_rgba(255,255,255,0.5)]
-        hover:scale-95">
+        active:scale-90">
               Explore
             </button>
           </div>
@@ -273,7 +273,7 @@ const Landing = ({ animate }) => {
         font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
         transition duration-200 transform
         hover:shadow-[0_0_30px_6px_rgba(255,255,255,0.5)]
-        hover:scale-95">
+        active:scale-90">
               Explore
             </button>
           </div>

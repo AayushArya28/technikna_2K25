@@ -52,3 +52,14 @@ html, body {
   background-color: #141414;
   min-height: 100%;
 }
+
+
+/* white logo of technika in mobile view*/
+.sm-logo-img {
+  filter: invert(1) brightness(100%);
+}
+
+/* stop shrinking of samurai from base style*/
+.no-max-width {
+  max-width: none !important;
+}
