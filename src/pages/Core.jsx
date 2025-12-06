@@ -1,7 +1,7 @@
 import React from "react";
 
 /* 
-// COMMENTED OUT AS REQUESTED - SHOWING COMING SOON IMAGE INSTEAD
+COMMENTED OUT AS REQUESTED - SHOWING COMING SOON IMAGE INSTEAD
 
 import ChromaGrid from "../components/ChromaGrid";
 
@@ -471,7 +471,6 @@ export const Core = () => {
     <div className="bg-[url('/images/core2-bg.png')] text-white min-h-screen">
       <div className="pt-25 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Treasury Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-red-400 to-cyan-600 bg-clip-text text-transparent">
               Treasury Team
@@ -488,7 +487,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Design & Decor Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-purple-400 to-blue-600 bg-clip-text text-transparent">
               Design & Decor Team
@@ -505,7 +503,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Design & Drafting Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-pink-500 to-rose-600 bg-clip-text text-transparent">
               Design & Drafting Team
@@ -522,7 +519,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Event Management Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent">
               Event Management Team
@@ -539,7 +535,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Venue Management Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-green-500 to-emerald-600 bg-clip-text text-transparent">
               Venue Management Team
@@ -556,7 +551,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Publicity Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-yellow-400 to-orange-600 bg-clip-text text-transparent">
               Publicity Team
@@ -573,7 +567,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Press & Media Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent">
               Press & Media Team
@@ -590,7 +583,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Web Design Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
               Web Design & Management Team
@@ -607,7 +599,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Logistics Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-orange-400 to-red-600 bg-clip-text text-transparent">
               Logistics Team
@@ -624,7 +615,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Food & Catering Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-amber-400 to-yellow-600 bg-clip-text text-transparent">
               Food & Catering Team
@@ -641,7 +631,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Cultural Management Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-rose-400 to-pink-600 bg-clip-text text-transparent">
               Cultural Management Team
@@ -658,7 +647,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Sponsorship Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-teal-400 to-green-600 bg-clip-text text-transparent">
               Sponsorship Team
@@ -675,7 +663,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Social Media Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-violet-400 to-purple-600 bg-clip-text text-transparent">
               Social Media Team
@@ -692,7 +679,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Hospitality Team Section *\/}
           <section className="mb-20">
             <h2 className="text-4xl font-bold text-center mb-4 bg-gradient-to-r from-sky-400 to-blue-600 bg-clip-text text-transparent">
               Hospitality Team
