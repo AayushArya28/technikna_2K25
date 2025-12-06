@@ -1,5 +1,3 @@
-// import ChromaGrid from "../components/ChromaGrid";
-
 /* COMMENTED OUT - ORIGINAL CODE
 // TREASURY TEAM
 const treasuryTeam = [
@@ -468,7 +466,7 @@ export const Core = () => {
     <div 
       className="mt-25 min-h-screen flex items-center justify-center p-10"
       style={{
-        backgroundImage: "url('/images/event.png')",
+        backgroundImage: "url('/images/core2-bg.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
