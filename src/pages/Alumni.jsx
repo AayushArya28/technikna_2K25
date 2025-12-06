@@ -455,6 +455,29 @@ const Alumni = () => {
                                             </div>
                                         </div>
 
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-100 mb-1">
+                                                Size
+                                            </label>
+                                            <div className="relative">
+                                                <select
+                                                    name="size"
+                                                    required
+                                                    value={formData.size}
+                                                    onChange={handleInputChange}
+                                                    className="w-full pl-4 pr-4 py-2 border border-white/20 rounded-lg bg-black/70 text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+                                                >
+                                                    <option value="">Select size</option>
+                                                    <option value="S">S</option>
+                                                    <option value="M">M</option>
+                                                    <option value="L">L</option>
+                                                    <option value="XL">XL</option>
+                                                    <option value="XXL">XXL</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+
                                         {status === "ERROR" && (
                                             <div className="text-red-300 text-sm bg-red-900/40 p-3 rounded-lg flex items-start border border-red-500/40">
                                                 <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
