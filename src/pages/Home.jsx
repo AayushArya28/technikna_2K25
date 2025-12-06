@@ -5,14 +5,14 @@ import CircularGallery from "../components/CircularGallery";
 import { useFirstLoad } from "../hooks/useFirstLoad";
 import ImageCarousel from "../components/ImageCarousel";
 import { Fade } from "react-awesome-reveal";
-import RollingGallery from '../components/RollingGallery';
-import { AboutTechnika, AboutPatna } from '../components/AboutSections';
+import RollingGallery from "../components/RollingGallery";
+import { AboutTechnika, AboutPatna } from "../components/AboutSections";
 
 const Home = () => {
   const isFirstLoad = useFirstLoad();
 
   return (
-    <div className="overflow-x-hidden" style={{ backgroundColor: '#f1e4dc' }}>
+    <div className="overflow-x-hidden" style={{ backgroundColor: "#f1e4dc" }}>
       <Landing animate={isFirstLoad} />
 
       {/* Pre-Technika Photos */}
@@ -35,7 +35,7 @@ const Home = () => {
       <AboutPatna />
 
       {/* Sponsors Section */}
-      <div className="relative z-0 mt-20 mb-20">
+      {/* <div className="relative z-0 mt-20 mb-20">
         <Fade triggerOnce={true} direction="up" delay={100} duration={800} fraction={0.3}>
           <div className="m-10 flex flex-col items-center text-center mb-8">
             <h1 className="text-5xl lg:text-6xl font-bold leading-tight mb-3 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
@@ -49,7 +49,7 @@ const Home = () => {
         <Fade triggerOnce={true} direction="up" delay={300} duration={1000} cascade damping={0.1}>
           <RollingGallery autoplay={true} pauseOnHover={true} />
         </Fade>
-      </div>
+      </div> */}
 
       {/* <div style={{ width: "98vw", height: "100vh" }}>
         <PreTechnika />
