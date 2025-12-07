@@ -119,7 +119,7 @@ const Landing = ({ animate }) => {
       </div> */}
 
       {/* Soft red background glow */}
-      <div className="absolute rounded-full bg-[rgb(255,0,30)] top-1/2 left-1/2 
+      <div className="absolute rounded-full bg-[rgb(255,0,30)] top-1/2 left-1/2 max-md:-translate-y-2/3
                 -translate-x-1/2 -translate-y-1/2
                       shadow-[0_0_15.42px_rgb(255,0,30),0_0_80.84px_rgb(255,0,30),0_0_387.93px_rgba(255,0,30,0.7)]"
                       style={{width:"clamp(250px, 40vw, 500px)",
@@ -140,15 +140,15 @@ const Landing = ({ animate }) => {
         />
       </div>
 
-    {/* Mount Fuji with Pink Sun - Bottom Center */}
+    {/* samurai photo */}
       <div
-        className="absolute bottom-12 z-99 select-none left-1/2 -translate-x-1/2"
+        className="absolute bottom-12 max-md:bottom-47 z-99 select-none left-1/2 -translate-x-1/2"
       >
         <img
           src="/images/samuraihero.png"
           alt="Mount Fuji with Pink Sun"
           className="mx-auto no-max-width"
-          style={{ width: "clamp(380px, 55vw, 440px)" }}
+          style={{ width: "clamp(300px, 55vw, 340px)" }}
         />
       </div>
 
@@ -205,7 +205,7 @@ const Landing = ({ animate }) => {
         data-depth="0.60"
       >
         <div className="text-center jp-font -mt-50">
-          <h1 className="text-[clamp(3rem,11vw,9rem)] font-black text-white mb-4 tracking-wider drop-shadow-lg">
+          <h1 className="text-[clamp(3rem,11vw,9rem)] font-black text-white mb-4 max-md:mb-2 tracking-wider drop-shadow-lg">
             <span
               id="heroText"
               className=" inline-block  md:tracking-[20px] sm:tracking-[10px] transform hover:scale-105 transition-transform duration-300 text-center select-none"
@@ -224,7 +224,7 @@ const Landing = ({ animate }) => {
 
       </div>
       <div
-        className="parallax absolute  left-1/2 -translate-x-1/2 bottom-10
+        className="parallax absolute center left-1/2 -translate-x-1/2 bottom-10 max-md:bottom-30
              flex items-center justify-center group z-10000"
         data-depth="0.30"
       >

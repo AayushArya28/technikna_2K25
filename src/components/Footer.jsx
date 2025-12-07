@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import {
   Facebook,
-  Twitter,
+  
   Instagram,
   Linkedin,
   Youtube,
@@ -106,8 +106,20 @@ export function Footer() {
     "https://youtube.com/@technika_bitp?si=2tvJpStKabR5RO-y",
   ];
 
+  // Custom X (Twitter) icon — simple SVG matching X logo
+  const XIcon = ({ size = 18 }) => (
+    <img
+      src="/images/x-logo.png"
+      alt="X"
+      width={size}
+      height={size}
+      style={{ display: "block" }}
+      draggable={false}
+    />
+  );
+
   // Icon components used for footer (Facebook is index 0 — currently hidden)
-  const ICON_COMPONENTS = [Facebook, Twitter, Instagram, Linkedin, Youtube];
+  const ICON_COMPONENTS = [Facebook, XIcon, Instagram, Linkedin, Youtube];
 
   return (
     <footer
@@ -302,10 +314,10 @@ export function Footer() {
                 <MapPin size={16} /> <span>BIT Patna, Bihar, India</span>
               </a>
               <a
-                href="tel:+91 7070747693"
+                href="tel:+911234567890"
                 className="flex items-center space-x-2 hover:text-red-400 transition-colors duration-300"
               >
-                <Phone size={16} /> <span>+91 70707 47693</span>
+                <Phone size={16} /> <span>+91 1234567890</span>
               </a>
               <a
                 href="mailto:technika@bitmesra.ac.in"

@@ -8,7 +8,6 @@ import {
   User,
   MessageSquare,
   Facebook,
-  Twitter,
   Instagram,
   Linkedin,
   Youtube,
@@ -195,7 +194,19 @@ export function ContactUs() {
     "https://youtube.com/@technika_bitp?si=2tvJpStKabR5RO-y",
   ];
 
-  const ICON_COMPONENTS = [Facebook, Twitter, Instagram, Linkedin, Youtube];
+  // X icon uses the shared PNG asset to avoid broken links
+  const XIcon = ({ size = 18 }) => (
+    <img
+      src="/images/x-logo.png"
+      alt="X"
+      width={size}
+      height={size}
+      draggable={false}
+      style={{ display: "block" }}
+    />
+  );
+
+  const ICON_COMPONENTS = [Facebook, XIcon, Instagram, Linkedin, Youtube];
 
   return (
     <div
