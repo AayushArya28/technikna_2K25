@@ -368,8 +368,8 @@ const DevsPage = () => {
     {
       id: 1,
       name: "Virat",
-      branch: "AI&ML · 1st Year",
-      year: "",
+      branch: "AI&ML",
+      year: "1st Year",
       social: {
         linkedin: "https://www.linkedin.com/in/virat-m-62a710390?utm_source=share_via&utm_content=profile&utm_medium=member_android",
         instagram: "https://www.instagram.com/vir_x_t",
@@ -379,8 +379,8 @@ const DevsPage = () => {
     {
       id: 2,
       name: "Krishankant Jha",
-      branch: "CSE · 1st Year",
-      year: "",
+      branch: "CSE",
+      year: "1st Year",
       social: {
         linkedin: "https://www.linkedin.com/in/krishankant-jha-kk00001?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
         instagram: "https://www.instagram.com/thek.krisshhh?igsh=NzJjajk1M2JlM3Z4",
