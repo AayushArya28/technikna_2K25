@@ -382,9 +382,9 @@ const DevsPage = () => {
       branch: "CSE · 1st Year",
       year: "",
       social: {
-        linkedin: "https://www.linkedin.com/in/",
-        instagram: "https://www.instagram.com/",
-        email: "mailto:lokeshs8525@gmail.com"
+        linkedin: "https://www.linkedin.com/in/krishankant-jha-kk00001?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+        instagram: "https://www.instagram.com/thek.krisshhh?igsh=NzJjajk1M2JlM3Z4",
+        email: "mailto:krishnkantjha713@gmail.com"
       }
     }
   ];
