@@ -254,7 +254,7 @@ const Landing = ({ animate }) => {
 
         </Link>
 
-        <Link to="/explore">
+        <Link to="/events">
 
           {/* Mobile Button */}
           <div className="relative block md:hidden w-auto  justify-center ml-2">

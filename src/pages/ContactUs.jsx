@@ -186,6 +186,17 @@ export function ContactUs() {
     });
   };
 
+  // Social links for Contact page (match footer links)
+  const SOCIAL_URLS = [
+    "https://www.facebook.com/",
+    "https://x.com/technikabitp",
+    "https://www.instagram.com/technika_bitp?igsh=MTlqY2Vwd3h4OHdrdQ==",
+    "https://www.linkedin.com/in/technika-bitp-b765b2397?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+    "https://youtube.com/@technika_bitp?si=2tvJpStKabR5RO-y",
+  ];
+
+  const ICON_COMPONENTS = [Facebook, Twitter, Instagram, Linkedin, Youtube];
+
   return (
     <div
       className="
@@ -409,11 +420,16 @@ export function ContactUs() {
                 Follow Us
               </h3>
               <div className="flex space-x-4">
-                {[Facebook, Twitter, Instagram, Linkedin, Youtube].map(
-                  (Icon, idx) => (
+                {ICON_COMPONENTS.map((Icon, idx) => {
+                  // Facebook (index 0) is intentionally hidden
+                  if (idx === 0) return null;
+
+                  return (
                     <a
                       key={idx}
-                      href="#"
+                      href={SOCIAL_URLS[idx]}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       onMouseEnter={handleSocialMouseEnter}
                       onMouseLeave={handleSocialMouseLeave}
                       className="w-10 h-10 bg-black/60 border border-white/25 rounded-full flex items-center justify-center 
@@ -422,8 +438,8 @@ export function ContactUs() {
                     >
                       <Icon size={18} />
                     </a>
-                  )
-                )}
+                  );
+                })}
               </div>
             </div>
           </div>

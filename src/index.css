@@ -63,3 +63,12 @@ html, body {
 .no-max-width {
   max-width: none !important;
 }
+
+/* Rotate social icons on hover (used in Devs page) */
+.icon-rotate-hover svg {
+  transition: transform 0.4s ease-out;
+}
+
+.icon-rotate-hover:hover svg {
+  transform: rotate(360deg);
+}

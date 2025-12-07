@@ -97,6 +97,18 @@ export function Footer() {
     });
   };
 
+  // Social links - update these to real pages as needed
+  const SOCIAL_URLS = [
+    "https://www.facebook.com/",
+    "https://x.com/technikabitp",
+    "https://www.instagram.com/technika_bitp?igsh=MTlqY2Vwd3h4OHdrdQ==",
+    "https://www.linkedin.com/in/technika-bitp-b765b2397?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+    "https://youtube.com/@technika_bitp?si=2tvJpStKabR5RO-y",
+  ];
+
+  // Icon components used for footer (Facebook is index 0 — currently hidden)
+  const ICON_COMPONENTS = [Facebook, Twitter, Instagram, Linkedin, Youtube];
+
   return (
     <footer
       ref={footerRef}
@@ -199,9 +211,10 @@ export function Footer() {
               <div className="flex items-center space-x-4">
                 <div className="w-16 h-16 bg-[#11111a] border border-red-700/60 rounded-lg p-2 overflow-hidden">
                   <img
-                    src="/technika_logo.png"
+                    src="images/favicon.png"
                     alt="Technika"
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain filter invert"
+                    draggable="false"
                   />
                 </div>
                 <div>
@@ -234,19 +247,27 @@ export function Footer() {
 
             <h3 className="text-lg font-semibold mb-4 text-white">Follow Us</h3>
             <div className="flex space-x-4">
-              {[Facebook, Twitter, Instagram, Linkedin, Youtube].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  onMouseEnter={handleSocialMouseEnter}
-                  onMouseLeave={handleSocialMouseLeave}
-                  className="w-10 h-10 bg-slate-950/70 border border-slate-700/80 rounded-full flex items-center justify-center 
-                             hover:bg-red-600 transition-colors duration-300 text-gray-200
-                             shadow-[0_0_18px_rgba(248,113,113,0.15)]"
-                >
-                  <Icon size={18} />
-                </a>
-              ))}
+              {ICON_COMPONENTS.map((Icon, i) => {
+                // Facebook button intentionally commented out (index 0)
+                if (i === 0) return null;
+
+                return (
+                  <a
+                    key={i}
+                    href={SOCIAL_URLS[i]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open ${SOCIAL_URLS[i]}`}
+                    onMouseEnter={handleSocialMouseEnter}
+                    onMouseLeave={handleSocialMouseLeave}
+                    className="w-10 h-10 bg-slate-950/70 border border-slate-700/80 rounded-full flex items-center justify-center 
+                               hover:bg-red-600 transition-colors duration-300 text-gray-200
+                               shadow-[0_0_18px_rgba(248,113,113,0.15)]"
+                  >
+                    <Icon size={18} />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
@@ -281,10 +302,10 @@ export function Footer() {
                 <MapPin size={16} /> <span>BIT Patna, Bihar, India</span>
               </a>
               <a
-                href="tel:+911234567890"
+                href="tel:+91 7070747693"
                 className="flex items-center space-x-2 hover:text-red-400 transition-colors duration-300"
               >
-                <Phone size={16} /> <span>+91 1234567890</span>
+                <Phone size={16} /> <span>+91 70707 47693</span>
               </a>
               <a
                 href="mailto:technika@bitmesra.ac.in"
@@ -297,16 +318,8 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-slate-800 pt-8 text-sm flex justify-between flex-wrap">
+        <div className="border-t border-slate-800 pt-8 text-sm">
           <p className="text-gray-500">© 2026 BIT Mesra - Technika</p>
-          <div className="flex space-x-6">
-            <a href="#" className="text-gray-500 hover:text-red-400">
-              Privacy Policy
-            </a>
-            <a href="#" className="text-gray-500 hover:text-red-400">
-              Terms of Service
-            </a>
-          </div>
         </div>
       </div>
 
