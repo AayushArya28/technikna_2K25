@@ -5,12 +5,12 @@ const events = [
   {
     title: "Code Arena",
     desc: "Competitive Programming Battle for elite coders.",
-    img:  "https://wallpapercave.com/wp/wp13514544.jpg",
+    img: "https://wallpapercave.com/wp/wp13514544.jpg",
   },
   {
     title: "Hack Battle",
     desc: "24-hour Hackathon with real-world problem statements.",
-    img:  "https://wallpapercave.com/wp/wp9777674.png",
+    img: "https://wallpapercave.com/wp/wp9777674.png",
   },
   {
     title: "AI Showdown",
@@ -20,17 +20,17 @@ const events = [
   {
     title: "Cyber Security",
     desc: "CTF, ethical hacking & digital forensics.",
-    img:  "https://wallpapercave.com/wp/wp13514544.jpg",
+    img: "https://wallpapercave.com/wp/wp13514544.jpg",
   },
   {
     title: "UI/UX Wars",
     desc: "Design battles for creative designers.",
     img: "https://as2.ftcdn.net/v2/jpg/05/40/07/17/1000_F_540071724_i82PvZO9FccmGpHEGTQyChbX7G7DLRIo.jpg",
   },
-    {
+  {
     title: "Code Arena",
     desc: "Competitive Programming Battle for elite coders.",
-    img:  "https://wallpapercave.com/wp/wp13514544.jpg",
+    img: "https://wallpapercave.com/wp/wp13514544.jpg",
   },
   {
     title: "Hack Battle",
@@ -50,11 +50,11 @@ const events = [
   {
     title: "UI/UX Wars",
     desc: "Design battles for creative designers.",
-    img:  "https://wallpapercave.com/wp/wp13514544.jpg",
+    img: "https://wallpapercave.com/wp/wp13514544.jpg",
   },
 ];
 
-export default function Technical() {
+export default function Fun() {
   const [active, setActive] = useState(0);
   const navigate = useNavigate();
   const sliderRef = useRef(null);
@@ -71,8 +71,7 @@ export default function Technical() {
     const cardWidth = activeCard.offsetWidth;
     const cardLeft = activeCard.offsetLeft;
 
-    const scrollPosition =
-      cardLeft - sliderWidth / 2 + cardWidth / 2;
+    const scrollPosition = cardLeft - sliderWidth / 2 + cardWidth / 2;
 
     slider.scrollTo({
       left: scrollPosition,
@@ -85,17 +84,15 @@ export default function Technical() {
   };
 
   const prev = () => {
-    setActive((prev) =>
-      prev === 0 ? events.length - 1 : prev - 1
-    );
+    setActive((prev) => (prev === 0 ? events.length - 1 : prev - 1));
   };
 
   return (
     <div
-    className="min-h-screen text-white px-6 py-12 overflow-hidden bg-cover bg-center bg-no-repeat"
-    style={{
+      className="min-h-screen text-white px-6 py-12 overflow-hidden bg-cover bg-center bg-no-repeat"
+      style={{
         backgroundImage: "url('./images/events.png')",
-    }}
+      }}
     >
       {/* Heading */}
       <button
@@ -112,9 +109,9 @@ export default function Technical() {
         rounded-lg 
         transition shadow-md
         text-sm sm:text-base"
-        >
+      >
         ← Back
-        </button>
+      </button>
       <h1 className="text-4xl font-bold mt-20 text-center text-white-500 mb-16">
         TECHNICAL EVENTS
       </h1>
@@ -135,9 +132,7 @@ export default function Technical() {
             {events[active].title}
           </h2>
 
-          <p className="text-white mb-10">
-            {events[active].desc}
-          </p>
+          <p className="text-white mb-10">{events[active].desc}</p>
 
           <ul className="text-sm text-white space-y-2 mb-6">
             <li>➤ Solo & Team Participation</li>
@@ -188,9 +183,7 @@ export default function Technical() {
 
                 {/* TEXT */}
                 <div className="absolute bottom-0 w-full p-2 bg-black/40">
-                  <h2 className="text-s font-bold text-white">
-                    {event.title}
-                  </h2>
+                  <h2 className="text-s font-bold text-white">{event.title}</h2>
                 </div>
               </div>
             );

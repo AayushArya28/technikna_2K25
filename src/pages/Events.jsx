@@ -14,16 +14,19 @@ const heroes = [
     id: 2,
     name: "Fun",
     img: "https://img.pikbest.com/illustration/20240607/the-soldiers-of-samurai-warrior_10600894.jpg!bw700",
+    route: "/fun",
   },
   {
     id: 3,
     name: "Cultural",
     img: "https://tse2.mm.bing.net/th/id/OIP.DYk6BjV4Sjjm0vC0VkFhJAHaEJ?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3",
+    route: "/cultural",
   },
   {
     id: 4,
     name: "Workshops",
     img: "https://tse1.explicit.bing.net/th/id/OIP.fPRomGdpeIgwomQpBnE1WgHaNK?cb=ucfimg2&ucfimg=1&w=1080&h=1920&rs=1&pid=ImgDetMain&o=7&rm=3",
+    route: "/workshops",
   },
 ];
 export function Events() {
