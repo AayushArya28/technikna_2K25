@@ -3,6 +3,7 @@ import Loading from "./pages/Loading";
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
 import { Events } from "./pages/Events";
+import Technical from "./events/Technical.jsx";
 // import { Workshop } from "./pages/Workshop.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
 import { Core } from "./pages/Core.jsx";
@@ -20,6 +21,7 @@ function App() {
   const routes = [
     { path: "/", Component: Home },
     { path: "/events", Component: Events },
+    { path: "/technical", Component: Technical },
     { path: "/merchandise", Component: Merchandise },
     { path: "/core", Component: Core },
     // { path: "/workshop", Component: Workshop },
