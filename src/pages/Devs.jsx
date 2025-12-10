@@ -305,11 +305,11 @@ const DevsPage = () => {
     {
       id: 3,
       name: "Kanan Kotwani",
-      role: "Backend Engineer",
-      branch: "ECE",
+      role: "Frontend Engineer",
+    branch: "AI&ML",
       year: "2nd Year",
       image: "images/devs/kanan.png",
-      bio: "Building robust and scalable backend systems. Love solving complex problems.",
+      bio: "Skilled in building fast, responsive, and user-focused web interfaces",
       social: {
         github: "https://github.com/kanankotwani28",
         linkedin: "https://www.linkedin.com/in/kanan-kotwani/",
