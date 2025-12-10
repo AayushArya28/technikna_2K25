@@ -53,11 +53,16 @@ export function Events() {
               }}
               initial={{ opacity: 0, y: 80, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: index * 0.2, duration: 0.6 }}
+              transition={{ delay:0, duration: 0.1 }}
               whileHover={{
                 scale: 1,
                 y: -22,
                 rotateX: 6,
+                boxShadow:
+                active === hero.id
+                  ? "ring-4 ring-red-500 shadow-[0_0_50px_rgba(239,68,68,0.85)]"
+                  : "opacity-60 blur-[0.3px]"
+
               }}
               className={`relative w-[240px] h-[380px] rounded-2xl overflow-hidden cursor-pointer 
               transition-all duration-300 transform-gpu
