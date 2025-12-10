@@ -31,6 +31,7 @@ function Nav() {
     { label: "Events", ariaLabel: "View events", link: "/events", onClick: handleNavClick },
     { label: "Merchandise", ariaLabel: "Browse merchandise", link: "/merchandise", onClick: handleNavClick },
     { label: "Core Team", ariaLabel: "Meet the core team", link: "/core", onClick: handleNavClick },
+    { label: "Delegate", ariaLabel: "Delegate Info", link: "/delegate", onClick: handleNavClick },
     // { label: "WorkShop", ariaLabel: "Explore workshops", link: "/workshop", onClick: handleNavClick },
     { label: "Alumni", ariaLabel: "Our Alumni", link: "/alumni", onClick: handleNavClick },
     { label: 'Developers', ariaLabel: 'Learn about Devs', link: '/devs', onClick: handleNavClick },
@@ -202,6 +203,7 @@ function Nav() {
         <NavLink to="/events" label="Events" jp="イベント" onClick={handleNavClick} />
         <NavLink to="/merchandise" label="Merchandise" jp="グッズ" onClick={handleNavClick} />
         <NavLink to="/core" label="Core Team" jp="コアチーム" onClick={handleNavClick} />
+        <NavLink to="/delegate" label="Delegate" jp="デリゲート" onClick={handleNavClick} />
         {/* <NavLink to="/workshop" label="WorkShop" jp="ワークショップ" onClick={handleNavClick} /> */}
         <NavLink to="/alumni" label="Alumni" jp="卒業生" onClick={handleNavClick} />
         <NavLink to="/devs" label="Developers" jp="開発者" onClick={handleNavClick} />
