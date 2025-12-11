@@ -1,3 +1,4 @@
+/*
 import React from "react";
 
 export default function Accommodation() {
@@ -37,5 +38,20 @@ export default function Accommodation() {
         </section>
       </div>
     </main>
+  );
+}
+*/
+
+import React from "react";
+
+export default function Accommodation() {
+  return (
+    <div className="pt-25 min-h-screen flex items-center justify-center bg-black">
+      <img
+        src="/images/coming-soon.jpg"
+        alt="Coming Soon"
+        className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
+      />
+    </div>
   );
 }

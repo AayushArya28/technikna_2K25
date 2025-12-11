@@ -1,3 +1,18 @@
+import React from "react";
+
+export const Core = () => (
+  <div className="pt-25 min-h-screen flex items-center justify-center bg-black">
+    <img
+      src="/images/coming-soon.jpg"
+      alt="Coming Soon"
+      className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
+    />
+  </div>
+);
+
+export default Core;
+
+/*
 import ChromaGrid from "../components/ChromaGrid";
 
 // TREASURY TEAM
@@ -464,26 +479,12 @@ const hospitalityTeam = [
 export const Core = () => {
   return (
     <div className="bg-[url('/images/core2-bg.png')] text-white min-h-screen flex items-center justify-center">
-      
-      {/*
-      ======================================================
-      ORIGINAL UI COMMENTED OUT
-      ======================================================
-
-      <div className="pt-25 pb-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          ... all <section> blocks and <ChromaGrid /> calls ...
-        </div>
-      </div>
-      */}
-
-      {/* REPLACEMENT CONTENT */}
       <h1 className="text-6xl font-extrabold tracking-widest text-center">
         COMING SOON
       </h1>
-
     </div>
   );
 };
 
 export default Core;
+*/
