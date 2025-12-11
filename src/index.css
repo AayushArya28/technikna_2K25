@@ -51,6 +51,7 @@
 html, body {
   background-color: #141414;
   min-height: 100%;
+  scroll-behavior: auto;
 }
 
 

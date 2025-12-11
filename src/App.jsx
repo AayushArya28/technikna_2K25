@@ -18,12 +18,13 @@ import Delegate from "./pages/Delegate";
 import DelegateRegistration from "./pages/DelegateRegistration";
 import DelegateGroupRegistration from "./pages/DelegateGroupRegistration";
 import Accommodation from "./pages/Accommodation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
 import { AuthProvider } from "./context/auth.jsx";
 import { Analytics } from "@vercel/analytics/react";
 import { path } from "framer-motion/client";
+import Lenis from "@studio-freight/lenis";
 
 function App() {
   const routes = [
@@ -49,6 +50,31 @@ function App() {
   // Skipping loading screen in development mode, comment this line and uncomment the next to enable loading screen while working on it
   // const [loadingDone, setLoadingDone] = useState(import.meta.env.DEV);
   const [loadingDone, setLoadingDone] = useState(false);
+
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.1,
+      smoothWheel: true,
+      smoothTouch: false,
+      lerp: 0.08,
+    });
+
+    let frameId;
+
+    const raf = (time) => {
+      lenis.raf(time);
+      frameId = requestAnimationFrame(raf);
+    };
+
+    frameId = requestAnimationFrame(raf);
+
+    return () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+      lenis.destroy();
+    };
+  }, []);
 
   return (
     <BrowserRouter>
