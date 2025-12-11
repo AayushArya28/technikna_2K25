@@ -16,12 +16,13 @@ const Home = () => {
       <Landing animate={isFirstLoad} />
 
       {/* Pre-Technika Photos */}
-      <div className="relative z-0 mt-12 mb-20">
+      <div className="relative flex flex-col justify-center items-center z-0 mt-12 mb-20">
         <Fade triggerOnce={true} direction="up" delay={200}>
-          <div className="m-10 lg:w-5/12 flex flex-col justify-start">
-            <h1 className="text-5xl lg:text-4xl font-light leading-tight text-white">
+          <div className="m-10 flex flex-col justify-center items-center text-center">
+            <h1 className="text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
               Previous Technika
             </h1>
+            <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-pink-600 mx-auto mb-6"></div>
             <p className="text-sm tracking-wider text-gray-400 mb-6">
               Featured Photos
             </p>

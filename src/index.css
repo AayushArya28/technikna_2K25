@@ -72,3 +72,11 @@ html, body {
 .icon-rotate-hover:hover svg {
   transform: rotate(360deg);
 }
+
+/* to center the "Previous Technika" text */
+.css-zvi4ix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/SplitText";
+import { useEffect, useState } from "react"
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(useGSAP, SplitText, ScrollTrigger);
@@ -87,6 +88,21 @@ const Landing = ({ animate }) => {
     ScrollTrigger.refresh();
   });
 
+  const [isMobile, setIsMobile] = useState(false);
+  
+    useEffect(() => {
+        const checkMobile = () => {
+          setIsMobile(window.innerWidth < 613);
+        };
+    
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+    
+        return () => {
+          window.removeEventListener("resize", checkMobile);
+        };
+      }, []);
+
   return (
     <div id="hero" className="relative min-h-screen overflow-hidden">
       {/* Social Media Icons */}
@@ -142,7 +158,7 @@ const Landing = ({ animate }) => {
 
     {/* samurai photo */}
       <div
-        className="absolute bottom-12 max-md:bottom-47 z-99 select-none left-1/2 -translate-x-1/2"
+        className="absolute bottom-12 max-md:bottom-35 z-5 select-none left-1/2 -translate-x-1/2"
       >
         <img
           src="/images/samuraihero.png"
@@ -201,10 +217,12 @@ const Landing = ({ animate }) => {
 
       {/* Main Title - Centered */}
       <div
-        className="parallax absolute inset-0 z-30 flex items-center justify-center"
+        className="parallax absolute inset-0 flex items-center justify-center"
         data-depth="0.60"
       >
-        <div className="text-center jp-font -mt-50">
+        <div className="text-center flex flex-col jp-font -mt-50">
+          <div className="block  relative text-start text-[clamp(0.9rem,4vw,1.6rem)] -ml-10 max-md:-ml-3 tracking-[2px] z-10 select-none hover:opacity-100 hover:scale-105 transition-transform duration-250"><p>BIT Patna <span className="opacity-80 text-[clamp(0.7rem,3vw,1.2rem)] hover:opacity-100 transition-transform duration-250">presents</span></p></div>
+          
           <h1 className="text-[clamp(3rem,11vw,9rem)] font-black text-white mb-4 max-md:mb-2 tracking-wider drop-shadow-lg">
             <span
               id="heroText"
@@ -215,71 +233,74 @@ const Landing = ({ animate }) => {
           </h1>
           {/* <h2 className="text-3xl  md:text-6xl font-black text-white tracking-widest drop-shadow-lg">
             <span className="inline-block transform hover:scale-105 transition-transform duration-300">
-              2026
+            2026
             </span>
-          </h2> */}
-          {/* REGISTER Button */}
+            </h2> */}
 
         </div>
 
       </div>
+      
+      <div className=" parallax absolute tracking-[2px] jp-font top-1/2 max-[400px]:top-42/100 max-[1250px]:right-37 max-[400px]:mt-[9px] text-[clamp(0.7rem,3vw,1.2rem)] z-10 right-40 max-[400px]:right-10 max-[1000px]:right-32 max-[1150px]:top-47/100 max-[850px]:right-20 max-[850px]:top-45/100 max-[550px]:top-44/100 max-[550px]:right-15 select-none" data-depth="17.7"><p className="opacity-80 hover:opacity-100 hover:scale-105 transition-transform duration-250">16th-18th Jan. 2026</p></div>
+      
+      {/* REGISTER Button */}
+      
       <div
-        className="parallax absolute center left-1/2 -translate-x-1/2 bottom-10 max-md:bottom-30
-             flex items-center justify-center group z-10000"
-        data-depth="0.30"
-      >
-        <Link to="/login">
-
-          {/* Mobile Button */}
-          <div className="relative block md:hidden w-auto  justify-center mr-2">
-            <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
-        font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
-        transition duration-200 transform
-        hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
-        active:scale-90">
-              Register Now
-            </button>
-          </div>
-
-          {/* Desktop Button */}
-          <div className="parallax relative hidden md:flex justify-center w-auto mr-3">
-            <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
-        font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
-        transition duration-200 transform
-        hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
-        active:scale-90">
-              Register Now
-            </button>
-          </div>
-
-        </Link>
-
-        <Link to="/events">
-
-          {/* Mobile Button */}
-          <div className="relative block md:hidden w-auto  justify-center ml-2">
-            <button className="mb-3 bg-[rgba(0,0,0,0)] border-white border-2 text-white text-[1.3rem] ks-font tracking-[1.2px] 
-        font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
-        transition duration-200 transform
-        hover:shadow-[0_0_30px_6px_rgba(255,255,255,0.5)]
-        active:scale-90">
-              Explore
-            </button>
-          </div>
-
-          {/* Desktop Button */}
-          <div className="parallax relative hidden md:flex justify-center w-auto ml-3">
-            <button className="mb-3 bg-[rgba(0,0,0,0)] border-white border-2 text-white text-[1.3rem] ks-font tracking-[1.2px] 
-        font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
-        transition duration-200 transform
-        hover:shadow-[0_0_30px_6px_rgba(255,255,255,0.5)]
-        active:scale-90">
-              Explore
-            </button>
-          </div>
-
-        </Link>
+  className={`parallax absolute center left-1/2 transform -translate-x-1/2 bottom-10 max-md:bottom-20
+      flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center ${isMobile ? "gap-1" : "gap-4"} group z-10000`}
+  data-depth="0.30"
+>
+  {/* REGISTER BUTTON */}
+    <Link to="/login">
+      {/* Mobile Button */}
+      <div className="relative block md:hidden w-auto justify-center mb-3">
+        <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
+            font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
+            transition duration-200 transform
+            hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
+            active:scale-90">
+          Register Now
+        </button>
       </div>
+
+      {/* Desktop Button */}
+      <div className="parallax relative hidden md:flex justify-center w-auto">
+        <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
+            font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
+            transition duration-200 transform
+            hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
+            active:scale-90">
+          Register Now
+        </button>
+      </div>
+    </Link>
+
+    {/* EXPLORE BUTTON */}
+    <Link to="/events">
+      {/* Mobile Button */}
+      <div className="relative block md:hidden w-auto justify-center">
+        <button className="mb-3 bg-[rgba(0,0,0,0)] border-white border-2 text-white text-[1.3rem] ks-font tracking-[1.2px] 
+            font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
+            transition duration-200 transform
+            hover:shadow-[0_0_30px_6px_rgba(255,255,255,0.5)]
+            active:scale-90">
+          Explore
+        </button>
+      </div>
+
+      {/* Desktop Button */}
+      <div className="parallax relative hidden md:flex justify-center w-auto">
+        <button className="mb-3 bg-[rgba(0,0,0,0)] border-white border-2 text-white text-[1.3rem] ks-font tracking-[1.2px] 
+            font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
+            transition duration-200 transform
+            hover:shadow-[0_0_30px_6px_rgba(255,255,255,0.5)]
+            active:scale-90">
+          Explore
+        </button>
+      </div>
+    </Link>
+</div>
+
 
       {/* Floating Animation Effects */}
       {/* <div
