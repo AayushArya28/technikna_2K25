@@ -60,7 +60,7 @@ function Nav() {
     { label: "Core Team", ariaLabel: "Meet the core team", link: "/core", onClick: handleNavClick },
     // { label: "WorkShop", ariaLabel: "Explore workshops", link: "/workshop", onClick: handleNavClick },
     { label: "Alumni", ariaLabel: "Our Alumni", link: "/alumni", onClick: handleNavClick },
-    { label: "Accommodation", ariaLabel: "Alumni accommodation", link: "/alumni/accommodation", onClick: handleNavClick },
+    { label: "Accommodation", ariaLabel: "Stay assistance", link: "/accommodation", onClick: handleNavClick },
     { label: 'Developers', ariaLabel: 'Learn about Devs', link: '/devs', onClick: handleNavClick },
     { label: "Contact Us", ariaLabel: "Get in touch", link: "/contact", onClick: handleNavClick },
   ];
@@ -73,6 +73,7 @@ function Nav() {
       dropdown: [
         { label: "Events", link: "/events" },
         { label: "Merchandise", link: "/merchandise" },
+        { label: "Accommodation", link: "/accommodation" },
       ],
     },
     {
@@ -89,7 +90,6 @@ function Nav() {
       jp: "卒業生",
       dropdown: [
         { label: "Alumni Registration", link: "/alumni" },
-        { label: "Alumni Accommodation", link: "/alumni/accommodation" },
       ],
     },
     { label: "Contact", jp: "連絡先", link: "/contact" },
