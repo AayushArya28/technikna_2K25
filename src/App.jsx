@@ -3,7 +3,10 @@ import Loading from "./pages/Loading";
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
 import { Events } from "./pages/Events";
-// import { Workshop } from "./pages/Workshop.jsx";
+import Technical from "./events/Technical.jsx";
+import Fun from "./events/Fun.jsx";
+import Cultural from "./events/Cultural.jsx";
+import Workshop from "./events/Workshop.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
 import { Core } from "./pages/Core.jsx";
 import Merchandise from "./pages/Merchandise.jsx";
@@ -15,11 +18,16 @@ import { useState } from "react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
 import { Analytics } from "@vercel/analytics/react";
+import { path } from "framer-motion/client";
 
 function App() {
   const routes = [
     { path: "/", Component: Home },
     { path: "/events", Component: Events },
+    { path: "/technical", Component: Technical },
+    { path: "/fun", Component: Fun },
+    { path: "/cultural", Component: Cultural },
+    { path: "/workshops", Component: Workshop },
     { path: "/merchandise", Component: Merchandise },
     { path: "/core", Component: Core },
     // { path: "/workshop", Component: Workshop },
