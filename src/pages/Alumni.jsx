@@ -531,7 +531,7 @@ const Alumni = () => {
                     <div className="mt-4 pt-4 border-t border-white/15">
                       <button
                         type="button"
-                        onClick={checkPaymentStatus}
+                        onClick={() => checkPaymentStatus()}
                         disabled={checkingStatus}
                         className="w-full text-red-300 font-medium text-sm hover:text-red-200 transition-colors flex items-center justify-center"
                       >

@@ -1,3 +1,5 @@
+// Previous Events page retained for reference.
+/*
 import React from "react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -53,16 +55,15 @@ export function Events() {
               }}
               initial={{ opacity: 0, y: 80, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay:0, duration: 0.1 }}
+              transition={{ delay: 0, duration: 0.1 }}
               whileHover={{
                 scale: 1,
                 y: -22,
                 rotateX: 6,
                 boxShadow:
-                active === hero.id
-                  ? "ring-4 ring-red-500 shadow-[0_0_50px_rgba(239,68,68,0.85)]"
-                  : "opacity-60 blur-[0.3px]"
-
+                  active === hero.id
+                    ? "ring-4 ring-red-500 shadow-[0_0_50px_rgba(239,68,68,0.85)]"
+                    : "opacity-60 blur-[0.3px]",
               }}
               className={`relative w-[240px] h-[380px] rounded-2xl overflow-hidden cursor-pointer 
               transition-all duration-300 transform-gpu
@@ -87,7 +88,6 @@ export function Events() {
 
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
-              {/* NAME */}
               <div className="absolute bottom-6 left-6">
                 <h2 className="text-white text-lg font-semibold tracking-wide">
                   {hero.name}
@@ -97,6 +97,22 @@ export function Events() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+*/
+
+import React from "react";
+
+// Temporary Coming Soon placeholder matching Merchandise page style.
+export function Events() {
+  return (
+    <div className="pt-25 min-h-screen flex items-center justify-center bg-black">
+      <img
+        src="/images/coming-soon.jpg"
+        alt="Coming Soon"
+        className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
+      />
     </div>
   );
 }
