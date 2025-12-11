@@ -1,79 +1,135 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Delegate = () => {
     const navigate = useNavigate();
+    const highlights = [
+        {
+            title: "Immersive Audience Access",
+            description: "Priority seating and front-row viewership across every Technika flagship showcase.",
+        },
+        {
+            title: "Discounted Event Entries",
+            description: "Locked-in lower pricing across all competitive and cultural event registrations.",
+        },
+        {
+            title: "Seamless Transit",
+            description: "Delegates-only bus transportation on designated BIT Patna routes throughout the fest.",
+        },
+        {
+            title: "Stay On Campus",
+            description: "Eligibility for in-campus accommodation with curated delegate hosting support.",
+        },
+        {
+            title: "After-Hours Entry",
+            description: "Complimentary access to every official after-party and late-night Technika experience.",
+        },
+        {
+            title: "Complimentary Parking",
+            description: "Reserved parking privileges for personal vehicles across Technika venues.",
+        },
+    ];
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-b from-black via-[#4a0000] to-black text-white p-8 pt-32 flex flex-col items-center relative overflow-hidden">
-
-            {/* Top Decorative Elements */}
-            <div className="flex justify-between w-full max-w-4xl mb-12 opacity-80 max-md:hidden">
-                <div className="border border-white/50 rounded-full px-6 py-2 flex items-center gap-4">
-                    <span>*</span>
+        <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-b from-black via-[#140109] to-black px-6 pb-20 pt-32 text-white">
+            <div className="pointer-events-none absolute inset-0">
+                <div className="absolute -top-24 right-16 h-[420px] w-[420px] rounded-full bg-[#ff0030]/12 blur-[150px]" />
+                <div className="absolute bottom-0 left-8 h-80 w-80 rounded-full bg-[#4100ff]/12 blur-[150px]" />
+                <div className="absolute top-[15%] left-[10%] text-9xl font-black uppercase tracking-[0.3em] text-white/5 select-none">
+                    Delegate
                 </div>
-                <div className="border border-white/50 rounded-full px-6 py-2 flex items-center gap-4">
-                    <span>✦</span>
-                    <span>✦</span>
-                    <span>✦</span>
-                </div>
-
-                {/* Center Graphic Placeholder */}
-                <div className="h-12 w-32 bg-white/10 rounded-full border border-white/30 overflow-hidden flex items-center justify-center">
-                    <div className="w-full h-full bg-white opacity-20"></div>
-                </div>
-
-                <div className="border border-white/50 rounded-full px-6 py-2 flex items-center gap-4">
-                    <span>✦</span>
-                    <span>✦</span>
-                    <span>✦</span>
-                </div>
-                <div className="border border-white/50 rounded-full px-6 py-2 flex items-center gap-4">
-                    <span>*</span>
+                <div className="absolute bottom-[18%] right-[12%] text-7xl font-black text-white/5 select-none">
+                    *
                 </div>
             </div>
 
-            {/* Main Title */}
-            <h1 className="text-4xl md:text-5xl font-bold text-center mb-16 leading-relaxed tracking-wider text-white drop-shadow-[0_0_10px_rgba(255,0,0,0.5)]">
-                A DELEGATE CARD OFFERS YOU
-            </h1>
+            <div className="relative z-10 w-full max-w-5xl space-y-10">
+                <div className="relative overflow-hidden rounded-[32px] border border-white/12 bg-black/55 p-8 md:p-12 shadow-[0_42px_120px_rgba(255,0,48,0.28)] backdrop-blur-xl">
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.22),_transparent_60%)]" />
+                    <div className="relative flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+                        <div className="space-y-4">
+                            <span className="inline-flex w-fit items-center rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.38em] text-white/70">
+                                Technika 2K25
+                            </span>
+                            <h1 className="text-4xl font-semibold uppercase tracking-[0.22em] text-white md:text-5xl">
+                                Delegate Access Pass
+                            </h1>
+                            <p className="max-w-xl text-sm text-white/70 md:text-base">
+                                Step into the premium lane for Technika. One pass unlocks immersive showcases, curated networking, and effortless movement across campus.
+                            </p>
+                        </div>
+                        <div className="relative w-full max-w-xs rounded-3xl border border-white/15 bg-white/5 p-6 text-center md:text-right">
+                            <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
+                                Investment
+                            </div>
+                            <div className="mt-3 text-3xl font-semibold text-white">INR 699</div>
+                            <div className="mt-2 text-xs uppercase tracking-[0.35em] text-white/60">
+                                inclusive of gst & fees
+                            </div>
+                            <div className="mt-6 text-left text-sm text-white/70 md:text-right">
+                                <span className="font-semibold text-white">Bonus:</span> concierge assistance and curated community meetups throughout Technika.
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            {/* List */}
-            <div className="text-lg md:text-xl space-y-4 max-w-4xl w-full mb-20 px-4">
-                <ul className="list-disc pl-6 space-y-4 text-gray-200">
-                    <li className="pl-2">Audience viewership across all events held under Technika, BIT Patna</li>
-                    <li className="pl-2">Discounted registration for all Technika events</li>
-                    <li className="pl-2">Bus transportation facilities on designated BIT Patna routes</li>
-                    <li className="pl-2">Eligibility for in-campus accommodation facilities</li>
-                    <li className="pl-2">Free & exclusive entry to all after-party Technika events</li>
-                    <li className="pl-2">Free parking facilities for all participant vehicles</li>
-                </ul>
-            </div>
+                <div className="grid gap-5 md:grid-cols-2">
+                    {highlights.map((item) => (
+                        <div
+                            key={item.title}
+                            className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg transition hover:border-white/30 hover:bg-white/10"
+                        >
+                            <div className="pointer-events-none absolute -top-16 right-0 h-36 w-36 rotate-12 rounded-full bg-[#ff0030]/10 blur-[120px] transition group-hover:bg-[#ff0030]/20" />
+                            <div className="relative flex items-start gap-4">
+                                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-base font-semibold uppercase tracking-[0.3em] text-white/80">
+                                    *
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+                                    <p className="text-sm text-white/70">{item.description}</p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
-            {/* Registration Status Box */}
-            <div className="mb-12">
-                <div className="border-2 border-white px-12 py-4 text-xl md:text-2xl font-bold tracking-wide rounded-2xl hover:bg-white/5 transition-colors cursor-default">
-                    Your Registrations
+                <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-black/60 p-6 md:p-10 backdrop-blur-xl">
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(70,0,255,0.2),_transparent_60%)]" />
+                    <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                        <div className="space-y-3">
+                            <h2 className="text-2xl font-semibold uppercase tracking-[0.3em] text-white md:text-3xl">
+                                Choose Your Flow
+                            </h2>
+                            <p className="max-w-xl text-sm text-white/70 md:text-base">
+                                Register solo in minutes or pool in as a crew. Either way, you unlock the same premium delegate advantages from day one.
+                            </p>
+                        </div>
+                        <div className="flex w-full flex-col gap-4 md:w-auto md:flex-row">
+                            <div className="flex flex-col gap-3 rounded-3xl border border-white/12 bg-white/5 p-5 backdrop-blur-lg">
+                                <button
+                                    type="button"
+                                    onClick={() => navigate("/delegate-registration")}
+                                    className="rounded-full bg-white px-8 py-4 text-sm font-semibold uppercase tracking-[0.35em] text-black transition hover:-translate-y-1 hover:bg-white/90"
+                                >
+                                    Individual Pass
+                                </button>
+                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">instant checkout</p>
+                            </div>
+                            <div className="flex flex-col gap-3 rounded-3xl border border-white/12 bg-white/5 p-5 backdrop-blur-lg">
+                                <button
+                                    type="button"
+                                    onClick={() => navigate("/delegate-group-registration")}
+                                    className="rounded-full bg-gradient-to-r from-[#ff1744] via-[#ff4f81] to-[#5b2cff] px-8 py-4 text-sm font-semibold uppercase tracking-[0.35em] text-white transition hover:-translate-y-1 hover:brightness-110"
+                                >
+                                    Group Pass
+                                </button>
+                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">ideal for 5+ members</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col md:flex-row gap-8 w-full max-w-3xl justify-center px-4">
-                <button
-                    onClick={() => navigate('/delegate-registration')}
-                    className="bg-white text-black font-semibold text-lg md:text-xl py-4 px-8 rounded-2xl hover:scale-105 transition-transform duration-300 w-full md:w-1/2 text-center shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                    Self Registration
-                </button>
-                <button
-                    onClick={() => navigate('/delegate-group-registration')}
-                    className="bg-white text-black font-semibold text-lg md:text-xl py-4 px-8 rounded-2xl hover:scale-105 transition-transform duration-300 w-full md:w-1/2 text-center shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                    Group Registration
-                </button>
-            </div>
-
-            {/* Bottom spacing */}
-            <div className="h-20"></div>
         </div>
     );
 };
