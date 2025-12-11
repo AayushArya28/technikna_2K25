@@ -173,7 +173,7 @@ const Alumni = () => {
         setPaymentStatus(PaymentStatus.Confirmed);
         setStatus("success");
       } else if (data.paymentUrl) {
-        window.open(data.paymentUrl, "_blank");
+        window.location.href = data.paymentUrl;
         setStatus("IDLE");
         setPaymentStatus(PaymentStatus.PendingPayment);
       } else {
