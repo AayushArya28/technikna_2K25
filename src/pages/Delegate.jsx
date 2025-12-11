@@ -1,42 +1,81 @@
-import React from "react";
 
-export default function Delegate() {
-  return (
-    <main className="min-h-screen bg-black text-white pt-28 pb-20 px-6 md:px-12 lg:px-20">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8">
-        <header className="space-y-3">
-          <p className="text-sm uppercase tracking-[0.2em] text-white/60">Delegates</p>
-          <h1 className="text-4xl font-bold sm:text-5xl">Delegate Program</h1>
-          <p className="max-w-3xl text-lg text-white/70">
-            Explore everything delegates get access to—priority seating, exclusive meetups,
-            and guided experiences throughout Technika. Register early to secure your spot.
-          </p>
-        </header>
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-        <section className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-black/40">
-            <h2 className="text-2xl font-semibold">What you get</h2>
-            <ul className="mt-4 space-y-2 text-white/75">
-              <li>• Priority entry to featured events</li>
-              <li>• Curated sessions with speakers</li>
-              <li>• Delegate lounge access</li>
-              <li>• Dedicated support desk</li>
-            </ul>
-          </div>
+const Delegate = () => {
+    const navigate = useNavigate();
 
-          <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/30 via-fuchsia-500/20 to-blue-500/25 p-6 shadow-lg shadow-black/40">
-            <h2 className="text-2xl font-semibold">How to join</h2>
-            <ol className="mt-4 space-y-2 text-white/80">
-              <li>1. Review delegate benefits and pricing.</li>
-              <li>2. Complete the registration form.</li>
-              <li>3. Watch for a confirmation email with your pass.</li>
-            </ol>
-            <button className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-white px-4 py-2 text-black transition hover:-translate-y-[1px] hover:bg-white/90">
-              Start delegate registration
-            </button>
-          </div>
-        </section>
-      </div>
-    </main>
-  );
-}
+    return (
+        <div className="min-h-screen w-full bg-gradient-to-b from-black via-[#4a0000] to-black text-white p-8 pt-32 flex flex-col items-center relative overflow-hidden">
+
+            {/* Top Decorative Elements */}
+            <div className="flex justify-between w-full max-w-4xl mb-12 opacity-80 max-md:hidden">
+                <div className="border border-white/50 rounded-full px-6 py-2 flex items-center gap-4">
+                    <span>*</span>
+                </div>
+                <div className="border border-white/50 rounded-full px-6 py-2 flex items-center gap-4">
+                    <span>✦</span>
+                    <span>✦</span>
+                    <span>✦</span>
+                </div>
+
+                {/* Center Graphic Placeholder */}
+                <div className="h-12 w-32 bg-white/10 rounded-full border border-white/30 overflow-hidden flex items-center justify-center">
+                    <div className="w-full h-full bg-white opacity-20"></div>
+                </div>
+
+                <div className="border border-white/50 rounded-full px-6 py-2 flex items-center gap-4">
+                    <span>✦</span>
+                    <span>✦</span>
+                    <span>✦</span>
+                </div>
+                <div className="border border-white/50 rounded-full px-6 py-2 flex items-center gap-4">
+                    <span>*</span>
+                </div>
+            </div>
+
+            {/* Main Title */}
+            <h1 className="text-4xl md:text-5xl font-bold text-center mb-16 leading-relaxed tracking-wider text-white drop-shadow-[0_0_10px_rgba(255,0,0,0.5)]">
+                A DELEGATE CARD OFFERS YOU
+            </h1>
+
+            {/* List */}
+            <div className="text-lg md:text-xl space-y-4 max-w-4xl w-full mb-20 px-4">
+                <ul className="list-disc pl-6 space-y-4 text-gray-200">
+                    <li className="pl-2">Audience viewership across all events held under Technika, BIT Patna</li>
+                    <li className="pl-2">Discounted registration for all Technika events</li>
+                    <li className="pl-2">Bus transportation facilities on designated BIT Patna routes</li>
+                    <li className="pl-2">Eligibility for in-campus accommodation facilities</li>
+                    <li className="pl-2">Free & exclusive entry to all after-party Technika events</li>
+                    <li className="pl-2">Free parking facilities for all participant vehicles</li>
+                </ul>
+            </div>
+
+            {/* Registration Status Box */}
+            <div className="mb-12">
+                <div className="border-2 border-white px-12 py-4 text-xl md:text-2xl font-bold tracking-wide rounded-2xl hover:bg-white/5 transition-colors cursor-default">
+                    Your Registrations
+                </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col md:flex-row gap-8 w-full max-w-3xl justify-center px-4">
+                <button
+                    onClick={() => navigate('/delegate-registration')}
+                    className="bg-white text-black font-semibold text-lg md:text-xl py-4 px-8 rounded-2xl hover:scale-105 transition-transform duration-300 w-full md:w-1/2 text-center shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                    Self Registration
+                </button>
+                <button
+                    onClick={() => navigate('/delegate-group-registration')}
+                    className="bg-white text-black font-semibold text-lg md:text-xl py-4 px-8 rounded-2xl hover:scale-105 transition-transform duration-300 w-full md:w-1/2 text-center shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                    Group Registration
+                </button>
+            </div>
+
+            {/* Bottom spacing */}
+            <div className="h-20"></div>
+        </div>
+    );
+};
+
+export default Delegate;

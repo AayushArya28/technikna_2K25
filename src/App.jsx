@@ -15,6 +15,8 @@ import Login from "./pages/Login";
 import Devs from "./pages/Devs";
 import Alumni from "./pages/Alumni";
 import Delegate from "./pages/Delegate";
+import DelegateRegistration from "./pages/DelegateRegistration";
+import DelegateGroupRegistration from "./pages/DelegateGroupRegistration";
 import Accommodation from "./pages/Accommodation";
 import { useState } from "react";
 import TransitionComponent from "./components/Transition.jsx";
@@ -39,6 +41,8 @@ function App() {
     { path: "/devs", Component: Devs },
     { path: "/alumni", Component: Alumni },
     { path: "/delegate", Component: Delegate },
+    { path: "/delegate-registration", Component: DelegateRegistration },
+    { path: "/delegate-group-registration", Component: DelegateGroupRegistration },
     { path: "/accommodation", Component: Accommodation },
   ];
 
