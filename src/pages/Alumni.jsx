@@ -493,7 +493,7 @@ const Alumni = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-100 mb-1">Size</label>
+                      <label className="block text-sm font-medium text-gray-100 mb-1">Merchandise Size</label>
                       <div className="relative">
                         <select
                           name="size"
