@@ -1,3 +1,5 @@
+// Previous Events page retained for reference.
+/*
 import React from "react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -14,16 +16,19 @@ const heroes = [
     id: 2,
     name: "Fun",
     img: "https://img.pikbest.com/illustration/20240607/the-soldiers-of-samurai-warrior_10600894.jpg!bw700",
+    route: "/fun",
   },
   {
     id: 3,
     name: "Cultural",
     img: "https://tse2.mm.bing.net/th/id/OIP.DYk6BjV4Sjjm0vC0VkFhJAHaEJ?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3",
+    route: "/cultural",
   },
   {
     id: 4,
     name: "Workshops",
     img: "https://tse1.explicit.bing.net/th/id/OIP.fPRomGdpeIgwomQpBnE1WgHaNK?cb=ucfimg2&ucfimg=1&w=1080&h=1920&rs=1&pid=ImgDetMain&o=7&rm=3",
+    route: "/workshops",
   },
 ];
 export function Events() {
@@ -50,11 +55,15 @@ export function Events() {
               }}
               initial={{ opacity: 0, y: 80, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: index * 0.2, duration: 0.6 }}
+              transition={{ delay: 0, duration: 0.1 }}
               whileHover={{
                 scale: 1,
                 y: -22,
                 rotateX: 6,
+                boxShadow:
+                  active === hero.id
+                    ? "ring-4 ring-red-500 shadow-[0_0_50px_rgba(239,68,68,0.85)]"
+                    : "opacity-60 blur-[0.3px]",
               }}
               className={`relative w-[240px] h-[380px] rounded-2xl overflow-hidden cursor-pointer 
               transition-all duration-300 transform-gpu
@@ -79,7 +88,6 @@ export function Events() {
 
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
-              {/* NAME */}
               <div className="absolute bottom-6 left-6">
                 <h2 className="text-white text-lg font-semibold tracking-wide">
                   {hero.name}
@@ -89,6 +97,22 @@ export function Events() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+*/
+
+import React from "react";
+
+// Temporary Coming Soon placeholder matching Merchandise page style.
+export function Events() {
+  return (
+    <div className="pt-25 min-h-screen flex items-center justify-center bg-black">
+      <img
+        src="/images/coming-soon.jpg"
+        alt="Coming Soon"
+        className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
+      />
     </div>
   );
 }
