@@ -107,7 +107,7 @@ import React from "react";
 // Temporary Coming Soon placeholder matching Merchandise page style.
 export function Events() {
   return (
-    <div className="pt-25 min-h-screen flex items-center justify-center bg-black">
+    <div className="pt-27 min-h-screen flex items-center justify-center bg-black">
       <img
         src="/images/coming-soon.jpg"
         alt="Coming Soon"
