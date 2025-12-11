@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { auth } from "../firebase";
 import StaggeredMenu from "./StaggeredMenu";
 
 gsap.registerPlugin(useGSAP);
@@ -10,6 +12,9 @@ function Nav() {
   const navRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuCloseTimeout = useRef(null);
   const location = useLocation();
 
   // Scroll to top whenever the route changes
@@ -25,16 +30,69 @@ function Nav() {
     });
   };
 
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => {
+      if (unsub) unsub();
+    };
+  }, []);
+
+  const displayName = user?.displayName || (user?.email ? user.email.split("@")[0] : "User");
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      setUserMenuOpen(false);
+    } catch (err) {
+      console.error("Sign out failed", err);
+    }
+  };
+
   // Menu items for mobile - matching PC nav exactly
   const menuItems = [
     { label: "Home", ariaLabel: "Go to home page", link: "/", onClick: handleNavClick },
+    { label: "Delegates", ariaLabel: "Delegate page", link: "/delegate", onClick: handleNavClick },
     { label: "Events", ariaLabel: "View events", link: "/events", onClick: handleNavClick },
     { label: "Merchandise", ariaLabel: "Browse merchandise", link: "/merchandise", onClick: handleNavClick },
     { label: "Core Team", ariaLabel: "Meet the core team", link: "/core", onClick: handleNavClick },
     // { label: "WorkShop", ariaLabel: "Explore workshops", link: "/workshop", onClick: handleNavClick },
     { label: "Alumni", ariaLabel: "Our Alumni", link: "/alumni", onClick: handleNavClick },
+    { label: "Accommodation", ariaLabel: "Alumni accommodation", link: "/alumni/accommodation", onClick: handleNavClick },
     { label: 'Developers', ariaLabel: 'Learn about Devs', link: '/devs', onClick: handleNavClick },
     { label: "Contact Us", ariaLabel: "Get in touch", link: "/contact", onClick: handleNavClick },
+  ];
+
+  const desktopNavItems = [
+    { label: "Home", jp: "ホーム", link: "/" },
+    {
+      label: "Registrations",
+      jp: "登録",
+      dropdown: [
+        { label: "Events", link: "/events" },
+        { label: "Merchandise", link: "/merchandise" },
+      ],
+    },
+    {
+      label: "Members",
+      jp: "メンバー",
+      dropdown: [
+        { label: "Core Team", link: "/core" },
+        { label: "Developers", link: "/devs" },
+      ],
+    },
+    { label: "Delegates", jp: "デリゲート", link: "/delegate" },
+    {
+      label: "Alumni",
+      jp: "卒業生",
+      dropdown: [
+        { label: "Alumni Registration", link: "/alumni" },
+        { label: "Alumni Accommodation", link: "/alumni/accommodation" },
+      ],
+    },
+    { label: "Contact", jp: "連絡先", link: "/contact" },
   ];
 
   const socialItems = [
@@ -191,35 +249,129 @@ function Nav() {
   return (
     <nav
       ref={navRef}
-      className="fixed top-0 left-0 right-0 w-full
-            font-bold text-3xl flex justify-center 
-            items-center px-8 pt-4 pb-1 z-50 backdrop-blur-md"
+      className="fixed top-0 left-0 right-0 w-full font-bold text-3xl px-6 md:px-10 py-3 z-50 backdrop-blur-md"
       style={{ backgroundColor: "rgba(0, 0, 0, 0.15)" }}
     >
-      {/* Centered Links */}
-      <div className="flex gap-25 max-xl:gap-15 max-lg:gap-10 text-white/80 text-[clamp(0.9rem,1.9vw,1.2rem)] ks-font select-none font-bold">
-        <NavLink to="/" label="Home" jp="ホーム" onClick={handleNavClick} />
-        <NavLink to="/events" label="Events" jp="イベント" onClick={handleNavClick} />
-        <NavLink to="/merchandise" label="Merchandise" jp="グッズ" onClick={handleNavClick} />
-        <NavLink to="/core" label="Core Team" jp="コアチーム" onClick={handleNavClick} />
-        {/* <NavLink to="/workshop" label="WorkShop" jp="ワークショップ" onClick={handleNavClick} /> */}
-        <NavLink to="/alumni" label="Alumni" jp="卒業生" onClick={handleNavClick} />
-        <NavLink to="/devs" label="Developers" jp="開発者" onClick={handleNavClick} />
-        <NavLink to="/contact" label="Contact Us" jp="連絡先" onClick={handleNavClick} />
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 text-white/80 text-[clamp(0.9rem,1.8vw,1.1rem)] ks-font select-none font-bold">
+        <div className="flex items-center gap-8 max-xl:gap-6 max-lg:gap-5">
+          {desktopNavItems.map((item) => (
+            <DropdownNavItem key={item.label} item={item} onClick={handleNavClick} />
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3 text-[clamp(0.85rem,1.6vw,1rem)]">
+          {!user && (
+            <Link
+              to="/login"
+              className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 hover:text-white transition"
+              onClick={handleNavClick}
+            >
+              Register
+            </Link>
+          )}
+
+          {user && (
+            <div
+              className="relative"
+              onMouseEnter={() => {
+                if (userMenuCloseTimeout.current) clearTimeout(userMenuCloseTimeout.current);
+                setUserMenuOpen(true);
+              }}
+              onMouseLeave={() => {
+                userMenuCloseTimeout.current = setTimeout(() => setUserMenuOpen(false), 140);
+              }}
+            >
+              <button
+                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition"
+              >
+                <span>Hi, {displayName}</span>
+                <span className="text-base">▾</span>
+              </button>
+
+              <div
+                onMouseEnter={() => {
+                  if (userMenuCloseTimeout.current) clearTimeout(userMenuCloseTimeout.current);
+                  setUserMenuOpen(true);
+                }}
+                onMouseLeave={() => {
+                  userMenuCloseTimeout.current = setTimeout(() => setUserMenuOpen(false), 140);
+                }}
+                className={`absolute right-0 mt-3 min-w-[160px] rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-150 ${
+                  userMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
+                }`}
+              >
+                <button
+                  className="block w-full px-4 py-3 text-left text-[0.95rem] hover:bg-white/10"
+                  onClick={handleSignOut}
+                >
+                  Sign out
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );
 }
 
-/* Reusable NavLink component */
-function NavLink({ to, label, jp, onClick }) {
+/* Reusable NavLink with optional dropdown */
+function DropdownNavItem({ item, onClick }) {
+  const hasDropdown = Array.isArray(item.dropdown) && item.dropdown.length > 0;
+  const targetLink = item.link || (hasDropdown ? item.dropdown[0].link : "#");
+  const [open, setOpen] = useState(false);
+  const closeTimeout = useRef(null);
+
+  const openMenu = () => {
+    if (closeTimeout.current) {
+      clearTimeout(closeTimeout.current);
+      closeTimeout.current = null;
+    }
+    setOpen(true);
+  };
+
+  const scheduleClose = () => {
+    closeTimeout.current = setTimeout(() => setOpen(false), 140);
+  };
+
   return (
-    <Link to={to} className="nav-link text-center hover:[text-shadow:0_0_10px_rgba(255,255,255,0.7),0_0_20px_rgba(255,255,255,0.7)]" onClick={onClick}>
-      <span className="en-label block">{label}</span>
-      <span className="jp-label inline-block text-sm text-white whitespace-nowrap opacity-0">
-        {jp}
-      </span>
-    </Link>
+    <div
+      className="relative group"
+      onMouseEnter={openMenu}
+      onMouseLeave={scheduleClose}
+    >
+      <Link
+        to={targetLink}
+        className="nav-link relative flex flex-col items-center text-center hover:[text-shadow:0_0_10px_rgba(255,255,255,0.7),0_0_20px_rgba(255,255,255,0.7)]"
+        onClick={onClick}
+      >
+        <span className="en-label block">{item.label}{hasDropdown && <span className="ml-1 text-sm align-middle">▾</span>}</span>
+        <span className="jp-label inline-block text-sm text-white whitespace-nowrap opacity-0">
+          {item.jp}
+        </span>
+      </Link>
+
+      {hasDropdown && (
+        <div
+          onMouseEnter={openMenu}
+          onMouseLeave={scheduleClose}
+          className={`absolute left-1/2 top-full z-50 mt-2 w-max min-w-[190px] -translate-x-1/2 rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-200 ${
+            open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-1 pointer-events-none"
+          }`}
+        >
+          {item.dropdown.map((child) => (
+            <Link
+              key={child.label}
+              to={child.link}
+              className="block px-4 py-3 text-left text-[0.95rem] hover:bg-white/10"
+              onClick={onClick}
+            >
+              {child.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

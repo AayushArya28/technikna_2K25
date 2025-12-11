@@ -14,6 +14,8 @@ import { Footer } from "./components/Footer.jsx";
 import Login from "./pages/Login";
 import Devs from "./pages/Devs";
 import Alumni from "./pages/Alumni";
+import Delegate from "./pages/Delegate";
+import AlumniAccommodation from "./pages/AlumniAccommodation";
 import { useState } from "react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
@@ -35,6 +37,8 @@ function App() {
     { path: "/contact", Component: ContactUs },
     { path: "/devs", Component: Devs },
     { path: "/alumni", Component: Alumni },
+    { path: "/delegate", Component: Delegate },
+    { path: "/alumni/accommodation", Component: AlumniAccommodation },
   ];
 
   // Skipping loading screen in development mode, comment this line and uncomment the next to enable loading screen while working on it
