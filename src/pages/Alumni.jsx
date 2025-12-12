@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
 import {
   User,
   Mail,
@@ -282,7 +283,9 @@ const Alumni = () => {
   };
 
   return (
-    <div
+    <>
+      <BrowserWarningModal />
+      <div
       className="
         min-h-screen
         bg-[url('/images/bg-alumni.png')]
@@ -568,6 +571,7 @@ const Alumni = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

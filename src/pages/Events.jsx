@@ -103,16 +103,20 @@ export function Events() {
 */
 
 import React from "react";
+import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
 
 // Temporary Coming Soon placeholder matching Merchandise page style.
 export function Events() {
   return (
-    <div className="pt-27 min-h-screen flex items-center justify-center bg-black">
-      <img
-        src="/images/coming-soon.jpg"
-        alt="Coming Soon"
-        className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
-      />
-    </div>
+    <>
+      <BrowserWarningModal />
+      <div className="pt-27 min-h-screen flex items-center justify-center bg-black">
+        <img
+          src="/images/coming-soon.jpg"
+          alt="Coming Soon"
+          className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
+        />
+      </div>
+    </>
   );
 }
