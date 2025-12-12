@@ -34,15 +34,15 @@ const ImageCarousel = () => {
   }, []);
 
   const slides = [
-    "/images/previous_technika/IMG-20251208-WA0005.jpg",
-    "/images/previous_technika/IMG-20251208-WA0006.jpg",
-    "/images/previous_technika/IMG-20251208-WA0009.jpg",
-    "/images/previous_technika/IMG-20251208-WA0010.jpg",
-    "/images/previous_technika/IMG-20251208-WA0011.jpg",
-    "/images/previous_technika/IMG-20251208-WA0012.jpg",
-    "/images/previous_technika/IMG-20251208-WA0013.jpg",
-    "/images/previous_technika/IMG-20251208-WA0014.jpg",
-    "/images/previous_technika/IMG-20251212-WA0040.jpg"
+    "https://i.ibb.co/b5VLFW8L/dgdgdg.jpg",
+"https://i.ibb.co/tpqSYHX6/fgdfhfhnfchnff.jpg",
+"https://i.ibb.co/M5hxpY6d/gvhyfgjfctgjfcgv.jpg",
+"https://i.ibb.co/LhJFP0Kh/qwertyui.jpg",
+"https://i.ibb.co/jkVLyRRM/sv-zsvzsvzv.jpg",
+"https://i.ibb.co/7NkDBPRg/Whats-App-Image-2025-12-12-at-3-37-55-PM.jpg",
+"https://i.ibb.co/27YRhFjY/Whats-App-Image-2025-12-12-at-3-37-56-PM.jpg",
+"https://i.ibb.co/My68Scyb/Whats-App-Image-2025-12-12-at-3-37-57-PM.jpg",
+"https://i.ibb.co/Xfvgnnvy/Whats-App-Image-2025-12-12-at-3-37-58-PMvdsf.jpg"
   ];
 
   return (
