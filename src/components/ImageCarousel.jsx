@@ -34,17 +34,15 @@ const ImageCarousel = () => {
   }, []);
 
   const slides = [
-    "cultural",
-    "dance",
-    "dance2",
-    "dj",
-    "fashion",
-    "paintball",
-    "pitching",
-    "img1",
-    "singing",
-    "tall-tower",
-    "tech",
+    "https://i.ibb.co/b5VLFW8L/dgdgdg.jpg",
+"https://i.ibb.co/tpqSYHX6/fgdfhfhnfchnff.jpg",
+"https://i.ibb.co/M5hxpY6d/gvhyfgjfctgjfcgv.jpg",
+"https://i.ibb.co/LhJFP0Kh/qwertyui.jpg",
+"https://i.ibb.co/jkVLyRRM/sv-zsvzsvzv.jpg",
+"https://i.ibb.co/7NkDBPRg/Whats-App-Image-2025-12-12-at-3-37-55-PM.jpg",
+"https://i.ibb.co/27YRhFjY/Whats-App-Image-2025-12-12-at-3-37-56-PM.jpg",
+"https://i.ibb.co/My68Scyb/Whats-App-Image-2025-12-12-at-3-37-57-PM.jpg",
+"https://i.ibb.co/Xfvgnnvy/Whats-App-Image-2025-12-12-at-3-37-58-PMvdsf.jpg"
   ];
 
   return (
@@ -70,11 +68,11 @@ const ImageCarousel = () => {
         extensions={{ AutoScroll }}
         aria-label="Image Carousel"
       >
-        {slides.map((name) => (
-          <SplideSlide key={name}>
+        {slides.map((src, index) => (
+          <SplideSlide key={src}>
             <img
-              src={`/slideshow/${name}.webp`}
-              alt={name}
+              src={src}
+              alt={`Technika memory ${index + 1}`}
               className={imageClassName}
               style={{ padding: "0.4rem" }}
               loading="lazy"

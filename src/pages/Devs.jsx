@@ -275,7 +275,7 @@ const DevsPage = () => {
     {
       id: 1,
       name: "Aayush Arya",
-      role: "Full Stack",
+      role: "ye bagal wala mc kon hai",
       branch: "ECE",
       year: "2nd Year",
       image: "images/devs/aayush.png",

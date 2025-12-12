@@ -1,24 +1,22 @@
-import React from "react";
-
-export const Core = () => (
-  <div className="pt-25 min-h-screen flex items-center justify-center bg-black">
-    <img
-      src="/images/coming-soon.jpg"
-      alt="Coming Soon"
-      className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
-    />
-  </div>
-);
-
-export default Core;
-
-/*
 import ChromaGrid from "../components/ChromaGrid";
+
+// GENERAL SECRETARY
+const generalSecretaryTeam = [
+  {
+    image: "https://i.ibb.co/gZ9fVQnQ/gensec.jpg",
+    title: "Ashutosh Kumar",
+    subtitle: "GENERAL SECRETARY",
+    handle: "@ashutoshk",
+    borderColor: "#F44336",
+    gradient: "linear-gradient(145deg, #F44336, #4CAF50)",
+    url: "https://github.com/ashutoshk",
+  },
+];
 
 // TREASURY TEAM
 const treasuryTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=11",
+    image: "https://i.ibb.co/Z1Kjr0Ry/Kishlaya-Sinha-KISHLAYA-SINHA.jpg",
     title: "Kishlaya Sinha",
     subtitle: "HEAD",
     handle: "@kishlaya_s",
@@ -27,7 +25,7 @@ const treasuryTeam = [
     url: "https://github.com/kishlayas",
   },
   {
-    image: "https://i.pravatar.cc/300?img=12",
+    image: "https://i.ibb.co/SDkcHvxm/IMG-20251206-182402-Vipra-Raj.jpg",
     title: "Vipra Raj",
     subtitle: "HEAD",
     handle: "@vipraraj",
@@ -36,7 +34,7 @@ const treasuryTeam = [
     url: "https://github.com/vipraraj",
   },
   {
-    image: "https://i.pravatar.cc/300?img=13",
+    image: "https://i.ibb.co/QjY4mqQX/image-RAJ-YASH-GUPTA-1.jpg",
     title: "Raj Yash Gupta",
     subtitle: "CO-HEAD",
     handle: "@rajyashg",
@@ -45,7 +43,7 @@ const treasuryTeam = [
     url: "https://github.com/rajyashg",
   },
   {
-    image: "https://i.pravatar.cc/300?img=14",
+    image: "https://i.ibb.co/mVjyRM9m/IMG-1260-Nipun-Sinha.jpg",
     title: "Nipun Sinha",
     subtitle: "CO-HEAD",
     handle: "@nipunsinha",
@@ -58,7 +56,7 @@ const treasuryTeam = [
 // DESIGN & DECOR TEAM
 const designDecorTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=15",
+    image: "https://i.ibb.co/mr0XjxwQ/320d8640-2979-4659-8167-19d6c55217f4-Jahanvi-Param.jpg",
     title: "Jahanvi Param",
     subtitle: "HEAD",
     handle: "@jahanvip",
@@ -67,7 +65,7 @@ const designDecorTeam = [
     url: "https://github.com/jahanvip",
   },
   {
-    image: "https://i.pravatar.cc/300?img=16",
+    image: "https://i.ibb.co/M5GV3PSw/IMG-20251207-WA0152-Raj-kamal.jpg",
     title: "Raj Kamal",
     subtitle: "CO-HEAD",
     handle: "@rajkamal",
@@ -76,7 +74,7 @@ const designDecorTeam = [
     url: "https://github.com/rajkamal",
   },
   {
-    image: "https://i.pravatar.cc/300?img=17",
+    image: "https://i.ibb.co/XfGPDZph/IMG-20251111-111827-801-Vanshika-Lakra.webp",
     title: "Vanshika Lakra",
     subtitle: "CO-HEAD",
     handle: "@vanshikal",
@@ -89,7 +87,7 @@ const designDecorTeam = [
 // DESIGN & DRAFTING TEAM
 const designDraftingTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=18",
+    image: "https://i.ibb.co/xKqGcyXV/IMG-7648-Arpit-Raj.jpg",
     title: "Aprit Raj",
     subtitle: "HEAD",
     handle: "@apritraj",
@@ -98,7 +96,7 @@ const designDraftingTeam = [
     url: "https://github.com/apritraj",
   },
   {
-    image: "https://i.pravatar.cc/300?img=19",
+    image: "images/devs/kanan.png",
     title: "Kanan Kotwani",
     subtitle: "CO-HEAD",
     handle: "@kanank",
@@ -107,8 +105,8 @@ const designDraftingTeam = [
     url: "https://github.com/kanank",
   },
   {
-    image: "https://i.pravatar.cc/300?img=20",
-    title: "Aditi Srivastava",
+    image: "https://i.ibb.co/1JshdH92/aditi.jpg",
+    title: "Aditi Shrivastava",
     subtitle: "CO-HEAD",
     handle: "@aditis",
     borderColor: "#795548",
@@ -120,7 +118,7 @@ const designDraftingTeam = [
 // EVENT MANAGEMENT TEAM
 const eventManagementTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=21",
+    image: "https://i.ibb.co/5XvcX7zf/1000065966-Suyash-Sinha.jpg",
     title: "Suyash Sinha",
     subtitle: "HEAD",
     handle: "@suyashs",
@@ -129,7 +127,7 @@ const eventManagementTeam = [
     url: "https://github.com/suyashs",
   },
   {
-    image: "https://i.pravatar.cc/300?img=22",
+    image: "https://i.ibb.co/tj4ZdrB/IMG-4217-Abhishek-Singh-Rathore.jpg",
     title: "Abhishek Rathore",
     subtitle: "CO-HEAD",
     handle: "@abhishekr",
@@ -138,7 +136,7 @@ const eventManagementTeam = [
     url: "https://github.com/abhishekr",
   },
   {
-    image: "https://i.pravatar.cc/300?img=23",
+    image: "https://i.ibb.co/6c3nQMjB/IMG-2010-Kaushik-Singh.png",
     title: "Kaushik Singh",
     subtitle: "CO-HEAD",
     handle: "@kaushiks",
@@ -147,7 +145,7 @@ const eventManagementTeam = [
     url: "https://github.com/kaushiks",
   },
   {
-    image: "https://i.pravatar.cc/300?img=24",
+    image: "https://i.ibb.co/9mfwQ1kg/aparna.jpg",
     title: "Aparna Singh",
     subtitle: "CO-HEAD",
     handle: "@aparnas",
@@ -160,7 +158,7 @@ const eventManagementTeam = [
 // VENUE MANAGEMENT TEAM
 const venueManagementTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=25",
+    image: "https://i.ibb.co/35SRJc9C/IMG-5418-Parag-Yadav.jpg",
     title: "Parag",
     subtitle: "HEAD",
     handle: "@parag",
@@ -169,7 +167,7 @@ const venueManagementTeam = [
     url: "https://github.com/parag",
   },
   {
-    image: "https://i.pravatar.cc/300?img=26",
+    image: "https://i.ibb.co/JRC4TMT8/kanisk-jain.jpg",
     title: "Kanishka Jain",
     subtitle: "CO-HEAD",
     handle: "@kanishkaj",
@@ -178,7 +176,7 @@ const venueManagementTeam = [
     url: "https://github.com/kanishkaj",
   },
   {
-    image: "https://i.pravatar.cc/300?img=27",
+    image: "https://i.ibb.co/ynJKwPSc/anjali.jpg",
     title: "Anjali Singh",
     subtitle: "CO-HEAD",
     handle: "@anjalisingh",
@@ -191,7 +189,7 @@ const venueManagementTeam = [
 // PUBLICITY TEAM
 const publicityTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=28",
+    image: "https://i.ibb.co/k2XTzm5j/IMG-7328-ALBAR.jpg",
     title: "Md. Albar",
     subtitle: "HEAD",
     handle: "@mdalbar",
@@ -200,7 +198,7 @@ const publicityTeam = [
     url: "https://github.com/mdalbar",
   },
   {
-    image: "https://i.pravatar.cc/300?img=29",
+    image: "https://i.ibb.co/mFBKfnj5/ali.jpg",
     title: "Ahsan Ali",
     subtitle: "CO-HEAD",
     handle: "@ahsana",
@@ -209,7 +207,7 @@ const publicityTeam = [
     url: "https://github.com/ahsana",
   },
   {
-    image: "https://i.pravatar.cc/300?img=30",
+    image: "https://i.ibb.co/9kStMw1w/IMG-20251103-WA0002-Soumya-Sharma.jpg",
     title: "Soumya Sharma",
     subtitle: "CO-HEAD",
     handle: "@soumyas",
@@ -222,7 +220,7 @@ const publicityTeam = [
 // PRESS & MEDIA TEAM
 const pressMediaTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=31",
+    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
     title: "Tanmay Sinha",
     subtitle: "HEAD",
     handle: "@tanmays",
@@ -231,7 +229,7 @@ const pressMediaTeam = [
     url: "https://github.com/tanmays",
   },
   {
-    image: "https://i.pravatar.cc/300?img=32",
+    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
     title: "Anshu Priya",
     subtitle: "CO-HEAD",
     handle: "@anshupriya",
@@ -240,7 +238,7 @@ const pressMediaTeam = [
     url: "https://github.com/anshupriya",
   },
   {
-    image: "https://i.pravatar.cc/300?img=36",
+    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
     title: "Saransh Johri",
     subtitle: "CO-HEAD",
     handle: "@saranshj",
@@ -253,38 +251,38 @@ const pressMediaTeam = [
 // WEB DESIGN AND MANAGEMENT TEAM
 const webDesignTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=34",
+    image: "https://i.ibb.co/zhmXZBqS/amit.jpg",
     title: "Amit Saurav",
     subtitle: "HEAD",
     handle: "@amitsaurav",
     borderColor: "#3F51B5",
     gradient: "linear-gradient(145deg, #3F51B5, #FF9800)",
-    url: "https://github.com/amitsaurav",
+    url: "https://www.instagram.com/saura.vamit/",
   },
   {
-    image: "https://i.pravatar.cc/300?img=35",
+    image: "images/devs/ashu.png",
     title: "Ashutosh Kumar",
     subtitle: "CO-HEAD",
-    handle: "@ashutoshk",
+    handle: "@sharmashutosh01",
     borderColor: "#F44336",
     gradient: "linear-gradient(145deg, #F44336, #4CAF50)",
-    url: "https://github.com/ashutoshk",
+    url: "https://www.instagram.com/sharmashutosh01/",
   },
   {
-    image: "https://i.pravatar.cc/300?img=33",
+    image: "images/devs/aayush2.jpg",
     title: "Aayush Arya",
     subtitle: "CO-HEAD",
-    handle: "@ayusharya",
+    handle: "@ayusharya_i_am",
     borderColor: "#00BCD4",
     gradient: "linear-gradient(145deg, #00BCD4, #FFEB3B)",
-    url: "https://github.com/ayusharya",
+    url: "https://www.instagram.com/aayusharya_i_am",
   }
 ];
 
 // LOGISTICS TEAM
 const logisticsTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=37",
+    image: "https://i.ibb.co/60jLLmdd/SAVE-20241225-192807-Sourav-Kumar-Sinha.jpg",
     title: "Sourav Kr. Sinha",
     subtitle: "HEAD",
     handle: "@souravs",
@@ -293,7 +291,7 @@ const logisticsTeam = [
     url: "https://github.com/souravs",
   },
   {
-    image: "https://i.pravatar.cc/300?img=38",
+    image: "https://i.ibb.co/JWJZTRWm/IMG-245678-Anubhav-Kumar.jpg",
     title: "Anubhav Kumar",
     subtitle: "HEAD",
     handle: "@anubhavk",
@@ -302,7 +300,7 @@ const logisticsTeam = [
     url: "https://github.com/anubhavk",
   },
   {
-    image: "https://i.pravatar.cc/300?img=39",
+    image: "https://i.ibb.co/dJ6vg2cL/IMG-20251204-WA0058-2-Abhijeet-Saharan.jpg",
     title: "Abhijeet Saharan",
     subtitle: "CO-HEAD",
     handle: "@abhijeets",
@@ -311,7 +309,7 @@ const logisticsTeam = [
     url: "https://github.com/abhijeets",
   },
   {
-    image: "https://i.pravatar.cc/300?img=40",
+    image: "https://i.ibb.co/PGKKp0QJ/IMG-20230505-WA0019-Pratyush-Kamal.jpg",
     title: "Pratyush Kamal",
     subtitle: "CO-HEAD",
     handle: "@pratyushk",
@@ -324,7 +322,7 @@ const logisticsTeam = [
 // FOOD & CATERING TEAM
 const foodCateringTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=41",
+    image: "https://i.ibb.co/j9c2P9QT/IMG-20250630-WA0041-Hardik-Singh.jpg",
     title: "Hardik Kumar Singh",
     subtitle: "HEAD",
     handle: "@hardiks",
@@ -333,7 +331,7 @@ const foodCateringTeam = [
     url: "https://github.com/hardiks",
   },
   {
-    image: "https://i.pravatar.cc/300?img=42",
+    image: "https://i.ibb.co/tpCsT2wS/IMG-0676-SHAURYA.jpg",
     title: "Shaurya Veer",
     subtitle: "CO-HEAD",
     handle: "@shauryav",
@@ -342,7 +340,7 @@ const foodCateringTeam = [
     url: "https://github.com/shauryav",
   },
   {
-    image: "https://i.pravatar.cc/300?img=43",
+    image: "https://i.ibb.co/fV0bKsYS/Screenshot-20251207-100022-Devojyoti-sinha.jpg",
     title: "Devojyoti Sinha",
     subtitle: "CO-HEAD",
     handle: "@devojyotis",
@@ -355,7 +353,7 @@ const foodCateringTeam = [
 // CULTURAL MANAGEMENT TEAM
 const culturalManagementTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=44",
+    image: "https://i.ibb.co/RT238xjm/dbcb30e8-d5ae-458f-b921-3ecfa6e851c2-Nidhi-Sinha.jpg",
     title: "Nidhi Sinha",
     subtitle: "HEAD",
     handle: "@nidhis",
@@ -364,7 +362,7 @@ const culturalManagementTeam = [
     url: "https://github.com/nidhis",
   },
   {
-    image: "https://i.pravatar.cc/300?img=45",
+    image: "https://i.ibb.co/5gTRMRMQ/Snapchat-845328509-Sanskar-kumar-Karn.jpg",
     title: "Sanskarkarn",
     subtitle: "CO-HEAD",
     handle: "@sanskarkarn",
@@ -373,7 +371,7 @@ const culturalManagementTeam = [
     url: "https://github.com/sanskarkarn",
   },
   {
-    image: "https://i.pravatar.cc/300?img=46",
+    image: "https://i.ibb.co/XkZ1QS0p/IMG-20251204-WA0190-Akshay-Kumar.jpg",
     title: "Akshay Kumar",
     subtitle: "CO-HEAD",
     handle: "@akshayk",
@@ -386,7 +384,7 @@ const culturalManagementTeam = [
 // SPONSORSHIP TEAM
 const sponsorshipTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=47",
+    image: "https://i.ibb.co/Mz0j6G4/purshottom.jpg",
     title: "Purushottam Kumar",
     subtitle: "HEAD",
     handle: "@purushottamk",
@@ -395,7 +393,7 @@ const sponsorshipTeam = [
     url: "https://github.com/purushottamk",
   },
   {
-    image: "https://i.pravatar.cc/300?img=48",
+    image: "https://i.ibb.co/GQ4SxgZF/356257db-9cd8-4ed6-acea-2653cf90edfb-Apoorv-Roy.jpg",
     title: "Apoorv Roy",
     subtitle: "CO-HEAD",
     handle: "@apoorvr",
@@ -404,7 +402,7 @@ const sponsorshipTeam = [
     url: "https://github.com/apoorvr",
   },
   {
-    image: "https://i.pravatar.cc/300?img=49",
+    image: "https://i.ibb.co/WW0xgp3N/IMG-20250713-WA0007-Md-Asad-Khan.jpg",
     title: "Asad Khan",
     subtitle: "CO-HEAD",
     handle: "@asadkhan",
@@ -417,7 +415,7 @@ const sponsorshipTeam = [
 // SOCIAL MEDIA TEAM
 const socialMediaTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=50",
+    image: "https://i.ibb.co/m5vS35VW/sikhar.jpg",
     title: "Shikhar Rai",
     subtitle: "HEAD",
     handle: "@shikharrai",
@@ -426,7 +424,7 @@ const socialMediaTeam = [
     url: "https://github.com/shikharrai",
   },
   {
-    image: "https://i.pravatar.cc/300?img=51",
+    image: "https://i.ibb.co/HLVSfTm0/D2-DBCB20-44-E5-44-E8-AE01-2909-EC5684-A9-Aayat-Fatima.jpg",
     title: "Aayat Fatima",
     subtitle: "CO-HEAD",
     handle: "@aayatf",
@@ -435,7 +433,7 @@ const socialMediaTeam = [
     url: "https://github.com/aayatf",
   },
   {
-    image: "https://i.pravatar.cc/300?img=52",
+    image: "https://i.ibb.co/hrrq45x/IMG-20250531-181900779-HDR-2-Harshika-Singh.jpg",
     title: "Harshika Singh",
     subtitle: "CO-HEAD",
     handle: "@harshikas",
@@ -448,7 +446,7 @@ const socialMediaTeam = [
 // HOSPITALITY TEAM
 const hospitalityTeam = [
   {
-    image: "https://i.pravatar.cc/300?img=53",
+    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
     title: "Anurag Anand",
     subtitle: "HEAD",
     handle: "@anurag",
@@ -457,7 +455,7 @@ const hospitalityTeam = [
     url: "https://github.com/anurag",
   },
   {
-    image: "https://i.pravatar.cc/300?img=54",
+    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
     title: "Aman Kumar",
     subtitle: "CO-HEAD",
     handle: "@amank",
@@ -466,7 +464,7 @@ const hospitalityTeam = [
     url: "https://github.com/amank",
   },
   {
-    image: "https://i.pravatar.cc/300?img=55",
+    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
     title: "Anshu Anand",
     subtitle: "CO-HEAD",
     handle: "@anshua",
@@ -478,13 +476,268 @@ const hospitalityTeam = [
 
 export const Core = () => {
   return (
-    <div className="bg-[url('/images/core2-bg.png')] text-white min-h-screen flex items-center justify-center">
-      <h1 className="text-6xl font-extrabold tracking-widest text-center">
-        COMING SOON
-      </h1>
+    <div className="bg-[url('/images/core2-bg.png')] bg-contain w-full min-h-screen text-white">
+  <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-screen mx-auto flex flex-col items-center">
+
+          {/* General Secretary Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font z-2">
+              General Secretary
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Leading Technika 2K25 as the primary student representative
+            </p>
+            <ChromaGrid
+              items={generalSecretaryTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Treasury Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font z-2">
+              Treasury Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Managing finances and resources
+            </p>
+            <ChromaGrid
+              items={treasuryTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Web Design Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3) hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200]">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Web Design & Management Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Developing and maintaining web presence
+            </p>
+            <ChromaGrid
+              items={webDesignTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Design & Decor Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Design & Decor Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Creating beautiful visual experiences
+            </p>
+            <ChromaGrid
+              items={designDecorTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Design & Drafting Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Design & Drafting Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Planning and technical design
+            </p>
+            <ChromaGrid
+              items={designDraftingTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Event Management Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Event Management Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Coordinating and executing events
+            </p>
+            <ChromaGrid
+              items={eventManagementTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Venue Management Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Venue Management Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Managing event venues and spaces
+            </p>
+            <ChromaGrid
+              items={venueManagementTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Publicity Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Publicity Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Promoting events and activities
+            </p>
+            <ChromaGrid
+              items={publicityTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Press & Media Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Press & Media Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Handling media relations and coverage
+            </p>
+            <ChromaGrid
+              items={pressMediaTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Logistics Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Logistics Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Managing operations and supplies
+            </p>
+            <ChromaGrid
+              items={logisticsTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Food & Catering Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Food & Catering Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Handling food services and hospitality
+            </p>
+            <ChromaGrid
+              items={foodCateringTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Cultural Management Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Cultural Management Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Organizing cultural events and activities
+            </p>
+            <ChromaGrid
+              items={culturalManagementTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Sponsorship Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Sponsorship Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Securing partnerships and funding
+            </p>
+            <ChromaGrid
+              items={sponsorshipTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Social Media Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Social Media Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Managing online presence and engagement
+            </p>
+            <ChromaGrid
+              items={socialMediaTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Hospitality Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
+              Hospitality Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Welcoming and assisting guests
+            </p>
+            <ChromaGrid
+              items={hospitalityTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Core;
-*/
