@@ -34,17 +34,15 @@ const ImageCarousel = () => {
   }, []);
 
   const slides = [
-    "cultural",
-    "dance",
-    "dance2",
-    "dj",
-    "fashion",
-    "paintball",
-    "pitching",
-    "img1",
-    "singing",
-    "tall-tower",
-    "tech",
+    "/images/previous_technika/IMG-20251208-WA0005.jpg",
+    "/images/previous_technika/IMG-20251208-WA0006.jpg",
+    "/images/previous_technika/IMG-20251208-WA0009.jpg",
+    "/images/previous_technika/IMG-20251208-WA0010.jpg",
+    "/images/previous_technika/IMG-20251208-WA0011.jpg",
+    "/images/previous_technika/IMG-20251208-WA0012.jpg",
+    "/images/previous_technika/IMG-20251208-WA0013.jpg",
+    "/images/previous_technika/IMG-20251208-WA0014.jpg",
+    "/images/previous_technika/IMG-20251212-WA0040.jpg"
   ];
 
   return (
@@ -70,11 +68,11 @@ const ImageCarousel = () => {
         extensions={{ AutoScroll }}
         aria-label="Image Carousel"
       >
-        {slides.map((name) => (
-          <SplideSlide key={name}>
+        {slides.map((src, index) => (
+          <SplideSlide key={src}>
             <img
-              src={`/slideshow/${name}.webp`}
-              alt={name}
+              src={src}
+              alt={`Technika memory ${index + 1}`}
               className={imageClassName}
               style={{ padding: "0.4rem" }}
               loading="lazy"
