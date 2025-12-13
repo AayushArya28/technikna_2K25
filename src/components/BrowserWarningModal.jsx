@@ -1,7 +1,26 @@
 import { useEffect, useState } from "react";
 
+const isSafariBrowser = () => {
+    if (typeof navigator === "undefined") {
+        return false;
+    }
+
+    const ua = navigator.userAgent || "";
+    const vendor = navigator.vendor || "";
+
+    const isIOS = /iP(ad|hone|od)/i.test(ua);
+    const isOnIOS = isIOS && /Safari/i.test(ua) && !/CriOS|Chrome|FxiOS|EdgiOS|OPiOS|Brave/i.test(ua);
+    const isOnMac = /Safari/i.test(ua) && /Apple/i.test(vendor) && !/Chrome|CriOS|Edge|Edg|OPR|Brave|Vivaldi|YaBrowser/i.test(ua);
+
+    return isOnIOS || isOnMac;
+};
+
 const BrowserWarningModal = () => {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        setIsOpen(isSafariBrowser());
+    }, []);
 
     useEffect(() => {
         if (!isOpen) {
