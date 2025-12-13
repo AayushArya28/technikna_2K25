@@ -1,3 +1,4 @@
+/*
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -60,7 +61,6 @@ export default function Workshop() {
   const sliderRef = useRef(null);
   const cardRef = useRef(null);
 
-  // ✅ AUTO CENTER ACTIVE CARD (Fixes slider issue)
   useEffect(() => {
     if (!sliderRef.current || !cardRef.current) return;
 
@@ -88,77 +88,31 @@ export default function Workshop() {
   };
 
   return (
-    <div
-      className="min-h-screen text-white px-6 py-12 overflow-hidden bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: "url('./images/events.png')",
-      }}
-    >
-      {/* Heading */}
-      <button
-        onClick={() => navigate("/events")}
-        className="fixed 
-        top-24 left-4        
-        sm:top-6 sm:left-6  
-        lg:top-20 lg:left-20
-        z-50 
-        flex items-center gap-2 
-        hover:bg-black 
-        text-white 
-        px-3 py-2 sm:px-4 sm:py-2 
-        rounded-lg 
-        transition shadow-md
-        text-sm sm:text-base"
-      >
+    <div className="min-h-screen text-white px-6 py-12 overflow-hidden bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('./images/events.png')" }}>
+      <button onClick={() => navigate("/events")} className="fixed top-24 left-4 sm:top-6 sm:left-6 lg:top-20 lg:left-20 z-50 flex items-center gap-2 hover:bg-black text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition shadow-md text-sm sm:text-base">
         ← Back
       </button>
-      <h1 className="text-4xl font-bold mt-20 text-center text-white-500 mb-16">
-        TECHNICAL EVENTS
-      </h1>
-
+      <h1 className="text-4xl font-bold mt-20 text-center text-white-500 mb-16">TECHNICAL EVENTS</h1>
       <div className="mt-10 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center bg-black/80 rounded-3xl p-8">
-        {/* LEFT IMAGE */}
         <div className="rounded-2xl overflow-hidden">
-          <img
-            src={events[active].img}
-            alt="event"
-            className="w-full h-[260px] object-cover"
-          />
+          <img src={events[active].img} alt="event" className="w-full h-[260px] object-cover" />
         </div>
-
-        {/* RIGHT DETAILS */}
         <div>
-          <h2 className="text-3xl text-white font-bold mb-3">
-            {events[active].title}
-          </h2>
-
+          <h2 className="text-3xl text-white font-bold mb-3">{events[active].title}</h2>
           <p className="text-white mb-10">{events[active].desc}</p>
-
           <ul className="text-sm text-white space-y-2 mb-6">
             <li>➤ Solo & Team Participation</li>
             <li>➤ Certificates & Cash Prizes</li>
             <li>➤ On-Spot Evaluation</li>
           </ul>
-
-          <button className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg text-white font-bold">
-            Register Now
-          </button>
+          <button className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg text-white font-bold">Register Now</button>
         </div>
       </div>
       <div className="relative flex items-center justify-center max-w-7xl mx-auto mb-24">
-        {/* LEFT ARROW */}
-        <button
-          onClick={prev}
-          className="absolute left-0 z-30 bg-black text-white px-3 py-2 rounded-full"
-        >
+        <button onClick={prev} className="absolute left-0 z-30 bg-black text-white px-3 py-2 rounded-full">
           ◀
         </button>
-
-        {/* SLIDER TRACK */}
-        <div
-          ref={sliderRef}
-          className="flex gap-6 px-20 overflow-hidden items-center h-[300px]"
-        >
+        <div ref={sliderRef} className="flex gap-6 px-20 overflow-hidden items-center h-[300px]">
           {events.map((event, index) => {
             const isActive = index === active;
 
@@ -167,21 +121,9 @@ export default function Workshop() {
                 key={index}
                 ref={isActive ? cardRef : null}
                 onClick={() => setActive(index)}
-                className={`relative cursor-pointer transition-all duration-500 rounded-xl overflow-hidden flex-shrink-0
-                ${
-                  isActive
-                    ? "scale-110 z-20 shadow-[0_0_35px_#ff0000]"
-                    : "scale-90 opacity-50"
-                }
-                w-[170px] h-[240px]`}
+                className={`relative cursor-pointer transition-all duration-500 rounded-xl overflow-hidden flex-shrink-0 ${isActive ? "scale-110 z-20 shadow-[0_0_35px_#ff0000]" : "scale-90 opacity-50"} w-[170px] h-[240px]`}
               >
-                <img
-                  src={event.img}
-                  alt={event.title}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-
-                {/* TEXT */}
+                <img src={event.img} alt={event.title} className="absolute inset-0 w-full h-full object-cover" />
                 <div className="absolute bottom-0 w-full p-2 bg-black/40">
                   <h2 className="text-s font-bold text-white">{event.title}</h2>
                 </div>
@@ -189,15 +131,29 @@ export default function Workshop() {
             );
           })}
         </div>
-
-        {/* RIGHT ARROW */}
-        <button
-          onClick={next}
-          className="absolute right-0 z-30 bg-black text-white px-3 py-2 rounded-full"
-        >
+        <button onClick={next} className="absolute right-0 z-30 bg-black text-white px-3 py-2 rounded-full">
           ▶
         </button>
       </div>
+    </div>
+  );
+}
+*/
+
+import { useNavigate } from "react-router-dom";
+
+export default function Workshop() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white px-6">
+      <button
+        onClick={() => navigate("/events")}
+        className="fixed top-24 left-4 sm:top-6 sm:left-6 lg:top-20 lg:left-20 z-50 flex items-center gap-2 hover:bg-black text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition shadow-md text-sm sm:text-base"
+      >
+        ← Back
+      </button>
+      <img src="/images/coming-soon.jpg" alt="Coming Soon" className="max-w-xs sm:max-w-sm md:max-w-md opacity-90" />
     </div>
   );
 }
