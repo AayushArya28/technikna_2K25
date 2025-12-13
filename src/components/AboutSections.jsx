@@ -39,21 +39,21 @@ export const AboutTechnika = () => {
                   className="text-center p-4 rounded-lg shadow-md"
                   style={{ backgroundColor: "#f52f2f" }}
                 >
-                  <div className="text-3xl font-bold text-white">50+</div>
+                  <div className="text-3xl font-bold text-white">30+</div>
                   <div className="text-sm text-gray-200 mt-1">Events</div>
                 </div>
                 <div
                   className="text-center p-4 rounded-lg shadow-md"
                   style={{ backgroundColor: "#f52f6e" }}
                 >
-                  <div className="text-3xl font-bold text-white">10K+</div>
+                  <div className="text-3xl font-bold text-white">1000+</div>
                   <div className="text-sm text-gray-200 mt-1">Participants</div>
                 </div>
                 <div
                   className="text-center p-4 rounded-lg shadow-md"
                   style={{ backgroundColor: "#f52fa3" }}
                 >
-                  <div className="text-3xl font-bold text-white">100+</div>
+                  <div className="text-3xl font-bold text-white">10+</div>
                   <div className="text-sm text-gray-200 mt-1">Colleges</div>
                 </div>
               </div>

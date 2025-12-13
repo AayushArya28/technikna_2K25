@@ -433,7 +433,7 @@ const socialMediaTeam = [
     url: "https://github.com/aayatf",
   },
   {
-    image: "https://i.ibb.co/hrrq45x/IMG-20250531-181900779-HDR-2-Harshika-Singh.jpg",
+    image: "https://i.ibb.co/cfgn40m/harshika.jpg",
     title: "Harshika Singh",
     subtitle: "CO-HEAD",
     handle: "@harshikas",
@@ -455,7 +455,7 @@ const hospitalityTeam = [
     url: "https://github.com/anurag",
   },
   {
-    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
+    image: "https://i.ibb.co/5xB0qbb6/IMG-20251009-WA0109-Aman-singh.jpg",
     title: "Aman Kumar",
     subtitle: "CO-HEAD",
     handle: "@amank",

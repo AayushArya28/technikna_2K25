@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import { Link } from "react-router-dom";
 import {
   Facebook,
   
@@ -120,6 +121,14 @@ export function Footer() {
 
   // Icon components used for footer (Facebook is index 0 — currently hidden)
   const ICON_COMPONENTS = [Facebook, XIcon, Instagram, Linkedin, Youtube];
+
+  const INTERNAL_LINKS = [
+    { text: "Contact Us", to: "/contact" },
+    { text: "Events", to: "/events" },
+    { text: "Core Team", to: "/core" },
+    { text: "Merchandise", to: "/merchandise" },
+    { text: "Devs", to: "/devs" },
+  ];
 
   return (
     <footer
@@ -245,14 +254,14 @@ export function Footer() {
           >
             <h3 className="text-lg font-semibold mb-4 text-white">Important Links</h3>
             <ul className="space-y-2 text-sm mb-8">
-              {["About Us", "Events", "Core Team", "Contact"].map((text) => (
+              {INTERNAL_LINKS.map(({ text, to }) => (
                 <li key={text}>
-                  <a
-                    href="#"
+                  <Link
+                    to={to}
                     className="text-gray-400 hover:text-red-400 transition-colors duration-300 hover:translate-x-1 inline-block"
                   >
                     {text}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -314,10 +323,10 @@ export function Footer() {
                 <MapPin size={16} /> <span>BIT Patna, Bihar, India</span>
               </a>
               <a
-                href="tel:+911234567890"
+                href="tel:+917070747693"
                 className="flex items-center space-x-2 hover:text-red-400 transition-colors duration-300"
               >
-                <Phone size={16} /> <span>+91 1234567890</span>
+                <Phone size={16} /> <span>+91 70707 47693</span>
               </a>
               <a
                 href="mailto:technika@bitmesra.ac.in"
