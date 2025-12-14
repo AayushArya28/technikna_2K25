@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../firebase";
 import StaggeredMenu from "./StaggeredMenu";
+import UserProfileModal from "./UserProfileModal";
 
 gsap.registerPlugin(useGSAP);
 
@@ -14,6 +15,7 @@ function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const userMenuCloseTimeout = useRef(null);
   const location = useLocation();
 
@@ -219,6 +221,8 @@ function Nav() {
           backgroundColor: "transparent",
         }}
       >
+
+
         <StaggeredMenu
           position="right"
           items={menuItems}
@@ -241,6 +245,7 @@ function Nav() {
             setIsMenuOpen(false);
           }}
         />
+
       </div>
     );
   }
@@ -296,10 +301,18 @@ function Nav() {
                 onMouseLeave={() => {
                   userMenuCloseTimeout.current = setTimeout(() => setUserMenuOpen(false), 140);
                 }}
-                className={`absolute right-0 mt-3 min-w-[160px] rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-150 ${
-                  userMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
-                }`}
+                className={`absolute right-0 mt-3 min-w-[160px] rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-150 ${userMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
+                  }`}
               >
+                <button
+                  className="block w-full px-4 py-3 text-left text-[0.95rem] hover:bg-white/10"
+                  onClick={() => {
+                    setShowProfileModal(true);
+                    setUserMenuOpen(false);
+                  }}
+                >
+                  My Profile
+                </button>
                 <button
                   className="block w-full px-4 py-3 text-left text-[0.95rem] hover:bg-white/10"
                   onClick={handleSignOut}
@@ -311,6 +324,7 @@ function Nav() {
           )}
         </div>
       </div>
+      {showProfileModal && <UserProfileModal onClose={() => setShowProfileModal(false)} />}
     </nav>
   );
 }
@@ -355,9 +369,8 @@ function DropdownNavItem({ item, onClick }) {
         <div
           onMouseEnter={openMenu}
           onMouseLeave={scheduleClose}
-          className={`absolute left-1/2 top-full z-50 mt-2 w-max min-w-[190px] -translate-x-1/2 rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-200 ${
-            open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-1 pointer-events-none"
-          }`}
+          className={`absolute left-1/2 top-full z-50 mt-2 w-max min-w-[190px] -translate-x-1/2 rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-200 ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-1 pointer-events-none"
+            }`}
         >
           {item.dropdown.map((child) => (
             <Link
