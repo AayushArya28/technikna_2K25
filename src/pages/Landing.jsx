@@ -6,10 +6,13 @@ import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/SplitText";
 import { useEffect, useState } from "react"
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useAuth } from "../context/auth.jsx";
 
 gsap.registerPlugin(useGSAP, SplitText, ScrollTrigger);
 
 const Landing = ({ animate }) => {
+  const { user } = useAuth();
+
   useGSAP(() => {
     if (animate) {
       const heroText = new SplitText("#heroText", { type: "chars" });
@@ -276,12 +279,12 @@ const Landing = ({ animate }) => {
       {/* REGISTER Button */}
       
       <div
-  className={`parallax absolute center left-1/2 transform -translate-x-1/2 bottom-10 max-md:bottom-20
+      className={`parallax absolute left-0 right-0 bottom-10 max-md:bottom-20
       flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center ${isMobile ? "gap-1" : "gap-4"} group z-10000`}
   data-depth="0.30"
 >
   {/* REGISTER BUTTON */}
-    <Link to="/login">
+    <Link to={user ? "/merchandise" : "/login"}>
       {/* Mobile Button */}
       <div className="relative block md:hidden w-auto justify-center mb-3">
         <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
@@ -289,7 +292,7 @@ const Landing = ({ animate }) => {
             transition duration-200 transform
             hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
             active:scale-90">
-          Register Now
+          {user ? "Merchandise" : "Register Now"}
         </button>
       </div>
 
@@ -300,7 +303,7 @@ const Landing = ({ animate }) => {
             transition duration-200 transform
             hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
             active:scale-90">
-          Register Now
+          {user ? "Merchandise" : "Register Now"}
         </button>
       </div>
     </Link>

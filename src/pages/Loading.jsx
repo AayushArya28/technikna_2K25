@@ -1,169 +1,162 @@
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import DrawSVGPlugin from "gsap/DrawSVGPlugin";
-import "./Loading.css";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 
-gsap.registerPlugin(DrawSVGPlugin);
-
-function Loading({ onFinish }) {
-  const svgContainerRef = useRef(null);
-  const enterBtnRef = useRef(null);
-  const splashSvgRef = useRef(null);
+export default function Loading({ onFinish }) {
+  const loaderRef = useRef(null);
+  const diamondRef = useRef(null);
+  const diamondWireRef = useRef(null);
+  const squareRef = useRef(null);
+  const scanSvgRef = useRef(null);
+  const logoRef = useRef(null);
+  const maskRef = useRef(null);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const loaderElement = document.querySelector(".loader");
-
-    if (loaderElement) {
-      loaderElement.style.strokeWidth = "0.2";
-    }
-
-    gsap.set(".loader", {
-      drawSVG: "0%",
-      strokeWidth: 0.2,
+    gsap.to(diamondRef.current, {
+      rotate: 360,
+      duration: 10,
+      repeat: -1,
+      ease: "linear",
     });
 
-    fetch("/landscape.svg")
-      .then((res) => res.text())
-      .then((svgText) => {
-        if (svgContainerRef.current) {
-          svgContainerRef.current.innerHTML = svgText;
+    gsap.to(squareRef.current, {
+      scale: 1.05,
+      boxShadow: "0 0 60px rgba(255,0,0,0.7)",
+      duration: 1.4,
+      repeat: -1,
+      yoyo: true,
+      ease: "power2.inOut",
+    });
 
-          // Make SVG fill container height
-          const svgEl = svgContainerRef.current.querySelector("svg");
-          if (svgEl) {
-            svgEl.style.height = "100%"; // Fill container height
-            svgEl.style.width = "auto";  // Keep aspect ratio
-            svgEl.style.display = "block";
-            svgEl.style.position = "relative";
-          }
-
-          const paths = svgContainerRef.current.querySelectorAll("path");
-
-          paths.forEach((path) => {
-            const length = path.getTotalLength();
-            path.style.strokeDasharray = length;
-            path.style.strokeDashoffset = length;
-            path.style.stroke = "#000";
-            path.style.strokeWidth = "2";
-            path.style.fill = "none";
-          });
-
-          const tl = gsap.timeline({
-            onComplete: () => {
-              const loaderText = document.querySelector(".loader-text");
-              if (loaderText) loaderText.textContent = "Start";
-
-              const loaderGroup = document.querySelector(".loader-group");
-              if (loaderGroup)
-                loaderGroup.addEventListener("click", handleEnterClick);
-            },
-          });
-
-          tl.to(paths, {
-            strokeDashoffset: 0,
-            duration: 2,
-            stagger: 0.001,
-            ease: "power1.inOut",
-            onUpdate: () => {
-              gsap.to(".loader", {
-                drawSVG: `${tl.progress() * 100}%`,
-                duration: 0.1,
-              });
-
-              const loaderText = document.querySelector(".loader-text");
-              if (loaderText)
-                loaderText.textContent = `${Math.round(tl.progress() * 100)}%`;
-            },
-          });
-        }
-      });
+    gsap.to({}, {
+      duration: 5,
+      ease: "power2.inOut",
+      onUpdate() {
+        setProgress(Math.floor(this.progress() * 100));
+      },
+      onComplete() {
+        exitLoader();
+      },
+    });
   }, []);
 
-  const handleEnterClick = () => {
-    const enterBtn = enterBtnRef.current;
-    const circles = splashSvgRef.current.querySelectorAll("circle");
+  const exitLoader = () => {
+    const tl = gsap.timeline({ onComplete: onFinish });
 
-    if (!enterBtn || circles.length === 0) return;
-
-    const rect = enterBtn.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-
-    circles.forEach((circle) => {
-      circle.setAttribute("cx", cx);
-      circle.setAttribute("cy", cy);
-      const maxRadius = window.innerWidth * (0.6 + Math.random() * 0.4);
-      gsap.to(circle, {
-        r: maxRadius,
-        duration: 1 + Math.random() * 0.5,
-        ease: "power2.out",
-      });
+    // Scanlines appear
+    tl.to(scanSvgRef.current, {
+      opacity: 1,
+      duration: 0.25,
+      ease: "power2.out",
     });
 
-    setTimeout(() => {
-      onFinish();
-    }, 1500);
+    tl.fromTo(
+      scanSvgRef.current,
+      { y: "-0.6%" },
+      { y: "0.6%", duration: 0.6, ease: "power1.inOut" }
+    );
+
+    // Logo comes out
+    tl.to(logoRef.current, {
+      z: 160,
+      scale: 1.5,
+      duration: 0.6,
+      ease: "power3.out",
+    }, "-=0.3");
+
+    // Logo rotation
+    tl.to(logoRef.current, {
+      rotateY: 300,
+      rotateX: 10,
+      duration: 0.9,
+      ease: "power4.inOut",
+    });
+
+    // Wireframe diamond
+    tl.to(diamondWireRef.current, {
+      opacity: 1,
+      duration: 0.3,
+      ease: "power2.out",
+    }, "-=0.6");
+
+    // 🌑 MASK EXPANSION (key transition)
+    tl.to(maskRef.current, {
+      scale: 20,
+      duration: 1.1,
+      ease: "power4.inOut",
+    }, "-=0.2");
+
+    // Fade loader inside mask
+    tl.to(loaderRef.current, {
+      opacity: 0,
+      duration: 0.2,
+    }, "-=0.3");
   };
 
   return (
-    <div className="relative w-screen h-screen bg-[beige] overflow-hidden">
-      {/* SVG Container covering full height */}
-      <div
-        ref={svgContainerRef}
-        className="absolute top-0 left-1/2 -translate-x-1/2 h-screen"
-        id="svgContainer"
-        style={{ overflow: "visible" }}
-      ></div>
+    <div
+      ref={loaderRef}
+      className="fixed inset-0 z-50 bg-black text-white overflow-hidden
+                 [perspective:1200px]"
+    >
+      {/* Mask overlay */}
+      <div className="absolute inset-0 z-[80] pointer-events-none flex items-center justify-center">
+        <div
+          ref={maskRef}
+          className="w-24 h-24 rounded-full bg-red-600 scale-0"
+        />
+      </div>
 
-      {/* Splash Circles */}
-      <svg
-        ref={splashSvgRef}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none z-40"
-      >
-        {[...Array(5)].map((_, i) => (
-          <circle key={i} r="${i+1}" fill="beige" opacity="0.9" />
-        ))}
-      </svg>
+      <div className="relative w-full h-full px-12 py-10">
+        {/* Top Left */}
+        <div className="absolute top-10 left-10 tracking-widest">
+          <h1 className="text-red-600 text-sm mb-2">TECHNIKA 2k26</h1>
+          <p className="text-xs text-gray-300 leading-relaxed">
+            ENTER THE FEST <br />
+            FROM THE UPSIDE DOWN.
+          </p>
+        </div>
 
-      {/* Centered Enter Button */}
-      <div className="absolute inset-0 flex items-center justify-center z-10">
-        <svg
-          version="1.1"
-          width="256"
-          height="256"
-          viewBox="0 0 16 16"
-          ref={enterBtnRef}
-        >
-          <g className="cursor-pointer loader-group">
-            <rect
-              x="1.9"
-              y="5.9"
-              width="12"
-              height="4"
-              stroke="black"
-              strokeWidth="0"
-              fill="#F5F5DC"
-              ry="3"
-              rx="2"
-              className="loader"
+        {/* Center */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative w-56 h-56 flex items-center justify-center">
+            <div
+              ref={diamondRef}
+              className="absolute w-56 h-56 rotate-45 bg-red-600/20 blur-[80px]"
             />
-            <text
-              x="7.9"
-              y="8.1"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fontSize="2"
-              fill="black"
-              fontFamily="Arial, sans-serif"
-              className="select-none loader-text"
+
+            <div
+              ref={diamondWireRef}
+              className="absolute w-64 h-64 rotate-45 border border-red-500/60
+                         shadow-[0_0_28px_rgba(255,0,0,0.45)]
+                         opacity-100"
+            />
+
+            <div
+              ref={squareRef}
+              className="relative w-36 h-36 bg-red-600 flex items-center justify-center"
             >
-              0%
-            </text>
-          </g>
-        </svg>
+              <img
+                ref={logoRef}
+                src="/landscape.svg"
+                alt="logo"
+                className="w-16 h-16"
+                style={{ transformStyle: "preserve-3d" }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Left */} 
+        <div className="absolute bottom-10 left-10 text-xs tracking-wide text-gray-300"> 
+        <p>INDIA : PATNA</p> <p>25°35′44″ N, 85°5′11″ E</p> 
+        <p className="text-red-600 mt-1">&gt; BIT PATNA</p> 
+        </div> 
+        {/* Bottom Right */} 
+        <div className="absolute bottom-6 right-6 text-red-600 font-light text-3xl sm:text-2xl md:text-4xl lg:text-5xl" style={{ lineHeight: 1.1, letterSpacing: "0.02em", userSelect: "none", }} > {progress}% </div> 
+        {/* Loading Bar */} 
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-red-600"> <div className="h-full bg-red-600 transition-all duration-75" style={{ width: `${progress}%` }} /> </div>
       </div>
     </div>
   );
 }
-
-export default Loading;

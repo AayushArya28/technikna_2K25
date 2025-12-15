@@ -2,9 +2,13 @@ import { Link, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import StaggeredMenu from "./StaggeredMenu";
+import { useAuth } from "../context/auth.jsx";
+
+const BASE_API_URL = "https://api.technika.co";
 
 gsap.registerPlugin(useGSAP);
 
@@ -12,10 +16,11 @@ function Nav() {
   const navRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuCloseTimeout = useRef(null);
   const location = useLocation();
+  const { user } = useAuth();
+  const [profileName, setProfileName] = useState("");
 
   // Scroll to top whenever the route changes
   useEffect(() => {
@@ -31,16 +36,72 @@ function Nav() {
   };
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
+    let cancelled = false;
+
+    const loadProfileName = async () => {
+      if (!user?.uid) {
+        setProfileName("");
+        return;
+      }
+
+      try {
+        const docRef = doc(db, "auth", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (cancelled) return;
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const name = typeof data?.name === "string" ? data.name.trim() : "";
+          if (name) {
+            setProfileName(name);
+            return;
+          }
+        } else {
+          setProfileName("");
+        }
+      } catch (err) {
+        console.error("Error fetching user name from DB:", err);
+        if (cancelled) return;
+      }
+
+      // Fallback: mimic Profile page behavior by trying delegate/alumni status
+      // (many users have their name stored server-side, not in Firestore).
+      try {
+        const token = await user.getIdToken();
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const [delegateRes, alumniRes] = await Promise.all([
+          fetch(`${BASE_API_URL}/delegate/status`, { headers }),
+          fetch(`${BASE_API_URL}/alumni/status`, { headers }),
+        ]);
+
+        const delegateData = delegateRes.ok ? await delegateRes.json() : null;
+        const alumniData = alumniRes.ok ? await alumniRes.json() : null;
+
+        const candidateName =
+          (typeof delegateData?.name === "string" && delegateData.name.trim()) ||
+          (typeof alumniData?.name === "string" && alumniData.name.trim()) ||
+          "";
+
+        if (!cancelled) setProfileName(candidateName);
+      } catch (err) {
+        console.error("Error fetching user name from API:", err);
+        if (!cancelled) setProfileName("");
+      }
+    };
+
+    loadProfileName();
 
     return () => {
-      if (unsub) unsub();
+      cancelled = true;
     };
-  }, []);
+  }, [user?.uid]);
 
-  const displayName = user?.displayName || (user?.email ? user.email.split("@")[0] : "User");
+  const displayName =
+    profileName ||
+    user?.displayName ||
+    (user?.email ? user.email.split("@")[0] : "User");
+
   const firstName = (displayName || "User").trim().split(/\s+/)[0] || "User";
   const avatarLetter = (firstName[0] || "U").toUpperCase();
 
@@ -312,7 +373,7 @@ function Nav() {
               <button
                 className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition"
               >
-                <span>Hi, {displayName}</span>
+                <span>Hi, {firstName}</span>
                 <span className="text-base">▾</span>
               </button>
 
