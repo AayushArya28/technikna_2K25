@@ -379,14 +379,14 @@ export const StaggeredMenu = ({
     <div
       className={`sm-scope z-40 ${
         isFixed
-          ? "fixed top-0 left-0 w-screen h-screen overflow-hidden"
+          ? `fixed top-0 left-0 w-screen ${open ? "h-screen overflow-hidden" : "h-auto"}`
           : "w-full h-full"
       }`}
     >
       <div
         className={
           (className ? className + " " : "") +
-          "staggered-menu-wrapper relative w-full h-full"
+          `staggered-menu-wrapper relative w-full ${open ? "h-full" : "h-auto"}`
         }
         style={accentColor ? { ["--sm-accent"]: accentColor } : undefined}
         data-position={position}
@@ -421,7 +421,10 @@ export const StaggeredMenu = ({
           className="staggered-menu-header absolute top-0 left-0 w-full flex items-center justify-between p-[2em] backdrop-blur-md pointer-events-none z-20"
           aria-label="Main navigation header"
           // transluscent bg and bg blur for better visibility
-          style={{backgroundColor: "rgba(0,0,0,0.35)"}}
+          style={{
+            backgroundColor: "rgba(0,0,0,0.35)",
+            paddingTop: "calc(3em + env(safe-area-inset-top))",
+          }}
         >
           <div
             className="sm-logo flex items-center select-none pointer-events-auto"
@@ -492,8 +495,11 @@ export const StaggeredMenu = ({
         <aside
           id="staggered-menu-panel"
           ref={panelRef}
-          className="staggered-menu-panel absolute top-0 right-0 h-full bg-black flex flex-col p-[6em_2em_2em_2em] overflow-y-auto z-10 backdrop-blur-[12px]"
-          style={{ WebkitBackdropFilter: "blur(12px)" }}
+          className="staggered-menu-panel absolute top-0 right-0 h-full bg-black flex flex-col p-[2em] overflow-y-auto z-10 backdrop-blur-[12px]"
+          style={{
+            WebkitBackdropFilter: "blur(12px)",
+            paddingTop: "calc(8em + env(safe-area-inset-top))",
+          }}
           aria-hidden={!open}
         >
           <div className="sm-panel-inner flex-1 flex flex-col gap-5">

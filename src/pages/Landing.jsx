@@ -279,7 +279,7 @@ const Landing = ({ animate }) => {
       {/* REGISTER Button */}
       
       <div
-  className={`parallax absolute center left-1/2 transform -translate-x-1/2 bottom-10 max-md:bottom-20
+      className={`parallax absolute left-0 right-0 bottom-10 max-md:bottom-20
       flex ${isMobile ? "flex-col" : "flex-row"} items-center justify-center ${isMobile ? "gap-1" : "gap-4"} group z-10000`}
   data-depth="0.30"
 >
