@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "../firebase";
@@ -17,6 +16,8 @@ const DetailRow = ({ label, value }) => (
 
 const DelegateRegistration = () => {
     const navigate = useNavigate();
+    const BASE_API_URL = "https://api.technika.co";
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -28,6 +29,8 @@ const DelegateRegistration = () => {
     const [loading, setLoading] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState(null);
     const [checkingStatus, setCheckingStatus] = useState(false);
+    const [checkingGroupStatus, setCheckingGroupStatus] = useState(false);
+    const [inGroupDelegate, setInGroupDelegate] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [agreed, setAgreed] = useState(false);
 
@@ -50,7 +53,6 @@ const DelegateRegistration = () => {
         setCheckingStatus(true);
         try {
             const token = await user.getIdToken();
-            const BASE_API_URL = "https://api.technika.co";
             const response = await fetch(`${BASE_API_URL}/delegate/status-self`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -88,7 +90,41 @@ const DelegateRegistration = () => {
         }
     };
 
-    React.useEffect(() => {
+    const checkGroupDelegateStatus = async () => {
+        const user = auth.currentUser;
+        if (!user) {
+            setInGroupDelegate(false);
+            return;
+        }
+
+        setCheckingGroupStatus(true);
+        try {
+            const token = await user.getIdToken();
+            const response = await fetch(`${BASE_API_URL}/delegate/status/user`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (response.status === 404) {
+                setInGroupDelegate(false);
+                return;
+            }
+
+            if (!response.ok) {
+                setInGroupDelegate(false);
+                return;
+            }
+
+            const data = await response.json().catch(() => ({}));
+            setInGroupDelegate(Boolean(data?.isOwner || data?.isMember));
+        } catch (e) {
+            console.error("Group delegate status check failed", e);
+            setInGroupDelegate(false);
+        } finally {
+            setCheckingGroupStatus(false);
+        }
+    };
+
+    useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
                 setFormData((prev) => ({
@@ -96,13 +132,23 @@ const DelegateRegistration = () => {
                     email: user.email || prev.email,
                 }));
                 checkStatus();
+                checkGroupDelegateStatus();
+            } else {
+                setInGroupDelegate(false);
             }
         });
         return () => unsubscribe();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (inGroupDelegate) {
+            alert("You are already a part of group delegate.");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -118,7 +164,35 @@ const DelegateRegistration = () => {
                 return;
             }
 
-            // Backend handles database storage, just move to payment/confirmation view
+            const user = auth.currentUser;
+            if (!user) {
+                alert("Please login first.");
+                navigate("/login");
+                return;
+            }
+
+            const token = await user.getIdToken();
+            const response = await fetch(`${BASE_API_URL}/delegate/register/self`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name: String(formData.name).trim(),
+                    email: String(formData.email).trim(),
+                    phone: String(formData.phone).trim(),
+                    address: String(formData.address).trim(),
+                    college: String(formData.college).trim(),
+                }),
+            });
+
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                alert(data.message || "Registration failed. Please try again.");
+                return;
+            }
+
             setSubmitted(true);
         } catch (error) {
             console.error("Error registering delegate: ", error);
@@ -127,8 +201,6 @@ const DelegateRegistration = () => {
             setLoading(false);
         }
     };
-
-    const BASE_API_URL = "https://api.technika.co";
 
     const handlePayment = async () => {
         if (!agreed) {
@@ -343,6 +415,19 @@ const DelegateRegistration = () => {
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="relative space-y-6 rounded-[28px] border border-white/12 bg-black/55 p-6 md:p-10 shadow-[0_40px_120px_rgba(255,0,48,0.25)] backdrop-blur-xl">
+                        {(checkingGroupStatus || inGroupDelegate) && (
+                            <div className="rounded-2xl border border-white/12 bg-white/5 p-4 text-sm text-white/80 backdrop-blur-lg">
+                                {checkingGroupStatus ? (
+                                    <span className="uppercase tracking-[0.25em] text-white/60">Checking group status...</span>
+                                ) : (
+                                    <>
+                                        <span className="font-semibold uppercase tracking-[0.25em] text-white/60">Notice:</span>{" "}
+                                        You are already a part of group delegate.
+                                    </>
+                                )}
+                            </div>
+                        )}
+
                         <div className="space-y-2">
                             <label
                                 htmlFor="name"
@@ -357,6 +442,7 @@ const DelegateRegistration = () => {
                                 value={formData.name}
                                 onChange={handleChange}
                                 placeholder="Enter your full name"
+                                disabled={inGroupDelegate}
                                 className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/50 transition"
                                 required
                             />
@@ -394,6 +480,7 @@ const DelegateRegistration = () => {
                                 value={formData.phone}
                                 onChange={handleChange}
                                 placeholder="Enter your phone number"
+                                disabled={inGroupDelegate}
                                 className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/50 transition"
                                 required
                             />
@@ -413,6 +500,7 @@ const DelegateRegistration = () => {
                                 onChange={handleChange}
                                 placeholder="Enter your full address"
                                 rows="3"
+                                disabled={inGroupDelegate}
                                 className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/50 transition resize-none"
                                 required
                             ></textarea>
@@ -432,6 +520,7 @@ const DelegateRegistration = () => {
                                 value={formData.college}
                                 onChange={handleChange}
                                 placeholder="Enter your college name"
+                                disabled={inGroupDelegate}
                                 className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/50 transition"
                                 required
                             />
@@ -440,11 +529,17 @@ const DelegateRegistration = () => {
                         <div className="pt-6">
                             <button
                                 type="submit"
-                                disabled={loading}
+                                disabled={loading || checkingGroupStatus || inGroupDelegate}
                                 className={`w-full rounded-full bg-white py-4 text-lg font-semibold uppercase tracking-[0.3em] text-black transition-all duration-300 hover:-translate-y-1 hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""
                                     }`}
                             >
-                                {loading ? "Registering..." : "Register Now"}
+                                {checkingGroupStatus
+                                    ? "Checking..."
+                                    : inGroupDelegate
+                                    ? "Already In Group Delegate"
+                                    : loading
+                                    ? "Registering..."
+                                    : "Register Now"}
                             </button>
                         </div>
                     </form>

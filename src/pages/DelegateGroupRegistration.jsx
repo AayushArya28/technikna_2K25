@@ -1,87 +1,724 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { db, auth } from '../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { Plus, Trash2 } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../firebase";
+import { Loader2 } from "lucide-react";
+
+function FlipCard({ flipped, front, back, minHeightClassName }) {
+    return (
+        <div className={`relative w-full ${minHeightClassName || "min-h-[420px]"} [perspective:1000px]`}>
+            <div
+                className={
+                    "absolute inset-0 transition-transform duration-500 [transform-style:preserve-3d] " +
+                    (flipped ? "[transform:rotateY(180deg)]" : "")
+                }
+            >
+                <div className="absolute inset-0 [backface-visibility:hidden]">{front}</div>
+                <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">{back}</div>
+            </div>
+        </div>
+    );
+}
 
 const DelegateGroupRegistration = () => {
     const navigate = useNavigate();
-    const [leader, setLeader] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        address: '',
-        college: ''
+
+    const BASE_API_URL = "https://api.technika.co";
+
+    const [authUser, setAuthUser] = useState(null);
+    const [userReady, setUserReady] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [checkingStatus, setCheckingStatus] = useState(true);
+
+    const [apiError, setApiError] = useState("");
+    const [notice, setNotice] = useState("");
+
+    const [checkingSelfStatus, setCheckingSelfStatus] = useState(false);
+    const [selfRegistered, setSelfRegistered] = useState(false);
+
+    const ROOM_CACHE_KEY = "technika_delegate_room";
+    const readCachedRoom = () => {
+        try {
+            const raw = localStorage.getItem(ROOM_CACHE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed !== "object") return null;
+            return parsed;
+        } catch {
+            return null;
+        }
+    };
+    const writeCachedRoom = ({ uid, roomId, role }) => {
+        try {
+            localStorage.setItem(
+                ROOM_CACHE_KEY,
+                JSON.stringify({ uid, roomId, role, ts: Date.now() })
+            );
+        } catch {
+            // ignore
+        }
+    };
+    const clearCachedRoom = () => {
+        try {
+            localStorage.removeItem(ROOM_CACHE_KEY);
+        } catch {
+            // ignore
+        }
+    };
+
+    // The backend may be eventually-consistent right after create/join.
+    // Keep the room visible for a short grace period even if status endpoint returns 404.
+    const pendingRoomRef = useRef({ roomId: "", ts: 0 });
+    const markPendingRoom = (roomId) => {
+        pendingRoomRef.current = { roomId, ts: Date.now() };
+    };
+    const clearPendingRoom = () => {
+        pendingRoomRef.current = { roomId: "", ts: 0 };
+    };
+    const getPendingRoomIdIfFresh = () => {
+        const pending = pendingRoomRef.current;
+        if (!pending?.roomId) return "";
+        // 12s grace window
+        if (Date.now() - pending.ts > 12_000) return "";
+        return pending.roomId;
+    };
+
+    const [activeMode, setActiveMode] = useState(null); // 'owner' | 'member' | null
+
+    const [selectedMode, setSelectedMode] = useState("owner"); // 'owner' | 'member'
+
+    const [ownerForm, setOwnerForm] = useState({
+        name: "",
+        phone: "",
+        college: "",
     });
 
-    const [members, setMembers] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
+    const [memberForm, setMemberForm] = useState({
+        name: "",
+        phone: "",
+        college: "",
+        roomId: "",
+    });
 
-    const handleLeaderChange = (e) => {
-        setLeader({
-            ...leader,
-            [e.target.name]: e.target.value
+    const [status, setStatus] = useState({
+        isOwner: false,
+        isMember: false,
+        roomId: "",
+    });
+
+    const [room, setRoom] = useState(null);
+
+    const [copied, setCopied] = useState(false);
+
+    const canCreateOrJoin = useMemo(() => !status.isOwner && !status.isMember, [status]);
+
+    const lockedMode = useMemo(() => {
+        if (status.isOwner) return "owner";
+        if (status.isMember) return "member";
+        return null;
+    }, [status.isOwner, status.isMember]);
+
+    const groupBlockedBySelf = useMemo(() => selfRegistered && canCreateOrJoin, [selfRegistered, canCreateOrJoin]);
+
+    const flipOwnerCard = Boolean(status.isMember && status.roomId);
+    const flipMemberCard = Boolean(status.isOwner && status.roomId);
+
+    const ownerCardDisabled = canCreateOrJoin && activeMode === "member";
+    const memberCardDisabled = canCreateOrJoin && activeMode === "owner";
+
+    const getAuthHeaders = async ({ json = true } = {}) => {
+        if (!authUser) throw new Error("Not authenticated");
+        const token = await authUser.getIdToken();
+        return {
+            Authorization: `Bearer ${token}`,
+            ...(json ? { "Content-Type": "application/json" } : {}),
+        };
+    };
+
+    const clearRoomState = (msg = "") => {
+        clearCachedRoom();
+        clearPendingRoom();
+        setApiError("");
+        setRoom(null);
+        setStatus({ isOwner: false, isMember: false, roomId: "" });
+        if (msg) setNotice(msg);
+    };
+
+    const fetchRoomDetails = async (roomId) => {
+        const headers = await getAuthHeaders({ json: false });
+        const resp = await fetch(`${BASE_API_URL}/delegate/status/room/${roomId}`, {
+            headers,
         });
+        if (!resp.ok) {
+            // If room was deleted, notify and reset UI (especially important for members)
+            if (resp.status === 404) {
+                clearRoomState("This group was deleted by the owner.");
+                return false;
+            }
+            const data = await resp.json().catch(() => ({}));
+            throw new Error(data.message || "Failed to fetch room details");
+        }
+        const data = await resp.json();
+
+        // Support a few common response shapes
+        // - { owner, users, roomId }
+        // - { room: { owner, users, roomId } }
+        setRoom(data?.room || data);
+        return true;
     };
 
-    const addMember = () => {
-        setMembers([...members, { name: '', email: '', phone: '' }]);
+    const refreshStatus = async () => {
+        setApiError("");
+        const headers = await getAuthHeaders({ json: false });
+        const resp = await fetch(`${BASE_API_URL}/delegate/status/user`, { headers });
+
+        if (!resp.ok) {
+            // Treat 404 as "no room"
+            if (resp.status === 404) {
+                const pendingRoomId = getPendingRoomIdIfFresh();
+                // If we just created/joined, keep showing the optimistic room UI.
+                if (pendingRoomId) {
+                    try {
+                        const ok = await fetchRoomDetails(pendingRoomId);
+                        if (!ok) return;
+                    } catch (err) {
+                        console.error(err);
+                    }
+                    return;
+                }
+
+                // Fallback to cached room on refresh (scoped to this user)
+                const cached = readCachedRoom();
+                if (cached?.uid && cached?.roomId && authUser?.uid && cached.uid === authUser.uid) {
+                    setStatus({
+                        isOwner: cached.role === "owner",
+                        isMember: cached.role === "member",
+                        roomId: cached.roomId,
+                    });
+                    try {
+                        const ok = await fetchRoomDetails(cached.roomId);
+                        if (!ok) return;
+                    } catch (err) {
+                        console.error(err);
+                    }
+                    return;
+                }
+
+                clearRoomState();
+                return;
+            }
+            const data = await resp.json().catch(() => ({}));
+            throw new Error(data.message || "Failed to fetch user status");
+        }
+
+        const data = await resp.json();
+        const roomId = data.roomId || data?.room?.roomId || "";
+
+        // If server says user is not in a room, reset quickly
+        if (!roomId) {
+            clearRoomState();
+            return;
+        }
+
+        setStatus({
+            isOwner: Boolean(data.isOwner),
+            isMember: Boolean(data.isMember),
+            roomId,
+        });
+
+        if (roomId && authUser?.uid) {
+            writeCachedRoom({
+                uid: authUser.uid,
+                roomId,
+                role: data.isOwner ? "owner" : "member",
+            });
+        } else {
+            clearCachedRoom();
+        }
+
+        if (roomId && roomId === pendingRoomRef.current.roomId) {
+            clearPendingRoom();
+        }
+
+        if (roomId) {
+            const ok = await fetchRoomDetails(roomId);
+            if (!ok) return;
+        } else {
+            setRoom(null);
+        }
     };
 
-    const removeMember = (index) => {
-        const updatedMembers = members.filter((_, i) => i !== index);
-        setMembers(updatedMembers);
-    };
+    // While in a room, poll status so members are updated when owner deletes the room.
+    useEffect(() => {
+        if (!authUser) return;
+        if (!status.roomId) return;
 
-    const handleMemberChange = (index, field, value) => {
-        const updatedMembers = [...members];
-        updatedMembers[index][field] = value;
-        setMembers(updatedMembers);
-    };
+        const id = setInterval(() => {
+            refreshStatus().catch(() => {
+                // ignore transient errors
+            });
+        }, 8000);
 
-    const totalCount = members.length + 1;
-    const paidCount = totalCount - Math.floor(totalCount / 6);
-    const totalAmount = paidCount * 699;
-    const freeTickets = totalCount - paidCount;
+        return () => clearInterval(id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [authUser, status.roomId]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+    useEffect(() => {
+        const unsub = auth.onAuthStateChanged((user) => {
+            setAuthUser(user || null);
+            setUserReady(true);
 
+            // Hydrate from cache immediately so a refresh/login doesn't flash the create/join forms.
+            if (user?.uid) {
+                const cached = readCachedRoom();
+                if (cached?.uid === user.uid && cached?.roomId) {
+                    setStatus({
+                        isOwner: cached.role === "owner",
+                        isMember: cached.role === "member",
+                        roomId: cached.roomId,
+                    });
+                    markPendingRoom(cached.roomId);
+                    fetchRoomDetails(cached.roomId).catch((err) => console.error(err));
+                }
+            }
+
+            if (user?.displayName || user?.email) {
+                const displayName =
+                    user.displayName || (user.email ? user.email.split("@")[0] : "");
+                setOwnerForm((prev) => ({ ...prev, name: prev.name || displayName }));
+                setMemberForm((prev) => ({ ...prev, name: prev.name || displayName }));
+            }
+        });
+        return () => unsub();
+    }, []);
+
+    const refreshSelfDelegateStatus = async () => {
+        if (!authUser) {
+            setSelfRegistered(false);
+            return;
+        }
+
+        setCheckingSelfStatus(true);
         try {
-            await addDoc(collection(db, "delegate_group"), {
-                leader,
-                members,
-                totalAmount,
-                totalCount,
-                paidCount,
-                freeTickets,
-                timestamp: serverTimestamp()
+            const token = await authUser.getIdToken();
+            const resp = await fetch(`${BASE_API_URL}/delegate/status-self`, {
+                headers: { Authorization: `Bearer ${token}` },
             });
 
-            setSubmitted(true);
-        } catch (error) {
-            console.error("Error registering group: ", error);
-            if (error.code === 'permission-denied') {
-                alert("Registration failed: Permission denied. Please check your Firebase Firestore rules.");
-            } else {
-                alert("Registration failed. Please try again.");
+            if (!resp.ok) {
+                setSelfRegistered(false);
+                return;
             }
+
+            const data = await resp.json().catch(() => ({}));
+            const statusVal = String(data?.status || "").toLowerCase();
+            const registered = ["success", "paid", "confirmed", "pending", "pending_payment"].includes(statusVal);
+            setSelfRegistered(registered);
+        } catch (err) {
+            console.error(err);
+            setSelfRegistered(false);
+        } finally {
+            setCheckingSelfStatus(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!canCreateOrJoin) return;
+        if (activeMode === "owner") {
+            const empty = !ownerForm.name.trim() && !String(ownerForm.phone).trim() && !ownerForm.college.trim();
+            if (empty) setActiveMode(null);
+        }
+        if (activeMode === "member") {
+            const empty =
+                !memberForm.name.trim() &&
+                !String(memberForm.phone).trim() &&
+                !memberForm.college.trim() &&
+                !String(memberForm.roomId).trim();
+            if (empty) setActiveMode(null);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeMode, ownerForm, memberForm, canCreateOrJoin]);
+
+    useEffect(() => {
+        const run = async () => {
+            if (!userReady) return;
+
+            if (!authUser) {
+                setStatus({ isOwner: false, isMember: false, roomId: "" });
+                setRoom(null);
+                setCheckingStatus(false);
+                setSelfRegistered(false);
+                setNotice("");
+                return;
+            }
+
+            setCheckingStatus(true);
+            try {
+                await refreshSelfDelegateStatus();
+                await refreshStatus();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setCheckingStatus(false);
+            }
+        };
+
+        run();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userReady, authUser]);
+
+    useEffect(() => {
+        if (status.isOwner) setSelectedMode("owner");
+        else if (status.isMember) setSelectedMode("member");
+    }, [status.isOwner, status.isMember]);
+
+    const onOwnerChange = (e) => {
+        if (activeMode !== "owner") {
+            setActiveMode("owner");
+            setMemberForm((prev) => ({ ...prev, name: "", phone: "", college: "", roomId: "" }));
+        }
+        setOwnerForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const onMemberChange = (e) => {
+        if (activeMode !== "member") {
+            setActiveMode("member");
+            setOwnerForm((prev) => ({ ...prev, name: "", phone: "", college: "" }));
+        }
+        setMemberForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const validateBasics = (payload) => {
+        if (!payload.name.trim()) {
+            alert("Please enter your name.");
+            return false;
+        }
+        if (String(payload.phone).trim().length < 10) {
+            alert("Please enter a valid phone number (at least 10 digits).");
+            return false;
+        }
+        if (!payload.college.trim()) {
+            alert("Please enter your college / institute.");
+            return false;
+        }
+        return true;
+    };
+
+    const handleCreateRoom = async () => {
+        if (!authUser) {
+            alert("Please login first.");
+            navigate("/login");
+            return;
+        }
+        setApiError("");
+        const payload = {
+            name: String(ownerForm.name).trim(),
+            phone: String(ownerForm.phone).trim(),
+            college: String(ownerForm.college).trim(),
+        };
+        if (!validateBasics(payload)) return;
+
+        setLoading(true);
+        try {
+            const headers = await getAuthHeaders({ json: true });
+            const resp = await fetch(`${BASE_API_URL}/delegate/create`, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    name: payload.name,
+                    phone: payload.phone,
+                    college: payload.college,
+                }),
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                const message = data.message || "Failed to create room";
+                setApiError(message);
+                alert(message);
+                return;
+            }
+
+            const roomId = data.roomId || data?.roomId || data?.room?.roomId || data?.data?.roomId || "";
+            if (!roomId) {
+                const message = "Room created but Room ID was not returned by the server.";
+                setApiError(message);
+                alert(message);
+                return;
+            }
+
+            markPendingRoom(roomId);
+
+            if (authUser?.uid) {
+                writeCachedRoom({ uid: authUser.uid, roomId, role: "owner" });
+            }
+
+            // Optimistic update so the UI shows something immediately
+            setStatus({ isOwner: true, isMember: false, roomId });
+            setMemberForm((prev) => ({ ...prev, roomId }));
+
+            try {
+                await fetchRoomDetails(roomId);
+            } catch (err) {
+                console.error(err);
+            }
+
+            // Then reconcile with server truth
+            // Delay slightly to avoid immediately hitting a 404 from the status endpoint
+            setTimeout(() => {
+                refreshStatus().catch((err) => console.error(err));
+            }, 900);
+        } catch (err) {
+            console.error(err);
+            const message = "Failed to create room. Please try again.";
+            setApiError(message);
+            alert(message);
         } finally {
             setLoading(false);
         }
     };
 
-    const BASE_API_URL = "https://api.technika.co";
+    const handleJoinRoom = async () => {
+        if (!authUser) {
+            alert("Please login first.");
+            navigate("/login");
+            return;
+        }
+        setApiError("");
+        const payload = {
+            name: String(memberForm.name).trim(),
+            phone: String(memberForm.phone).trim(),
+            college: String(memberForm.college).trim(),
+            roomId: String(memberForm.roomId).trim(),
+        };
+        if (!validateBasics(payload)) return;
+        if (!payload.roomId) {
+            alert("Please enter a Room ID.");
+            return;
+        }
 
-    const handlePayment = async () => {
-        // Group payment logic - currently placeholder or need specific endpoint
-        alert(`Payment for ${paidCount} paid delegates (Total: ${totalCount}, Free: ${freeTickets}) - ₹${totalAmount}. Integration Pending. Please provide Group Event ID.`);
+        setLoading(true);
+        try {
+            const headers = await getAuthHeaders({ json: true });
+            const resp = await fetch(`${BASE_API_URL}/delegate/join`, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    name: payload.name,
+                    phone: payload.phone,
+                    college: payload.college,
+                    roomId: payload.roomId,
+                }),
+            });
 
-        // Potential implementation if backend supports dynamic amount or specific group ID
-        // ...
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                const message = data.message || "Failed to join room";
+                setApiError(message);
+                alert(message);
+                return;
+            }
+
+            const roomId = payload.roomId || data.roomId || data?.room?.roomId || "";
+            if (roomId) markPendingRoom(roomId);
+            if (roomId && authUser?.uid) {
+                writeCachedRoom({ uid: authUser.uid, roomId, role: "member" });
+            }
+            setStatus({ isOwner: false, isMember: true, roomId });
+            try {
+                await fetchRoomDetails(roomId);
+            } catch (err) {
+                console.error(err);
+            }
+            setTimeout(() => {
+                refreshStatus().catch((err) => console.error(err));
+            }, 900);
+        } catch (err) {
+            console.error(err);
+            const message = "Failed to join room. Please try again.";
+            setApiError(message);
+            alert(message);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const handleLeaveRoom = async () => {
+        if (!authUser) return;
+        setLoading(true);
+        try {
+            const headers = await getAuthHeaders({ json: true });
+            const resp = await fetch(`${BASE_API_URL}/delegate/leave`, {
+                method: "DELETE",
+                headers,
+                body: JSON.stringify({ roomId: status.roomId || "" }),
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                alert(data.message || "Failed to leave room");
+                return;
+            }
+
+            // Immediately reflect updated state without manual refresh.
+            clearCachedRoom();
+            clearPendingRoom();
+            setApiError("");
+            setStatus({ isOwner: false, isMember: false, roomId: "" });
+            setRoom(null);
+
+            await refreshStatusWithRetry();
+        } catch (err) {
+            console.error(err);
+            alert("Failed to leave room. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDeleteRoom = async () => {
+        if (!authUser) return;
+        if (!confirm("Delete this room? Members will be removed.")) return;
+
+        setLoading(true);
+        try {
+            const headers = await getAuthHeaders({ json: true });
+            const resp = await fetch(`${BASE_API_URL}/delegate/delete`, {
+                method: "DELETE",
+                headers,
+                body: JSON.stringify({ roomId: status.roomId || "" }),
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                alert(data.message || "Failed to delete room");
+                return;
+            }
+
+            // Immediately reflect updated state without manual refresh.
+            clearCachedRoom();
+            clearPendingRoom();
+            setApiError("");
+            setStatus({ isOwner: false, isMember: false, roomId: "" });
+            setRoom(null);
+
+            await refreshStatusWithRetry();
+        } catch (err) {
+            console.error(err);
+            alert("Failed to delete room. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePay = async () => {
+        alert("Payment flow integration pending.");
+    };
+
+    const copyRoomId = async () => {
+        if (!status.roomId) return;
+        try {
+            await navigator.clipboard.writeText(status.roomId);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1400);
+        } catch {
+            alert("Copy failed. Please copy manually.");
+        }
+    };
+
+    const shareRoomId = async () => {
+        if (!status.roomId) return;
+        const shareText = `Join my Technika delegate room: ${status.roomId}`;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: "Technika Delegate Room",
+                    text: shareText,
+                });
+            } catch {
+                // ignored
+            }
+        } else {
+            await copyRoomId();
+        }
+    };
+
+    const refreshRoom = async () => {
+        if (!status.roomId) return;
+        setLoading(true);
+        try {
+            await fetchRoomDetails(status.roomId);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const refreshStatusWithRetry = async ({ attempts = 4, delayMs = 700 } = {}) => {
+        for (let i = 0; i < attempts; i++) {
+            try {
+                await refreshStatus();
+                return;
+            } catch (err) {
+                console.error(err);
+                if (i < attempts - 1) {
+                    await new Promise((r) => setTimeout(r, delayMs));
+                }
+            }
+        }
+    };
+
+    const MemberListPanel = (
+        <div className="relative h-full overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.18),_transparent_65%)]" />
+            <div className="relative space-y-4">
+                <div className="flex items-center justify-between gap-3">
+                    <div>
+                        <div className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">
+                            Room Members
+                        </div>
+                        <div className="mt-2 font-mono text-xs text-white/60">
+                            Room ID: <span className="text-white">{status.roomId || "—"}</span>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        disabled={loading}
+                        onClick={refreshRoom}
+                        className={`rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                    >
+                        Refresh
+                    </button>
+                </div>
+
+                {room?.owner && (
+                    <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
+                        <div className="text-xs uppercase tracking-[0.3em] text-white/50 mb-1">Owner</div>
+                        <div className="text-white font-medium">{room.owner.name}</div>
+                        <div className="text-xs text-white/60 break-all">{room.owner.email}</div>
+                    </div>
+                )}
+
+                <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
+                    Joined Members
+                </div>
+                {Array.isArray(room?.users) && room.users.length > 0 ? (
+                    <div className="grid gap-3">
+                        {room.users.map((u, idx) => (
+                            <div key={idx} className="rounded-2xl border border-white/10 bg-black/50 p-4">
+                                <div className="text-white font-medium">{u.name}</div>
+                                <div className="text-xs text-white/60 break-all">{u.email}</div>
+                                <div className="mt-1 text-xs text-white/50">{u.phone} • {u.college}</div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-sm text-white/60 italic">No members joined yet.</div>
+                )}
+
+            </div>
+        </div>
+    );
 
     return (
         <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-b from-black via-[#15000d] to-black px-6 pb-24 pt-32 text-white">
@@ -116,114 +753,326 @@ const DelegateGroupRegistration = () => {
                     </div>
                 </div>
 
-                {submitted ? (
-                    <div className="relative mx-auto max-w-2xl overflow-hidden rounded-3xl border border-white/20 bg-black/60 p-8 text-center shadow-[0_24px_70px_rgba(0,0,0,0.45)]">
-                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.24),_transparent_60%)]" />
-                        <div className="relative z-10 space-y-6">
-                            <h2 className="text-2xl font-semibold uppercase tracking-[0.35em] text-white/90 md:text-3xl">
-                                Registration Submitted
-                            </h2>
-                            <p className="text-lg text-white/80">
-                                Total payable amount • <span className="font-semibold text-[#ff5b6b]">₹{totalAmount}</span>
-                            </p>
+                {(!authUser && userReady) && (
+                    <div className="relative rounded-3xl border border-white/12 bg-white/5 p-4 backdrop-blur-lg">
+                        <div className="text-sm text-white/70">
+                            Login required to create/join a room.
                             <button
-                                className="w-full rounded-full bg-white py-4 text-base font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-white/90"
-                                onClick={handlePayment}
+                                type="button"
+                                onClick={() => navigate("/login")}
+                                className="ml-3 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20"
                             >
-                                Proceed to Pay
+                                Login
                             </button>
                         </div>
                     </div>
-                ) : (
-                    <form onSubmit={handleSubmit} className="relative space-y-10">
+                )}
 
-                        {/* Leader Details */}
-                        <div className="space-y-5">
-                            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                                <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">
-                                    Team Leader details
-                                </h3>
-                                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.3em] text-white/60">
-                                    Lead contact
-                                </span>
+                {(authUser && checkingStatus) && (
+                    <div className="flex items-center justify-center py-14">
+                        <Loader2 className="h-7 w-7 animate-spin text-white/70" />
+                    </div>
+                )}
+
+                {(userReady && (!authUser || !checkingStatus)) && (
+                    <div className="relative space-y-8">
+                        {notice && (
+                            <div className="rounded-2xl border border-white/12 bg-white/5 p-4 text-sm text-white/80 backdrop-blur-lg">
+                                <span className="font-semibold uppercase tracking-[0.25em] text-white/60">Notice:</span>{" "}
+                                {notice}
                             </div>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <input type="text" name="name" value={leader.name} onChange={handleLeaderChange} placeholder="Leader name" className="rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40" required />
-                                <input type="email" name="email" value={leader.email} onChange={handleLeaderChange} placeholder="Leader email" className="rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40" required />
-                                <input type="tel" name="phone" value={leader.phone} onChange={handleLeaderChange} placeholder="Leader phone" className="rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40" required />
-                                <input type="text" name="college" value={leader.college} onChange={handleLeaderChange} placeholder="College / Institute" className="rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40" required />
-                            </div>
-                            <textarea name="address" value={leader.address} onChange={handleLeaderChange} placeholder="Full address" rows="3" className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40 resize-none" required></textarea>
-                        </div>
+                        )}
 
-                        {/* Members */}
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                                <h3 className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">
-                                    Team Members
-                                </h3>
-                                <button type="button" onClick={addMember} className="flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-white/20">
-                                    <Plus className="h-4 w-4" /> Add Member
-                                </button>
-                            </div>
-
-                            {members.map((member, index) => (
-                                <div key={index} className="grid grid-cols-1 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 md:grid-cols-12">
-                                    <div className="md:col-span-1 text-center font-mono text-sm text-white/50">#{index + 1}</div>
-                                    <div className="md:col-span-3">
-                                        <input type="text" placeholder="Member name" value={member.name} onChange={(e) => handleMemberChange(index, 'name', e.target.value)} className="w-full rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40" required />
-                                    </div>
-                                    <div className="md:col-span-4">
-                                        <input type="email" placeholder="Member email" value={member.email} onChange={(e) => handleMemberChange(index, 'email', e.target.value)} className="w-full rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40" required />
-                                    </div>
-                                    <div className="md:col-span-3">
-                                        <input type="tel" placeholder="Member phone" value={member.phone} onChange={(e) => handleMemberChange(index, 'phone', e.target.value)} className="w-full rounded-xl border border-white/15 bg-black/60 px-3 py-2 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40" required />
-                                    </div>
-                                    <div className="md:col-span-1 text-center">
-                                        <button type="button" onClick={() => removeMember(index)} className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-[#ff4f61] transition hover:border-[#ff4f61]/60 hover:text-[#ff6f7f]">
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                            {members.length === 0 && <p className="rounded-2xl border border-dashed border-white/15 px-4 py-6 text-center text-sm italic text-white/55">No members added yet — add teammates to unlock the group offer.</p>}
-                        </div>
-
-                        {/* Summary */}
-                        <div className="grid gap-4 rounded-2xl border border-white/12 bg-white/5 p-5 md:grid-cols-2">
-                            <div className="space-y-2 text-sm text-white/70">
-                                <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/50">
-                                    <span>Delegates total</span>
-                                    <span>{totalCount}</span>
-                                </div>
-                                <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/50">
-                                    <span>Paid seats</span>
-                                    <span>{paidCount}</span>
-                                </div>
-                                <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/50">
-                                    <span>Complimentary</span>
-                                    <span>{freeTickets}</span>
-                                </div>
-                                {freeTickets > 0 && (
-                                    <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-emerald-300">
-                                        🎉 Offer applied
-                                    </span>
+                        {(checkingSelfStatus || groupBlockedBySelf) && (
+                            <div className="rounded-2xl border border-white/12 bg-white/5 p-4 text-sm text-white/80 backdrop-blur-lg">
+                                {checkingSelfStatus ? (
+                                    <span className="uppercase tracking-[0.25em] text-white/60">Checking registration...</span>
+                                ) : (
+                                    <>
+                                        <span className="font-semibold uppercase tracking-[0.25em] text-white/60">Notice:</span>{" "}
+                                        You are already registered as an individual delegate.
+                                    </>
                                 )}
                             </div>
-                            <div className="flex flex-col items-end justify-center gap-2 text-right">
-                                <span className="text-xs uppercase tracking-[0.35em] text-white/50">Amount payable</span>
-                                <span className="text-3xl font-bold text-white">₹{totalAmount}</span>
+                        )}
+
+                        {apiError && (
+                            <div className="rounded-2xl border border-white/12 bg-white/5 p-4 text-sm text-white/80 backdrop-blur-lg">
+                                <span className="font-semibold uppercase tracking-[0.25em] text-white/60">Error:</span>{" "}
+                                {apiError}
                             </div>
+                        )}
+
+                        <div
+                            role="radiogroup"
+                            aria-label="Select registration mode"
+                            className="grid gap-3 sm:grid-cols-2"
+                        >
+                            <button
+                                type="button"
+                                role="radio"
+                                aria-checked={selectedMode === "owner"}
+                                onClick={() => {
+                                    if (lockedMode && lockedMode !== "owner") return;
+                                    if (groupBlockedBySelf) return;
+                                    setSelectedMode("owner");
+                                }}
+                                disabled={Boolean(groupBlockedBySelf) || Boolean(lockedMode && lockedMode !== "owner")}
+                                aria-disabled={Boolean(groupBlockedBySelf) || Boolean(lockedMode && lockedMode !== "owner")}
+                                className={
+                                    "rounded-full border px-5 py-3 text-xs font-semibold uppercase tracking-[0.35em] transition " +
+                                    ((groupBlockedBySelf || (lockedMode && lockedMode !== "owner")) ? " opacity-50 pointer-events-none " : " ") +
+                                    (selectedMode === "owner"
+                                        ? "border-white/30 bg-white/15 text-white"
+                                        : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10")
+                                }
+                            >
+                                Create Room (Owner)
+                            </button>
+                            <button
+                                type="button"
+                                role="radio"
+                                aria-checked={selectedMode === "member"}
+                                onClick={() => {
+                                    if (lockedMode && lockedMode !== "member") return;
+                                    if (groupBlockedBySelf) return;
+                                    setSelectedMode("member");
+                                }}
+                                disabled={Boolean(groupBlockedBySelf) || Boolean(lockedMode && lockedMode !== "member")}
+                                aria-disabled={Boolean(groupBlockedBySelf) || Boolean(lockedMode && lockedMode !== "member")}
+                                className={
+                                    "rounded-full border px-5 py-3 text-xs font-semibold uppercase tracking-[0.35em] transition " +
+                                    ((groupBlockedBySelf || (lockedMode && lockedMode !== "member")) ? " opacity-50 pointer-events-none " : " ") +
+                                    (selectedMode === "member"
+                                        ? "border-white/30 bg-white/15 text-white"
+                                        : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10")
+                                }
+                            >
+                                Join Room (Member)
+                            </button>
                         </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className={`w-full rounded-full bg-white py-4 text-lg font-semibold uppercase tracking-[0.3em] text-black transition-all duration-300 hover:-translate-y-1 hover:bg-white/90 ${loading ? 'pointer-events-none opacity-60' : ''}`}
-                        >
-                            {loading ? 'Submitting...' : 'Register Group'}
-                        </button>
-                    </form>
+                        <div className={(status.roomId ? "grid gap-6 md:grid-cols-2" : "grid gap-6")}>
+                            {/* OWNER CARD */}
+                            {selectedMode === "owner" && (
+                            <div className={ownerCardDisabled ? "blur-sm opacity-50 pointer-events-none" : ""}>
+                                <FlipCard
+                                    flipped={flipOwnerCard}
+                                    minHeightClassName="min-h-[480px]"
+                                    front={
+                                        <div className="relative h-full overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg">
+                                            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.18),_transparent_60%)]" />
+                                            <div className="relative space-y-4">
+                                                <div className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">
+                                                    Create Room (Owner)
+                                                </div>
+
+                                                {status.isOwner && status.roomId ? (
+                                                    <>
+                                                        <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
+                                                            <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Room ID</div>
+                                                            <div className="mt-2 font-mono text-white text-lg break-all">{status.roomId}</div>
+                                                        </div>
+
+                                                        <div className="flex flex-col gap-3 sm:flex-row">
+                                                            <button
+                                                                type="button"
+                                                                onClick={copyRoomId}
+                                                                className="w-full rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-black transition hover:bg-white/90"
+                                                            >
+                                                                {copied ? "Copied" : "Copy Room ID"}
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={shareRoomId}
+                                                                className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20"
+                                                            >
+                                                                Share
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="flex flex-col gap-3 sm:flex-row">
+                                                            <button
+                                                                type="button"
+                                                                disabled={loading}
+                                                                onClick={handlePay}
+                                                                className={`w-full rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-black transition hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                            >
+                                                                Pay
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                disabled={loading}
+                                                                onClick={handleDeleteRoom}
+                                                                className={`w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                            >
+                                                                Delete Room
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="text-xs text-white/50">
+                                                            Member panel shows the live room list.
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="grid gap-3">
+                                                            <input
+                                                                type="text"
+                                                                name="name"
+                                                                value={ownerForm.name}
+                                                                onChange={onOwnerChange}
+                                                                placeholder="Your name"
+                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                            />
+                                                            <input
+                                                                type="tel"
+                                                                name="phone"
+                                                                value={ownerForm.phone}
+                                                                onChange={onOwnerChange}
+                                                                placeholder="Phone"
+                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                name="college"
+                                                                value={ownerForm.college}
+                                                                onChange={onOwnerChange}
+                                                                placeholder="College / Institute"
+                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            disabled={groupBlockedBySelf || loading || !authUser}
+                                                            onClick={handleCreateRoom}
+                                                            className={`w-full rounded-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                        >
+                                                            {loading ? "Working..." : "Create Room"}
+                                                        </button>
+                                                        <div className="text-xs text-white/50">
+                                                            Filling this form will blur and clear the member form.
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    }
+                                    back={MemberListPanel}
+                                />
+                            </div>
+                            )}
+
+                            {selectedMode === "owner" && Boolean(status.roomId) && (
+                                <div className="hidden md:block">
+                                    {MemberListPanel}
+                                </div>
+                            )}
+
+                            {/* MEMBER CARD */}
+                            {selectedMode === "member" && (
+                            <div className={memberCardDisabled ? "blur-sm opacity-50 pointer-events-none" : ""}>
+                                <FlipCard
+                                    flipped={flipMemberCard}
+                                    minHeightClassName="min-h-[480px]"
+                                    front={
+                                        <div className="relative h-full overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg">
+                                            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(70,0,255,0.18),_transparent_60%)]" />
+                                            <div className="relative space-y-4">
+                                                <div className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">
+                                                    Join Room (Member)
+                                                </div>
+
+                                                {status.isMember && status.roomId ? (
+                                                    <>
+                                                        <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
+                                                            <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Room ID</div>
+                                                            <div className="mt-2 font-mono text-white text-lg break-all">{status.roomId}</div>
+                                                        </div>
+
+                                                        <button
+                                                            type="button"
+                                                            disabled={loading}
+                                                            onClick={handleLeaveRoom}
+                                                            className={`w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                        >
+                                                            Leave Room
+                                                        </button>
+
+                                                        <div className="text-xs text-white/50">
+                                                            Owner panel shows the live room list.
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className="grid gap-3">
+                                                            <input
+                                                                type="text"
+                                                                name="name"
+                                                                value={memberForm.name}
+                                                                onChange={onMemberChange}
+                                                                placeholder="Your name"
+                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                            />
+                                                            <input
+                                                                type="tel"
+                                                                name="phone"
+                                                                value={memberForm.phone}
+                                                                onChange={onMemberChange}
+                                                                placeholder="Phone"
+                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                name="college"
+                                                                value={memberForm.college}
+                                                                onChange={onMemberChange}
+                                                                placeholder="College / Institute"
+                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                name="roomId"
+                                                                value={memberForm.roomId}
+                                                                onChange={onMemberChange}
+                                                                placeholder="Room ID"
+                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            disabled={groupBlockedBySelf || loading || !authUser}
+                                                            onClick={handleJoinRoom}
+                                                            className={`w-full rounded-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                        >
+                                                            {loading ? "Working..." : "Join Room"}
+                                                        </button>
+                                                        <div className="text-xs text-white/50">
+                                                            Filling this form will blur and clear the owner form.
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    }
+                                    back={MemberListPanel}
+                                />
+                            </div>
+                            )}
+
+                            {selectedMode === "member" && Boolean(status.roomId) && (
+                                <div className="hidden md:block">
+                                    {MemberListPanel}
+                                </div>
+                            )}
+                        </div>
+
+                        {Boolean(status.roomId) && (
+                            <div className="md:hidden">
+                                {MemberListPanel}
+                            </div>
+                        )}
+                    </div>
                 )}
             </div>
             <div className="h-12"></div>

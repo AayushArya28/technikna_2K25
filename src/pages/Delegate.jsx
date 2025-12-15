@@ -1,9 +1,71 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
+import { auth } from "../firebase";
 
 const Delegate = () => {
     const navigate = useNavigate();
+
+    const BASE_API_URL = "https://api.technika.co";
+    const [checkingAccess, setCheckingAccess] = useState(true);
+    const [groupStatus, setGroupStatus] = useState({ isOwner: false, isMember: false });
+    const [selfStatus, setSelfStatus] = useState({ registered: false });
+
+    const inGroup = useMemo(() => Boolean(groupStatus.isOwner || groupStatus.isMember), [groupStatus]);
+    const inSelf = useMemo(() => Boolean(selfStatus.registered), [selfStatus]);
+
+    useEffect(() => {
+        const unsub = auth.onAuthStateChanged(async (user) => {
+            setCheckingAccess(true);
+            try {
+                if (!user) {
+                    setGroupStatus({ isOwner: false, isMember: false });
+                    setSelfStatus({ registered: false });
+                    return;
+                }
+
+                const token = await user.getIdToken();
+                const headers = { Authorization: `Bearer ${token}` };
+
+                // Group status: 404 means not in any room
+                try {
+                    const resp = await fetch(`${BASE_API_URL}/delegate/status/user`, { headers });
+                    if (resp.status === 404) {
+                        setGroupStatus({ isOwner: false, isMember: false });
+                    } else if (resp.ok) {
+                        const data = await resp.json().catch(() => ({}));
+                        setGroupStatus({
+                            isOwner: Boolean(data?.isOwner),
+                            isMember: Boolean(data?.isMember),
+                        });
+                    } else {
+                        setGroupStatus({ isOwner: false, isMember: false });
+                    }
+                } catch {
+                    setGroupStatus({ isOwner: false, isMember: false });
+                }
+
+                // Self status: if backend returns a status that indicates pending/paid/etc, treat as registered
+                try {
+                    const resp = await fetch(`${BASE_API_URL}/delegate/status-self`, { headers });
+                    if (resp.ok) {
+                        const data = await resp.json().catch(() => ({}));
+                        const status = String(data?.status || "").toLowerCase();
+                        const registered = ["success", "paid", "confirmed", "pending", "pending_payment"].includes(status);
+                        setSelfStatus({ registered });
+                    } else {
+                        setSelfStatus({ registered: false });
+                    }
+                } catch {
+                    setSelfStatus({ registered: false });
+                }
+            } finally {
+                setCheckingAccess(false);
+            }
+        });
+
+        return () => unsub();
+    }, []);
     const highlights = [
         {
             title: "Immersive Audience Access",
@@ -61,7 +123,10 @@ const Delegate = () => {
                                 Step into the premium lane for Technika. One pass unlocks immersive showcases, curated networking, and effortless movement across campus.
                             </p>
                         </div>
-                        <div className="relative w-full max-w-xs rounded-3xl border border-white/15 bg-white/5 p-6 text-center md:text-right">
+                        <div className="group relative w-full max-w-xs overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-6 text-center md:text-right transition will-change-transform hover:-translate-y-1 hover:border-white/30 hover:bg-white/10 hover:shadow-[0_22px_80px_rgba(255,0,48,0.18)]">
+                            <div className="pointer-events-none absolute inset-[-70%] opacity-30 blur-2xl animate-[spin_10s_linear_infinite] bg-[conic-gradient(from_90deg,rgba(255,23,68,0.0),rgba(255,23,68,0.35),rgba(91,44,255,0.35),rgba(255,23,68,0.0))]" />
+                            <div className="pointer-events-none absolute inset-0 bg-black/15" />
+                            <div className="pointer-events-none absolute -top-20 right-0 h-48 w-48 rounded-full bg-[#ff0030]/10 blur-[120px] transition group-hover:bg-[#ff0030]/20" />
                             <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
                                 Investment
                             </div>
@@ -80,8 +145,10 @@ const Delegate = () => {
                     {highlights.map((item) => (
                         <div
                             key={item.title}
-                            className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg transition hover:border-white/30 hover:bg-white/10"
+                            className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg transition will-change-transform hover:-translate-y-1 hover:border-white/30 hover:bg-white/10 hover:shadow-[0_18px_70px_rgba(255,0,48,0.12)]"
                         >
+                            <div className="pointer-events-none absolute inset-[-70%] opacity-25 blur-2xl animate-[spin_12s_linear_infinite] bg-[conic-gradient(from_90deg,rgba(255,23,68,0.0),rgba(255,23,68,0.30),rgba(91,44,255,0.30),rgba(255,23,68,0.0))]" />
+                            <div className="pointer-events-none absolute inset-0 bg-black/10" />
                             <div className="pointer-events-none absolute -top-16 right-0 h-36 w-36 rotate-12 rounded-full bg-[#ff0030]/10 blur-[120px] transition group-hover:bg-[#ff0030]/20" />
                             <div className="relative flex items-start gap-4">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-base font-semibold uppercase tracking-[0.3em] text-white/80">
@@ -108,25 +175,47 @@ const Delegate = () => {
                             </p>
                         </div>
                         <div className="flex w-full flex-col gap-4 md:w-auto md:flex-row">
-                            <div className="flex flex-col gap-3 rounded-3xl border border-white/12 bg-white/5 p-5 backdrop-blur-lg">
+                            <div className="group relative overflow-hidden flex flex-col gap-3 rounded-3xl border border-white/12 bg-white/5 p-5 backdrop-blur-lg transition will-change-transform hover:-translate-y-1 hover:border-white/30 hover:bg-white/10 hover:shadow-[0_18px_70px_rgba(255,0,48,0.12)]">
+                                <div className="pointer-events-none absolute inset-[-70%] opacity-25 blur-2xl animate-[spin_12s_linear_infinite] bg-[conic-gradient(from_90deg,rgba(255,23,68,0.0),rgba(255,23,68,0.30),rgba(91,44,255,0.30),rgba(255,23,68,0.0))]" />
+                                <div className="pointer-events-none absolute inset-0 bg-black/10" />
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/delegate-registration")}
+                                    disabled={checkingAccess || inGroup}
+                                    onClick={() => {
+                                        if (inGroup) {
+                                            alert("You are already a part of group delegate.");
+                                            return;
+                                        }
+                                        navigate("/delegate-registration");
+                                    }}
                                     className="rounded-full bg-white px-8 py-4 text-sm font-semibold uppercase tracking-[0.35em] text-black transition hover:-translate-y-1 hover:bg-white/90"
                                 >
                                     Individual Pass
                                 </button>
-                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">instant checkout</p>
+                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+                                    {inGroup ? "already in group delegate" : checkingAccess ? "checking status" : "instant checkout"}
+                                </p>
                             </div>
-                            <div className="flex flex-col gap-3 rounded-3xl border border-white/12 bg-white/5 p-5 backdrop-blur-lg">
+                            <div className="group relative overflow-hidden flex flex-col gap-3 rounded-3xl border border-white/12 bg-white/5 p-5 backdrop-blur-lg transition will-change-transform hover:-translate-y-1 hover:border-white/30 hover:bg-white/10 hover:shadow-[0_18px_70px_rgba(255,0,48,0.12)]">
+                                <div className="pointer-events-none absolute inset-[-70%] opacity-25 blur-2xl animate-[spin_12s_linear_infinite] bg-[conic-gradient(from_90deg,rgba(255,23,68,0.0),rgba(255,23,68,0.30),rgba(91,44,255,0.30),rgba(255,23,68,0.0))]" />
+                                <div className="pointer-events-none absolute inset-0 bg-black/10" />
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/delegate-group-registration")}
+                                    disabled={checkingAccess || inSelf}
+                                    onClick={() => {
+                                        if (inSelf) {
+                                            alert("You are already registered as an individual delegate.");
+                                            return;
+                                        }
+                                        navigate("/delegate-group-registration");
+                                    }}
                                     className="rounded-full bg-gradient-to-r from-[#ff1744] via-[#ff4f81] to-[#5b2cff] px-8 py-4 text-sm font-semibold uppercase tracking-[0.35em] text-white transition hover:-translate-y-1 hover:brightness-110"
                                 >
                                     Group Pass
                                 </button>
-                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">ideal for 5+ members</p>
+                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+                                    {inSelf ? "already registered individually" : checkingAccess ? "checking status" : "ideal for 5+ members"}
+                                </p>
                             </div>
                         </div>
                     </div>
