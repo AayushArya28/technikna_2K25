@@ -41,6 +41,8 @@ function Nav() {
   }, []);
 
   const displayName = user?.displayName || (user?.email ? user.email.split("@")[0] : "User");
+  const firstName = (displayName || "User").trim().split(/\s+/)[0] || "User";
+  const avatarLetter = (firstName[0] || "U").toUpperCase();
 
   const handleSignOut = async () => {
     try {
@@ -211,16 +213,16 @@ function Nav() {
           top: 0,
           left: 0,
           right: 0,
-          bottom: 0,
           width: "100%",
-          height: "100vh",
+          height: isMenuOpen ? "100vh" : "auto",
           zIndex: isMenuOpen ? 9998 : 50,
-          pointerEvents: isMenuOpen ? "auto" : "none",
+          pointerEvents: "auto",
           backgroundColor: "transparent",
         }}
       >
         <StaggeredMenu
           position="right"
+          isFixed={true}
           items={menuItems}
           socialItems={socialItems}
           displaySocials={true}
@@ -232,6 +234,32 @@ function Nav() {
           logoUrl="/images/favicon.png"
           accentColor="#ff6b6b"
           fontSize="1.0rem"
+          headerRight={
+            !user ? (
+              <Link
+                to="/login"
+                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 hover:text-white transition"
+                onClick={handleNavClick}
+              >
+                Register
+              </Link>
+            ) : (
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-white hover:bg-white/20 transition"
+                onClick={handleNavClick}
+                aria-label="Open profile"
+              >
+                <span
+                  className="grid h-8 w-8 place-items-center rounded-full border border-white/20 bg-white/10 text-white text-sm font-semibold"
+                  aria-hidden="true"
+                >
+                  {avatarLetter}
+                </span>
+                <span className="max-w-[10rem] truncate">Hi, {firstName}</span>
+              </Link>
+            )
+          }
           onMenuOpen={() => {
             console.log("Menu opened");
             setIsMenuOpen(true);
@@ -296,10 +324,19 @@ function Nav() {
                 onMouseLeave={() => {
                   userMenuCloseTimeout.current = setTimeout(() => setUserMenuOpen(false), 140);
                 }}
-                className={`absolute right-0 mt-3 min-w-[160px] rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-150 ${
-                  userMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
-                }`}
+                className={`absolute right-0 mt-3 min-w-[160px] rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-150 ${userMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-2"
+                  }`}
               >
+                <Link
+                  to="/profile"
+                  className="block w-full px-4 py-3 text-left text-[0.95rem] hover:bg-white/10"
+                  onClick={() => {
+                    handleNavClick();
+                    setUserMenuOpen(false);
+                  }}
+                >
+                  My Profile
+                </Link>
                 <button
                   className="block w-full px-4 py-3 text-left text-[0.95rem] hover:bg-white/10"
                   onClick={handleSignOut}
@@ -355,9 +392,8 @@ function DropdownNavItem({ item, onClick }) {
         <div
           onMouseEnter={openMenu}
           onMouseLeave={scheduleClose}
-          className={`absolute left-1/2 top-full z-50 mt-2 w-max min-w-[190px] -translate-x-1/2 rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-200 ${
-            open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-1 pointer-events-none"
-          }`}
+          className={`absolute left-1/2 top-full z-50 mt-2 w-max min-w-[190px] -translate-x-1/2 rounded-xl border border-[#7cf0ff]/80 bg-black/55 text-white shadow-xl backdrop-blur-xl transition-all duration-200 ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-1 pointer-events-none"
+            }`}
         >
           {item.dropdown.map((child) => (
             <Link

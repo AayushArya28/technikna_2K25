@@ -106,22 +106,23 @@ const DelegateRegistration = () => {
         setLoading(true);
 
         try {
-            await addDoc(collection(db, "delegate_single"), {
-                ...formData,
-                status: "pending_payment", // Initial status
-                timestamp: serverTimestamp(),
-            });
+            if (formData.name.trim().length < 1) {
+                alert("Please enter a valid name.");
+                setLoading(false);
+                return;
+            }
 
+            if (formData.phone.trim().length < 10) {
+                alert("Please enter a valid phone number (at least 10 digits).");
+                setLoading(false);
+                return;
+            }
+
+            // Backend handles database storage, just move to payment/confirmation view
             setSubmitted(true);
         } catch (error) {
             console.error("Error registering delegate: ", error);
-            if (error.code === "permission-denied") {
-                alert(
-                    "Registration failed: Permission denied. Please check your Firebase Firestore rules."
-                );
-            } else {
-                alert("Registration failed. Please try again.");
-            }
+            alert("Registration failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -155,6 +156,8 @@ const DelegateRegistration = () => {
                     name: String(formData.name),
                     email: String(formData.email),
                     phone: String(formData.phone).trim(),
+                    college: String(formData.college),
+                    address: String(formData.address),
                     callbackUrl: window.location.href,
                 }),
             });

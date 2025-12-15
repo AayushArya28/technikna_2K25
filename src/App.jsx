@@ -18,6 +18,7 @@ import Delegate from "./pages/Delegate";
 import DelegateRegistration from "./pages/DelegateRegistration";
 import DelegateGroupRegistration from "./pages/DelegateGroupRegistration";
 import Accommodation from "./pages/Accommodation";
+import Profile from "./pages/Profile";
 import { useEffect, useState } from "react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
@@ -45,6 +46,7 @@ function App() {
     { path: "/delegate-registration", Component: DelegateRegistration },
     { path: "/delegate-group-registration", Component: DelegateGroupRegistration },
     { path: "/accommodation", Component: Accommodation },
+    { path: "/profile", Component: Profile },
   ];
 
   // Skipping loading screen in development mode, comment this line and uncomment the next to enable loading screen while working on it
