@@ -30,6 +30,7 @@ const DelegateGroupRegistration = () => {
     const [checkingStatus, setCheckingStatus] = useState(true);
 
     const [apiError, setApiError] = useState("");
+    const [notice, setNotice] = useState("");
 
     const [checkingSelfStatus, setCheckingSelfStatus] = useState(false);
     const [selfRegistered, setSelfRegistered] = useState(false);
@@ -133,12 +134,26 @@ const DelegateGroupRegistration = () => {
         };
     };
 
+    const clearRoomState = (msg = "") => {
+        clearCachedRoom();
+        clearPendingRoom();
+        setApiError("");
+        setRoom(null);
+        setStatus({ isOwner: false, isMember: false, roomId: "" });
+        if (msg) setNotice(msg);
+    };
+
     const fetchRoomDetails = async (roomId) => {
         const headers = await getAuthHeaders({ json: false });
         const resp = await fetch(`${BASE_API_URL}/delegate/status/room/${roomId}`, {
             headers,
         });
         if (!resp.ok) {
+            // If room was deleted, notify and reset UI (especially important for members)
+            if (resp.status === 404) {
+                clearRoomState("This group was deleted by the owner.");
+                return false;
+            }
             const data = await resp.json().catch(() => ({}));
             throw new Error(data.message || "Failed to fetch room details");
         }
@@ -148,6 +163,7 @@ const DelegateGroupRegistration = () => {
         // - { owner, users, roomId }
         // - { room: { owner, users, roomId } }
         setRoom(data?.room || data);
+        return true;
     };
 
     const refreshStatus = async () => {
@@ -162,7 +178,8 @@ const DelegateGroupRegistration = () => {
                 // If we just created/joined, keep showing the optimistic room UI.
                 if (pendingRoomId) {
                     try {
-                        await fetchRoomDetails(pendingRoomId);
+                        const ok = await fetchRoomDetails(pendingRoomId);
+                        if (!ok) return;
                     } catch (err) {
                         console.error(err);
                     }
@@ -178,16 +195,15 @@ const DelegateGroupRegistration = () => {
                         roomId: cached.roomId,
                     });
                     try {
-                        await fetchRoomDetails(cached.roomId);
+                        const ok = await fetchRoomDetails(cached.roomId);
+                        if (!ok) return;
                     } catch (err) {
                         console.error(err);
                     }
                     return;
                 }
 
-                setStatus({ isOwner: false, isMember: false, roomId: "" });
-                setRoom(null);
-                clearCachedRoom();
+                clearRoomState();
                 return;
             }
             const data = await resp.json().catch(() => ({}));
@@ -196,6 +212,13 @@ const DelegateGroupRegistration = () => {
 
         const data = await resp.json();
         const roomId = data.roomId || data?.room?.roomId || "";
+
+        // If server says user is not in a room, reset quickly
+        if (!roomId) {
+            clearRoomState();
+            return;
+        }
+
         setStatus({
             isOwner: Boolean(data.isOwner),
             isMember: Boolean(data.isMember),
@@ -217,11 +240,27 @@ const DelegateGroupRegistration = () => {
         }
 
         if (roomId) {
-            await fetchRoomDetails(roomId);
+            const ok = await fetchRoomDetails(roomId);
+            if (!ok) return;
         } else {
             setRoom(null);
         }
     };
+
+    // While in a room, poll status so members are updated when owner deletes the room.
+    useEffect(() => {
+        if (!authUser) return;
+        if (!status.roomId) return;
+
+        const id = setInterval(() => {
+            refreshStatus().catch(() => {
+                // ignore transient errors
+            });
+        }, 8000);
+
+        return () => clearInterval(id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [authUser, status.roomId]);
 
     useEffect(() => {
         const unsub = auth.onAuthStateChanged((user) => {
@@ -308,6 +347,7 @@ const DelegateGroupRegistration = () => {
                 setRoom(null);
                 setCheckingStatus(false);
                 setSelfRegistered(false);
+                setNotice("");
                 return;
             }
 
@@ -506,12 +546,11 @@ const DelegateGroupRegistration = () => {
         if (!authUser) return;
         setLoading(true);
         try {
-            const headers = await getAuthHeaders({ json: false });
+            const headers = await getAuthHeaders({ json: true });
             const resp = await fetch(`${BASE_API_URL}/delegate/leave`, {
                 method: "DELETE",
-                headers: {
-                    Authorization: headers.Authorization,
-                },
+                headers,
+                body: JSON.stringify({ roomId: status.roomId || "" }),
             });
 
             const data = await resp.json().catch(() => ({}));
@@ -542,12 +581,11 @@ const DelegateGroupRegistration = () => {
 
         setLoading(true);
         try {
-            const headers = await getAuthHeaders({ json: false });
+            const headers = await getAuthHeaders({ json: true });
             const resp = await fetch(`${BASE_API_URL}/delegate/delete`, {
                 method: "DELETE",
-                headers: {
-                    Authorization: headers.Authorization,
-                },
+                headers,
+                body: JSON.stringify({ roomId: status.roomId || "" }),
             });
 
             const data = await resp.json().catch(() => ({}));
@@ -738,6 +776,13 @@ const DelegateGroupRegistration = () => {
 
                 {(userReady && (!authUser || !checkingStatus)) && (
                     <div className="relative space-y-8">
+                        {notice && (
+                            <div className="rounded-2xl border border-white/12 bg-white/5 p-4 text-sm text-white/80 backdrop-blur-lg">
+                                <span className="font-semibold uppercase tracking-[0.25em] text-white/60">Notice:</span>{" "}
+                                {notice}
+                            </div>
+                        )}
+
                         {(checkingSelfStatus || groupBlockedBySelf) && (
                             <div className="rounded-2xl border border-white/12 bg-white/5 p-4 text-sm text-white/80 backdrop-blur-lg">
                                 {checkingSelfStatus ? (
