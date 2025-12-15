@@ -12,28 +12,45 @@ const Home = () => {
   const isFirstLoad = useFirstLoad();
 
   return (
-    <div className="overflow-x-hidden bg-[#050509] text-gray-100">
+    <div className="overflow-x-hidden bg-gradient-to-b from-[#050509] via-[#0a0a0f] to-[#050509] text-gray-100">
       <Landing animate={isFirstLoad} />
 
       {/* Pre-Technika Photos */}
-      <div className="relative flex flex-col justify-center items-center z-0 mt-12 mb-20">
+      <div className="relative flex flex-col justify-center items-center z-0 py-20 px-4">
         <Fade triggerOnce={true} direction="up" delay={200}>
-          <div className="m-10 flex flex-col justify-center items-center text-center">
-            <h1 className="text-5xl lg:text-6xl font-bold mb-4 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-              Previous Technika
-            </h1>
-            <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-pink-600 mx-auto mb-6"></div>
-            <p className="text-sm tracking-wider text-gray-400 mb-6">
-              Featured Photos
+          <div className="mb-12 flex flex-col justify-center items-center text-center max-w-4xl mx-auto">
+            <div className="inline-block mb-4">
+              <h1 className="text-5xl lg:text-7xl font-black mb-2 bg-gradient-to-r from-[#ff001e] via-pink-500 to-red-600 bg-clip-text text-transparent drop-shadow-lg">
+                Previous Technika
+              </h1>
+              <div className="w-32 h-1.5 bg-gradient-to-r from-[#ff001e] to-pink-600 mx-auto rounded-full shadow-lg shadow-[#ff001e]/50"></div>
+            </div>
+            <p className="text-base tracking-[0.2em] text-gray-400 uppercase mt-4">
+              Relive the Moments
+            </p>
+            <p className="text-sm text-gray-500 mt-2 max-w-2xl">
+              Experience the energy and excitement from our previous editions
             </p>
           </div>
-          <ImageCarousel />
+          <div className="w-full max-w-7xl">
+            <ImageCarousel />
+          </div>
         </Fade>
       </div>
 
+      {/* Divider */}
+      <div className="flex justify-center items-center py-12">
+        <div className="h-px w-3/4 bg-gradient-to-r from-transparent via-[#ff001e]/30 to-transparent"></div>
+      </div>
+
       {/* About Sections */}
-      <AboutTechnika />
-      <AboutPatna />
+      <div className="relative">
+        <AboutTechnika />
+        <div className="flex justify-center items-center py-12">
+          <div className="h-px w-3/4 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </div>
+        <AboutPatna />
+      </div>
 
       {/* Sponsors Section */}
       {/* <div className="relative z-0 mt-20 mb-20">
