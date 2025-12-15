@@ -96,7 +96,7 @@ const designDraftingTeam = [
     url: "https://github.com/apritraj",
   },
   {
-    image: "images/devs/kanan.png",
+    image: "https://i.ibb.co/XrsrxTfR/IMG-20251216-WA0003-1.jpg",
     title: "Kanan Kotwani",
     subtitle: "CO-HEAD",
     handle: "@kanank",

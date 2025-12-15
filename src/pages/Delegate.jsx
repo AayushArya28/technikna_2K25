@@ -1,9 +1,71 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
+import { auth } from "../firebase";
 
 const Delegate = () => {
     const navigate = useNavigate();
+
+    const BASE_API_URL = "https://api.technika.co";
+    const [checkingAccess, setCheckingAccess] = useState(true);
+    const [groupStatus, setGroupStatus] = useState({ isOwner: false, isMember: false });
+    const [selfStatus, setSelfStatus] = useState({ registered: false });
+
+    const inGroup = useMemo(() => Boolean(groupStatus.isOwner || groupStatus.isMember), [groupStatus]);
+    const inSelf = useMemo(() => Boolean(selfStatus.registered), [selfStatus]);
+
+    useEffect(() => {
+        const unsub = auth.onAuthStateChanged(async (user) => {
+            setCheckingAccess(true);
+            try {
+                if (!user) {
+                    setGroupStatus({ isOwner: false, isMember: false });
+                    setSelfStatus({ registered: false });
+                    return;
+                }
+
+                const token = await user.getIdToken();
+                const headers = { Authorization: `Bearer ${token}` };
+
+                // Group status: 404 means not in any room
+                try {
+                    const resp = await fetch(`${BASE_API_URL}/delegate/status/user`, { headers });
+                    if (resp.status === 404) {
+                        setGroupStatus({ isOwner: false, isMember: false });
+                    } else if (resp.ok) {
+                        const data = await resp.json().catch(() => ({}));
+                        setGroupStatus({
+                            isOwner: Boolean(data?.isOwner),
+                            isMember: Boolean(data?.isMember),
+                        });
+                    } else {
+                        setGroupStatus({ isOwner: false, isMember: false });
+                    }
+                } catch {
+                    setGroupStatus({ isOwner: false, isMember: false });
+                }
+
+                // Self status: if backend returns a status that indicates pending/paid/etc, treat as registered
+                try {
+                    const resp = await fetch(`${BASE_API_URL}/delegate/status-self`, { headers });
+                    if (resp.ok) {
+                        const data = await resp.json().catch(() => ({}));
+                        const status = String(data?.status || "").toLowerCase();
+                        const registered = ["success", "paid", "confirmed", "pending", "pending_payment"].includes(status);
+                        setSelfStatus({ registered });
+                    } else {
+                        setSelfStatus({ registered: false });
+                    }
+                } catch {
+                    setSelfStatus({ registered: false });
+                }
+            } finally {
+                setCheckingAccess(false);
+            }
+        });
+
+        return () => unsub();
+    }, []);
     const highlights = [
         {
             title: "Immersive Audience Access",
@@ -118,24 +180,42 @@ const Delegate = () => {
                                 <div className="pointer-events-none absolute inset-0 bg-black/10" />
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/delegate-registration")}
+                                    disabled={checkingAccess || inGroup}
+                                    onClick={() => {
+                                        if (inGroup) {
+                                            alert("You are already a part of group delegate.");
+                                            return;
+                                        }
+                                        navigate("/delegate-registration");
+                                    }}
                                     className="rounded-full bg-white px-8 py-4 text-sm font-semibold uppercase tracking-[0.35em] text-black transition hover:-translate-y-1 hover:bg-white/90"
                                 >
                                     Individual Pass
                                 </button>
-                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">instant checkout</p>
+                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+                                    {inGroup ? "already in group delegate" : checkingAccess ? "checking status" : "instant checkout"}
+                                </p>
                             </div>
                             <div className="group relative overflow-hidden flex flex-col gap-3 rounded-3xl border border-white/12 bg-white/5 p-5 backdrop-blur-lg transition will-change-transform hover:-translate-y-1 hover:border-white/30 hover:bg-white/10 hover:shadow-[0_18px_70px_rgba(255,0,48,0.12)]">
                                 <div className="pointer-events-none absolute inset-[-70%] opacity-25 blur-2xl animate-[spin_12s_linear_infinite] bg-[conic-gradient(from_90deg,rgba(255,23,68,0.0),rgba(255,23,68,0.30),rgba(91,44,255,0.30),rgba(255,23,68,0.0))]" />
                                 <div className="pointer-events-none absolute inset-0 bg-black/10" />
                                 <button
                                     type="button"
-                                    onClick={() => navigate("/delegate-group-registration")}
+                                    disabled={checkingAccess || inSelf}
+                                    onClick={() => {
+                                        if (inSelf) {
+                                            alert("You are already registered as an individual delegate.");
+                                            return;
+                                        }
+                                        navigate("/delegate-group-registration");
+                                    }}
                                     className="rounded-full bg-gradient-to-r from-[#ff1744] via-[#ff4f81] to-[#5b2cff] px-8 py-4 text-sm font-semibold uppercase tracking-[0.35em] text-white transition hover:-translate-y-1 hover:brightness-110"
                                 >
                                     Group Pass
                                 </button>
-                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">ideal for 5+ members</p>
+                                <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+                                    {inSelf ? "already registered individually" : checkingAccess ? "checking status" : "ideal for 5+ members"}
+                                </p>
                             </div>
                         </div>
                     </div>
