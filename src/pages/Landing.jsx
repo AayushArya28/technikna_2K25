@@ -284,7 +284,7 @@ const Landing = ({ animate }) => {
   data-depth="0.30"
 >
   {/* REGISTER BUTTON */}
-    <Link to={user ? "/merchandise" : "/login"}>
+    <Link to={user ? "/timeline" : "/login"}>
       {/* Mobile Button */}
       <div className="relative block md:hidden w-auto justify-center mb-3">
         <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
@@ -292,7 +292,7 @@ const Landing = ({ animate }) => {
             transition duration-200 transform
             hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
             active:scale-90">
-          {user ? "Merchandise" : "Register Now"}
+          {user ? "Timeline" : "Register Now"}
         </button>
       </div>
 
@@ -303,7 +303,7 @@ const Landing = ({ animate }) => {
             transition duration-200 transform
             hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
             active:scale-90">
-          {user ? "Merchandise" : "Register Now"}
+          {user ? "Timeline" : "Register Now"}
         </button>
       </div>
     </Link>

@@ -19,11 +19,11 @@ import DelegateRegistration from "./pages/DelegateRegistration";
 import DelegateGroupRegistration from "./pages/DelegateGroupRegistration";
 import Accommodation from "./pages/Accommodation";
 import Profile from "./pages/Profile";
+import Timeline from "./pages/Timeline";
 import { useEffect, useState } from "react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
 import { AuthProvider } from "./context/auth.jsx";
-import { Analytics } from "@vercel/analytics/react";
 import { path } from "framer-motion/client";
 import Lenis from "@studio-freight/lenis";
 
@@ -40,6 +40,7 @@ function App() {
     // { path: "/workshop", Component: Workshop },
     { path: "/login", Component: Login },
     { path: "/contact", Component: ContactUs },
+    { path: "/timeline", Component: Timeline },
     { path: "/devs", Component: Devs },
     { path: "/alumni", Component: Alumni },
     { path: "/delegate", Component: Delegate },

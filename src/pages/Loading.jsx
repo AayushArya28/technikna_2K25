@@ -113,7 +113,7 @@ export default function Loading({ onFinish }) {
           <h1 className="text-red-600 text-sm mb-2">TECHNIKA 2k26</h1>
           <p className="text-xs text-gray-300 leading-relaxed">
             ENTER THE FEST <br />
-            FROM THE UPSIDE DOWN.
+            FORGED IN HONOR.
           </p>
         </div>
 
