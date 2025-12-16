@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
+import { useEntitlements } from "../context/useEntitlements.jsx";
+import { usePopup } from "../context/usePopup.jsx";
 import {
   User,
   Mail,
@@ -35,6 +37,9 @@ const PaymentStatus = {
 const BASE_API_URL = "https://api.technika.co";
 
 const Alumni = () => {
+  const popup = usePopup();
+  const { loading: entitlementsLoading, isBitStudent } = useEntitlements();
+
   const [user, setUser] = useState(null);
   const [dbName, setDbName] = useState("");
   const [loadingAuth, setLoadingAuth] = useState(true);
@@ -58,6 +63,14 @@ const Alumni = () => {
   const formRef = useRef(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (entitlementsLoading) return;
+    if (!isBitStudent) return;
+
+    popup.info("BIT Mesra email detected. Alumni page is locked for BIT students.");
+    navigate("/", { replace: true });
+  }, [entitlementsLoading, isBitStudent, navigate, popup]);
 
   // GSAP entrance
   useEffect(() => {

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { usePopup } from "../context/usePopup.jsx";
+import { useEntitlements } from "../context/useEntitlements.jsx";
 import { Loader2 } from "lucide-react";
 
 function FlipCard({ flipped, front, back, minHeightClassName }) {
@@ -23,6 +24,7 @@ function FlipCard({ flipped, front, back, minHeightClassName }) {
 const DelegateGroupRegistration = () => {
     const navigate = useNavigate();
     const popup = usePopup();
+    const { loading: entitlementsLoading, isBitStudent } = useEntitlements();
 
     const BASE_API_URL = "https://api.technika.co";
 
@@ -36,6 +38,13 @@ const DelegateGroupRegistration = () => {
 
     const [checkingSelfStatus, setCheckingSelfStatus] = useState(false);
     const [selfRegistered, setSelfRegistered] = useState(false);
+
+    useEffect(() => {
+        if (entitlementsLoading) return;
+        if (!isBitStudent) return;
+        popup.info("BIT Mesra email detected. Delegate pages are locked for BIT students.");
+        navigate("/", { replace: true });
+    }, [entitlementsLoading, isBitStudent, navigate, popup]);
 
     const ROOM_CACHE_KEY = "technika_delegate_room";
     const readCachedRoom = () => {

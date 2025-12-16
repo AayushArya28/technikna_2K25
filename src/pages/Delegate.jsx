@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
 import { auth } from "../firebase";
 import { usePopup } from "../context/usePopup.jsx";
+import { useEntitlements } from "../context/useEntitlements.jsx";
 
 const Delegate = () => {
     const navigate = useNavigate();
     const popup = usePopup();
+    const { loading: entitlementsLoading, isBitStudent } = useEntitlements();
 
     const BASE_API_URL = "https://api.technika.co";
     const [checkingAccess, setCheckingAccess] = useState(true);
@@ -15,6 +17,13 @@ const Delegate = () => {
 
     const inGroup = useMemo(() => Boolean(groupStatus.isOwner || groupStatus.isMember), [groupStatus]);
     const inSelf = useMemo(() => Boolean(selfStatus.registered), [selfStatus]);
+
+    useEffect(() => {
+        if (entitlementsLoading) return;
+        if (!isBitStudent) return;
+        popup.info("BIT Mesra email detected. Delegate pages are locked for BIT students.");
+        navigate("/", { replace: true });
+    }, [entitlementsLoading, isBitStudent, navigate, popup]);
 
     useEffect(() => {
         const unsub = auth.onAuthStateChanged(async (user) => {

@@ -3,6 +3,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { BASE_API_URL, fetchJson, getAuthHeaders } from "../lib/api.js";
 import { usePopup } from "../context/usePopup.jsx";
+import { useEntitlements } from "../context/useEntitlements.jsx";
 
 function sanitizePhone(phone) {
   return String(phone || "").replace(/\D/g, "").trim();
@@ -10,6 +11,7 @@ function sanitizePhone(phone) {
 
 export default function EventForm({ eventId, eventTitle, eventCategory, open, onClose }) {
   const popup = usePopup();
+  const { loading: entitlementsLoading, isEventFreeEligible } = useEntitlements();
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -139,6 +141,10 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
       popup.error("Please sign in to register.");
       return;
     }
+    if (entitlementsLoading) {
+      popup.info("Checking eligibility… please try again in a moment.");
+      return;
+    }
     if (!eventId) {
       popup.error("Missing event id.");
       return;
@@ -185,6 +191,7 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
         type,
         eventTitle: String(eventTitle || ""),
         eventCategory: String(eventCategory || ""),
+        isFreeEligible: Boolean(isEventFreeEligible),
         name: leader.name,
         email: leader.email,
         phone: leader.phone,
@@ -217,11 +224,15 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
 
       const redirectUrl = data?.paymentUrl || data?.url;
       if (typeof redirectUrl === "string" && redirectUrl.trim()) {
-        window.location.href = redirectUrl;
-        return;
+        if (!isEventFreeEligible) {
+          window.location.href = redirectUrl;
+          return;
+        }
       }
 
-      popup.success(data?.message || "Event registration submitted.");
+      popup.success(
+        data?.message || (isEventFreeEligible ? "Event registration submitted (free eligible)." : "Event registration submitted.")
+      );
       onClose?.();
     } catch (e) {
       popup.error(e?.message || "Event registration failed.");
