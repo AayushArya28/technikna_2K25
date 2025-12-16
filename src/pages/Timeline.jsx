@@ -105,11 +105,7 @@ function Timeline() {
 
           <div className="space-y-5">
             {items.map((item, index) => (
-              <TimelineItem
-                key={index}
-                {...item}
-                isLeft={index % 2 === 0}
-              />
+              <TimelineItem key={index} {...item} isLeft={index % 2 === 0} />
             ))}
           </div>
         </div>
@@ -192,9 +188,7 @@ function EventBox({ title, subtitle, desc }) {
         )}
 
         {desc && (
-          <p className="mt-4 text-sm text-white/70 leading-relaxed">
-            {desc}
-          </p>
+          <p className="mt-4 text-sm text-white/70 leading-relaxed">{desc}</p>
         )}
       </div>
     </div>
