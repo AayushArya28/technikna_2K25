@@ -204,7 +204,7 @@ const Alumni = () => {
       const text = await resp.text();
       try {
         data = JSON.parse(text);
-      } catch (e) {
+      } catch {
         console.error("Non-JSON response:", text);
         throw new Error(`Server returned unexpected response (${resp.status})`);
       }
@@ -264,7 +264,7 @@ const Alumni = () => {
       const text = await resp.text();
       try {
         data = JSON.parse(text);
-      } catch (e) {
+      } catch {
         console.error("Non-JSON status response:", text);
         // If status check fails with non-JSON, just return
         return;

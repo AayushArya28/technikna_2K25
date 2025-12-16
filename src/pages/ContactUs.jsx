@@ -16,6 +16,7 @@ import {
 // Firebase
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { usePopup } from "../context/usePopup.jsx";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -31,6 +32,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export function ContactUs() {
+  const popup = usePopup();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -128,7 +130,7 @@ export function ContactUs() {
       });
     } catch (error) {
       console.error("Error saving contact form data: ", error);
-      alert("Something went wrong. Please try again.");
+      popup.error("Something went wrong. Please try again.");
     }
   };
 

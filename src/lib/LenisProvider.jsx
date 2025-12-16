@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Lenis from '@studio-freight/lenis';
 
-const LenisContext = createContext(null);
+import { LenisContext } from './lenisContext';
 
 export function LenisProvider({ children, options = {} }) {
   const lenisRef = useRef(null);
@@ -38,10 +38,4 @@ export function LenisProvider({ children, options = {} }) {
   }, [options]);
 
   return <LenisContext.Provider value={lenisRef}>{children}</LenisContext.Provider>;
-}
-
-export function useLenisRef() {
-  const ref = useContext(LenisContext);
-  if (!ref) throw new Error('useLenisRef must be used inside LenisProvider');
-  return ref;
 }

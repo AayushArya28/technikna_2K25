@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { motion, useMotionValue, useAnimation, useTransform } from 'motion/react';
+import { motion as Motion, useMotionValue, useAnimation, useTransform } from 'motion/react';
 
 const IMGS = [
   {
@@ -143,7 +143,7 @@ const RollingGallery = ({ autoplay = false, pauseOnHover = false, images = [] })
   return (
     <div className="bg-#f1e4dc relative h-[600px] w-full overflow-hidden">
       <div className="flex h-full items-center justify-center [perspective:1000px] [transform-style:preserve-3d]">
-        <motion.div
+        <Motion.div
           drag="x"
           dragElastic={0}
           onDrag={handleDrag}
@@ -191,7 +191,7 @@ const RollingGallery = ({ autoplay = false, pauseOnHover = false, images = [] })
               </div>
             </div>
           ))}
-        </motion.div>
+        </Motion.div>
       </div>
     </div>
   );

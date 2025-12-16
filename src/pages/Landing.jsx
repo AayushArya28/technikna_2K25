@@ -6,7 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/SplitText";
 import { useEffect, useState } from "react"
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useAuth } from "../context/auth.jsx";
+import { useAuth } from "../context/useAuth.jsx";
 
 gsap.registerPlugin(useGSAP, SplitText, ScrollTrigger);
 

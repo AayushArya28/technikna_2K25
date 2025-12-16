@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import EventForm from "../components/EventForm.jsx";
+
+const toEventId = (title) =>
+  String(title || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 
 const events = [
   {
@@ -73,6 +81,7 @@ const events = [
 
 export default function Cultural() {
   const [active, setActive] = useState(0);
+  const [formOpen, setFormOpen] = useState(false);
   const navigate = useNavigate();
   const sliderRef = useRef(null);
   const cardRef = useRef(null);
@@ -137,7 +146,7 @@ export default function Cultural() {
         {/* LEFT IMAGE */}
         <div className="rounded-2xl overflow-hidden">
           <AnimatePresence mode="wait">
-            <motion.img
+            <Motion.img
               key={events[active].img}
               src={events[active].img}
               alt={events[active].title}
@@ -154,7 +163,7 @@ export default function Cultural() {
 
         {/* RIGHT DETAILS */}
         <AnimatePresence mode="wait">
-          <motion.div
+          <Motion.div
             key={events[active].title}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -174,7 +183,11 @@ export default function Cultural() {
             </ul>
 
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-              <button className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg text-white font-bold">
+              <button
+                type="button"
+                onClick={() => setFormOpen(true)}
+                className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg text-white font-bold"
+              >
                 Register Now
               </button>
 
@@ -205,7 +218,7 @@ export default function Cultural() {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </Motion.div>
         </AnimatePresence>
       </div>
       <div className="relative flex justify-center max-w-7xl mx-auto mb-24">
@@ -248,6 +261,14 @@ export default function Cultural() {
         </div>
 
       </div>
+
+      <EventForm
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        eventId={toEventId(events?.[active]?.title)}
+        eventTitle={events?.[active]?.title}
+        eventCategory="Cultural"
+      />
     </div>
   );
 }

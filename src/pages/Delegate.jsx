@@ -2,9 +2,11 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
 import { auth } from "../firebase";
+import { usePopup } from "../context/usePopup.jsx";
 
 const Delegate = () => {
     const navigate = useNavigate();
+    const popup = usePopup();
 
     const BASE_API_URL = "https://api.technika.co";
     const [checkingAccess, setCheckingAccess] = useState(true);
@@ -183,7 +185,7 @@ const Delegate = () => {
                                     disabled={checkingAccess || inGroup}
                                     onClick={() => {
                                         if (inGroup) {
-                                            alert("You are already a part of group delegate.");
+                                            popup.info("You are already a part of group delegate.");
                                             return;
                                         }
                                         navigate("/delegate-registration");
@@ -204,7 +206,7 @@ const Delegate = () => {
                                     disabled={checkingAccess || inSelf}
                                     onClick={() => {
                                         if (inSelf) {
-                                            alert("You are already registered as an individual delegate.");
+                                            popup.info("You are already registered as an individual delegate.");
                                             return;
                                         }
                                         navigate("/delegate-group-registration");

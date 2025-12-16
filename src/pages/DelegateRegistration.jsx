@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { auth } from "../firebase";
+import { usePopup } from "../context/usePopup.jsx";
+import { onAuthStateChanged } from "firebase/auth";
+import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
 
 const DetailRow = ({ label, value }) => (
     <div className="flex items-start gap-4 font-mono">
@@ -16,7 +18,12 @@ const DetailRow = ({ label, value }) => (
 
 const DelegateRegistration = () => {
     const navigate = useNavigate();
+    const popup = usePopup();
+
     const BASE_API_URL = "https://api.technika.co";
+
+    const [authUser, setAuthUser] = useState(null);
+    const [authReady, setAuthReady] = useState(false);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -33,6 +40,14 @@ const DelegateRegistration = () => {
     const [inGroupDelegate, setInGroupDelegate] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [agreed, setAgreed] = useState(false);
+
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (u) => {
+            setAuthUser(u || null);
+            setAuthReady(true);
+        });
+        return () => unsub();
+    }, []);
 
     const handleChange = (e) => {
         setFormData({
@@ -90,6 +105,19 @@ const DelegateRegistration = () => {
         }
     };
 
+    useEffect(() => {
+        if (!authReady) return;
+        if (!authUser) return;
+
+        setFormData((prev) => ({
+            ...prev,
+            email: authUser.email || prev.email,
+        }));
+        checkStatus();
+        checkGroupDelegateStatus();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [authReady, authUser]);
+
     const checkGroupDelegateStatus = async () => {
         const user = auth.currentUser;
         if (!user) {
@@ -125,27 +153,16 @@ const DelegateRegistration = () => {
     };
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                setFormData((prev) => ({
-                    ...prev,
-                    email: user.email || prev.email,
-                }));
-                checkStatus();
-                checkGroupDelegateStatus();
-            } else {
-                setInGroupDelegate(false);
-            }
-        });
-        return () => unsubscribe();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        if (authReady && !authUser) {
+            setInGroupDelegate(false);
+        }
+    }, [authReady, authUser]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (inGroupDelegate) {
-            alert("You are already a part of group delegate.");
+            popup.info("You are already a part of group delegate.");
             return;
         }
 
@@ -153,20 +170,20 @@ const DelegateRegistration = () => {
 
         try {
             if (formData.name.trim().length < 1) {
-                alert("Please enter a valid name.");
+                popup.error("Please enter a valid name.");
                 setLoading(false);
                 return;
             }
 
             if (formData.phone.trim().length < 10) {
-                alert("Please enter a valid phone number (at least 10 digits).");
+                popup.error("Please enter a valid phone number (at least 10 digits).");
                 setLoading(false);
                 return;
             }
 
             const user = auth.currentUser;
             if (!user) {
-                alert("Please login first.");
+                popup.error("Please login first.");
                 navigate("/login");
                 return;
             }
@@ -189,14 +206,14 @@ const DelegateRegistration = () => {
 
             const data = await response.json().catch(() => ({}));
             if (!response.ok) {
-                alert(data.message || "Registration failed. Please try again.");
+                popup.error(data.message || "Registration failed. Please try again.");
                 return;
             }
 
             setSubmitted(true);
         } catch (error) {
             console.error("Error registering delegate: ", error);
-            alert("Registration failed. Please try again.");
+            popup.error("Registration failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -204,7 +221,7 @@ const DelegateRegistration = () => {
 
     const handlePayment = async () => {
         if (!agreed) {
-            alert("Please agree to the Terms and Conditions & Refund Policy.");
+            popup.error("Please agree to the Terms and Conditions & Refund Policy.");
             return;
         }
         setLoading(true);
@@ -238,7 +255,7 @@ const DelegateRegistration = () => {
             console.log("Payment response:", data);
 
             if (!response.ok) {
-                alert(`Payment failed: ${data.message || response.statusText}`);
+                popup.error(`Payment failed: ${data.message || response.statusText}`);
                 return;
             }
 
@@ -247,17 +264,19 @@ const DelegateRegistration = () => {
             } else if (data.url) {
                 window.location.href = data.url;
             } else {
-                alert(`Payment failed: ${data.message || "No payment URL returned"}`);
+                popup.error(`Payment failed: ${data.message || "No payment URL returned"}`);
             }
         } catch (error) {
             console.error("Payment Error:", error);
-            alert("Something went wrong. Check console for details.");
+            popup.error("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
     return (
+        <>
+        <BrowserWarningModal />
         <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-b from-black via-[#140109] to-black px-6 pb-20 pt-32 text-white">
             {/* Background Decorative Elements */}
             <div className="pointer-events-none absolute inset-0">
@@ -272,6 +291,29 @@ const DelegateRegistration = () => {
             </div>
 
             <div className="relative z-10 w-full max-w-3xl">
+                {!authReady ? (
+                    <div className="min-h-[40vh] flex items-center justify-center">
+                        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/40 px-5 py-4 text-white/80">
+                            <span className="inline-block h-5 w-5 rounded-full border-2 border-white/30 border-t-white/80 animate-spin" />
+                            Checking login...
+                        </div>
+                    </div>
+                ) : !authUser ? (
+                    <div className="min-h-[40vh] flex items-center justify-center">
+                        <div className="w-full max-w-md rounded-3xl border border-white/10 bg-black/40 p-6 text-white/80">
+                            <div className="text-lg font-semibold text-white mb-2">You’re not logged in</div>
+                            <div className="text-white/60 mb-4">Please sign in to register for Delegate Pass.</div>
+                            <button
+                                type="button"
+                                onClick={() => navigate("/login")}
+                                className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition"
+                            >
+                                Go to Login
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <>
                 {!submitted && (
                     <div className="mb-8 flex items-center gap-4">
                         <button
@@ -544,10 +586,13 @@ const DelegateRegistration = () => {
                         </div>
                     </form>
                 )}
+                    </>
+                )}
             </div>
 
             <div className="h-12" />
         </div>
+        </>
     );
 };
 

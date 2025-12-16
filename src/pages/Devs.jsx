@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { gsap } from 'gsap';
 import { Github, Linkedin, Instagram, Mail } from 'lucide-react';
 
 const SocialLinks = ({ social, isMobile, isActive }) => (
