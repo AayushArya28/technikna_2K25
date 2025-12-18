@@ -38,7 +38,12 @@ const BASE_API_URL = "https://api.technika.co";
 
 const Alumni = () => {
   const popup = usePopup();
-  const { loading: entitlementsLoading, canAccessAlumni } = useEntitlements();
+  const {
+    loading: entitlementsLoading,
+    canAccessAlumni,
+    isBitStudent,
+    hasDelegatePass,
+  } = useEntitlements();
 
   const [user, setUser] = useState(null);
   const [dbName, setDbName] = useState("");
@@ -68,9 +73,15 @@ const Alumni = () => {
     if (entitlementsLoading) return;
     if (canAccessAlumni) return;
 
-    popup.info("Alumni registration is locked for users with a Delegate Pass.");
+    if (isBitStudent) {
+      popup.info("Alumni page is not available for BIT students.");
+    } else if (hasDelegatePass) {
+      popup.info("Alumni registration is locked for users with a Delegate Pass.");
+    } else {
+      popup.info("Alumni page is not available for your account.");
+    }
     navigate("/", { replace: true });
-  }, [canAccessAlumni, entitlementsLoading, navigate, popup]);
+  }, [canAccessAlumni, entitlementsLoading, hasDelegatePass, isBitStudent, navigate, popup]);
 
   // GSAP entrance
   useEffect(() => {

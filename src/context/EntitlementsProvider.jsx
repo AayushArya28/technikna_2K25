@@ -9,6 +9,7 @@ export function EntitlementsProvider({ children }) {
 
   const [loading, setLoading] = useState(true);
   const [delegateStatus, setDelegateStatus] = useState("");
+  const [alumniStatus, setAlumniStatus] = useState("");
 
   const email = user?.email;
 
@@ -23,6 +24,7 @@ export function EntitlementsProvider({ children }) {
 
       if (!user) {
         setDelegateStatus("");
+        setAlumniStatus("");
         setLoading(false);
         return;
       }
@@ -30,19 +32,23 @@ export function EntitlementsProvider({ children }) {
       setLoading(true);
       try {
         const headers = await getAuthHeaders({ json: false });
-        const { resp, data } = await fetchJson(`${BASE_API_URL}/delegate/status-self`, {
-          method: "GET",
-          headers,
-        });
+        const [delegateRes, alumniRes] = await Promise.all([
+          fetchJson(`${BASE_API_URL}/delegate/status-self`, { method: "GET", headers }),
+          fetchJson(`${BASE_API_URL}/alumni/status`, { method: "GET", headers }),
+        ]);
+
+        const { resp: delegateResp, data: delegateData } = delegateRes;
+        const { resp: alumniResp, data: alumniData } = alumniRes;
 
         if (cancelled) return;
-        if (!resp.ok) {
-          setDelegateStatus("");
-        } else {
-          setDelegateStatus(String(data?.status || ""));
-        }
+
+        setDelegateStatus(delegateResp.ok ? String(delegateData?.status || "") : "");
+        setAlumniStatus(alumniResp.ok ? String(alumniData?.status || "") : "");
       } catch {
-        if (!cancelled) setDelegateStatus("");
+        if (!cancelled) {
+          setDelegateStatus("");
+          setAlumniStatus("");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -56,12 +62,12 @@ export function EntitlementsProvider({ children }) {
   }, [authLoading, user]);
 
   const value = useMemo(() => {
-    const computed = computeEntitlements({ email, delegateStatus });
+    const computed = computeEntitlements({ email, delegateStatus, alumniStatus });
     return {
       loading,
       ...computed,
     };
-  }, [delegateStatus, email, loading]);
+  }, [alumniStatus, delegateStatus, email, loading]);
 
   return <EntitlementsContext.Provider value={value}>{children}</EntitlementsContext.Provider>;
 }

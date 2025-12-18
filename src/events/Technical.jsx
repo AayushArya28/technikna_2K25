@@ -4,6 +4,8 @@ import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import EventForm from "../components/EventForm.jsx";
 import { getEventId, getEventKeyById } from "../lib/eventIds.js";
+import { useEntitlements } from "../context/useEntitlements.jsx";
+import { usePopup } from "../context/usePopup.jsx";
 
 const events = [
   {
@@ -93,6 +95,16 @@ export default function Technical() {
   const [searchParams] = useSearchParams();
   const sliderRef = useRef(null);
   const cardRef = useRef(null);
+  const popup = usePopup();
+  const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
+
+  useEffect(() => {
+    if (entitlementsLoading) return;
+    if (canAccessEvents) return;
+
+    popup.info("Alumni Pass users can access only the Alumni section.");
+    navigate("/alumni", { replace: true });
+  }, [canAccessEvents, entitlementsLoading, navigate, popup]);
 
   useEffect(() => {
     const keyParam = searchParams.get("eventKey");

@@ -1,8 +1,10 @@
 // Previous Events page retained for reference.
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
+import { useEntitlements } from "../context/useEntitlements.jsx";
+import { usePopup } from "../context/usePopup.jsx";
 
 const heroes = [
   {
@@ -33,6 +35,16 @@ const heroes = [
 export function Events() {
   const [active, setActive] = useState(null);
   const navigate = useNavigate();
+  const popup = usePopup();
+  const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
+
+  useEffect(() => {
+    if (entitlementsLoading) return;
+    if (canAccessEvents) return;
+
+    popup.info("Alumni Pass users can access only the Alumni section.");
+    navigate("/alumni", { replace: true });
+  }, [canAccessEvents, entitlementsLoading, navigate, popup]);
 
   return (
     <>
