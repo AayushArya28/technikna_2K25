@@ -641,7 +641,61 @@ const DelegateGroupRegistration = () => {
     };
 
     const handlePay = async () => {
-        popup.info("Payment flow integration pending.");
+        if (!authUser) {
+            popup.error("Please login first.");
+            navigate("/login");
+            return;
+        }
+
+        if (!status.isOwner || !status.roomId) {
+            popup.error("Only the room owner can initiate payment.");
+            return;
+        }
+
+        setLoading(true);
+        setApiError("");
+        try {
+            const headers = await getAuthHeaders({ json: true });
+            const resp = await fetch(`${BASE_API_URL}/delegate/register/group`, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    roomId: status.roomId,
+                    callbackUrl: window.location.href,
+                }),
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                const message = data.message || "Failed to start payment. Please try again.";
+                setApiError(message);
+                popup.error(message);
+                return;
+            }
+
+            const statusVal = String(data?.status || "").toLowerCase();
+            const isConfirmed = ["success", "paid", "confirmed"].includes(statusVal);
+
+            if (isConfirmed) {
+                popup.success("Group delegate registration confirmed.");
+                await refreshSelfDelegateStatus();
+                await refreshStatusWithRetry();
+                return;
+            }
+
+            const paymentUrl = data.paymentUrl || data.url || "";
+            if (paymentUrl) {
+                window.location.href = paymentUrl;
+                return;
+            }
+
+            popup.error("Payment link not received. Please try again.");
+        } catch (err) {
+            console.error(err);
+            popup.error("Failed to start payment. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const copyRoomId = async () => {

@@ -11,7 +11,8 @@ function sanitizePhone(phone) {
 
 export default function EventForm({ eventId, eventTitle, eventCategory, open, onClose }) {
   const popup = usePopup();
-  const { loading: entitlementsLoading, isEventFreeEligible } = useEntitlements();
+  const { loading: entitlementsLoading, isEventFreeEligible, isBitStudent, hasDelegatePass } =
+    useEntitlements();
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -186,12 +187,19 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
         college: base.college,
       };
 
+      const freeEligible = Boolean(isEventFreeEligible);
+      const delegateEligible = Boolean(hasDelegatePass);
+
       const payload = {
         eventId,
         type,
         eventTitle: String(eventTitle || ""),
         eventCategory: String(eventCategory || ""),
-        isFreeEligible: Boolean(isEventFreeEligible),
+        // Back-compat (older backend): was used to mark free event bookings.
+        isFreeEligible: freeEligible,
+        // New backend flags:
+        isBitStudent: Boolean(isBitStudent),
+        isDelegate: delegateEligible,
         name: leader.name,
         email: leader.email,
         phone: leader.phone,
@@ -224,14 +232,17 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
 
       const redirectUrl = data?.paymentUrl || data?.url;
       if (typeof redirectUrl === "string" && redirectUrl.trim()) {
-        if (!isEventFreeEligible) {
+        if (!freeEligible) {
           window.location.href = redirectUrl;
           return;
         }
       }
 
       popup.success(
-        data?.message || (isEventFreeEligible ? "Event registration submitted (free eligible)." : "Event registration submitted.")
+        data?.message ||
+          (freeEligible
+            ? "Event registration confirmed (free)."
+            : "Event registration submitted.")
       );
       onClose?.();
     } catch (e) {
