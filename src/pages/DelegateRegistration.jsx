@@ -20,7 +20,7 @@ const DetailRow = ({ label, value }) => (
 const DelegateRegistration = () => {
     const navigate = useNavigate();
     const popup = usePopup();
-    const { loading: entitlementsLoading, isBitStudent } = useEntitlements();
+    const { loading: entitlementsLoading, canAccessDelegate } = useEntitlements();
 
     const BASE_API_URL = "https://api.technika.co";
 
@@ -45,10 +45,10 @@ const DelegateRegistration = () => {
 
     useEffect(() => {
         if (entitlementsLoading) return;
-        if (!isBitStudent) return;
+        if (canAccessDelegate) return;
         popup.info("BIT Mesra email detected. Delegate pages are locked for BIT students.");
         navigate("/", { replace: true });
-    }, [entitlementsLoading, isBitStudent, navigate, popup]);
+    }, [canAccessDelegate, entitlementsLoading, navigate, popup]);
 
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, (u) => {

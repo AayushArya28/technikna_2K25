@@ -146,7 +146,7 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
       return;
     }
     if (!eventId) {
-      popup.error("Missing event id.");
+      popup.error("Missing/invalid event id. Please contact the team.");
       return;
     }
 

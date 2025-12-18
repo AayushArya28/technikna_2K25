@@ -8,7 +8,7 @@ import { useEntitlements } from "../context/useEntitlements.jsx";
 const Delegate = () => {
     const navigate = useNavigate();
     const popup = usePopup();
-    const { loading: entitlementsLoading, isBitStudent } = useEntitlements();
+    const { loading: entitlementsLoading, canAccessDelegate } = useEntitlements();
 
     const BASE_API_URL = "https://api.technika.co";
     const [checkingAccess, setCheckingAccess] = useState(true);
@@ -20,10 +20,10 @@ const Delegate = () => {
 
     useEffect(() => {
         if (entitlementsLoading) return;
-        if (!isBitStudent) return;
+        if (canAccessDelegate) return;
         popup.info("BIT Mesra email detected. Delegate pages are locked for BIT students.");
         navigate("/", { replace: true });
-    }, [entitlementsLoading, isBitStudent, navigate, popup]);
+    }, [canAccessDelegate, entitlementsLoading, navigate, popup]);
 
     useEffect(() => {
         const unsub = auth.onAuthStateChanged(async (user) => {

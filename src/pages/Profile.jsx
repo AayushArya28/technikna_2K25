@@ -9,7 +9,7 @@ import {
   School,
   User,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import {
@@ -18,6 +18,13 @@ import {
   updatePassword,
 } from "firebase/auth";
 import { usePopup } from "../context/usePopup.jsx";
+import {
+  getEventId,
+  getEventKeyById,
+  getEventRouteById,
+  getEventTitleById,
+  getEventTitleByKey,
+} from "../lib/eventIds.js";
 
 const BASE_API_URL = "https://api.technika.co";
 
@@ -53,6 +60,7 @@ function StatusBadge({ status }) {
 
 export default function Profile() {
   const popup = usePopup();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState({
     name: "",
@@ -79,6 +87,87 @@ export default function Profile() {
     delegate: null,
     alumni: null,
   });
+  const [eventsFetchError, setEventsFetchError] = useState("");
+
+  const normalizedRegisteredEvents = (() => {
+    const raw = statuses.events;
+
+    const list =
+      Array.isArray(raw)
+        ? raw
+        : Array.isArray(raw?.events)
+          ? raw.events
+          : Array.isArray(raw?.data)
+            ? raw.data
+            : Array.isArray(raw?.registeredEvents)
+              ? raw.registeredEvents
+              : Array.isArray(raw?.registered_events)
+                ? raw.registered_events
+                : Array.isArray(raw?.registrations)
+                  ? raw.registrations
+                  : Array.isArray(raw?.results)
+                    ? raw.results
+                    : Array.isArray(raw?.items)
+                      ? raw.items
+                      : [];
+
+    return list
+      .map((item) => {
+        if (typeof item === "number") {
+          const eventId = item;
+          const key = getEventKeyById(eventId);
+          const title = getEventTitleById(eventId) || (key ? getEventTitleByKey(key) : null) || `Event ${eventId}`;
+          return { title, eventId, status: null, key };
+        }
+        if (typeof item === "string") {
+          const trimmed = item.trim();
+          const asNum = Number(trimmed);
+          if (Number.isFinite(asNum) && trimmed !== "") {
+            const eventId = asNum;
+            const key = getEventKeyById(eventId);
+            const title = getEventTitleById(eventId) || (key ? getEventTitleByKey(key) : null) || `Event ${eventId}`;
+            return { title, eventId, status: null, key };
+          }
+          return { title: item, eventId: null, status: null, key: null };
+        }
+        if (!item || typeof item !== "object") {
+          return null;
+        }
+
+        const eventId = item.eventId ?? item.id ?? item.event_id ?? item.eventID ?? item.eventIdFk ?? null;
+        const key = item.eventKey ?? item.key ?? getEventKeyById(eventId);
+        const title =
+          item.eventTitle ||
+          item.title ||
+          item.name ||
+          item.event ||
+          (key ? getEventTitleByKey(key) : null) ||
+          (eventId ? getEventTitleById(eventId) : null) ||
+          (eventId ? `Event ${eventId}` : "Event");
+        const status = item.status ?? item.paymentStatus ?? item.state ?? null;
+
+        return { title, eventId, status, key };
+      })
+      .filter(Boolean);
+  })();
+
+  const openRegisteredEvent = (evt) => {
+    const key = evt?.key;
+    const eventId = evt?.eventId ?? (key ? getEventId(key) : null);
+    const route = getEventRouteById(eventId);
+
+    if (!eventId || !route) {
+      popup.info("Event link is not available for this entry.");
+      return;
+    }
+
+    if (key) {
+      navigate(`${route}?eventKey=${encodeURIComponent(String(key))}`);
+      return;
+    }
+
+    navigate(`${route}?eventId=${encodeURIComponent(String(eventId))}`);
+  };
 
   const getPasswordStrength = (value) => {
     const v = String(value || "");
@@ -123,7 +212,16 @@ export default function Profile() {
           fetch(`${BASE_API_URL}/alumni/status`, { headers }),
         ]);
 
-        const eventData = eventRes.ok ? await eventRes.json() : null;
+        setEventsFetchError("");
+
+        let eventData = null;
+        if (eventRes.ok) {
+          eventData = await eventRes.json().catch(() => []);
+        } else {
+          // Mark as fetched but unavailable, so UI doesn't show "Fetching" forever.
+          eventData = [];
+          setEventsFetchError(`Could not load registered events (${eventRes.status}).`);
+        }
         const delegateData = delegateRes.ok ? await delegateRes.json() : null;
         const alumniData = alumniRes.ok ? await alumniRes.json() : null;
 
@@ -159,6 +257,8 @@ export default function Profile() {
         });
       } catch (error) {
         console.error("Error fetching profile data:", error);
+        setEventsFetchError("Could not load registered events.");
+        setStatuses((prev) => ({ ...prev, events: [] }));
       } finally {
         setLoading(false);
       }
@@ -452,6 +552,27 @@ export default function Profile() {
                                 : null
                           }
                         />
+
+                        {normalizedRegisteredEvents.length > 0 ? (
+                          <div className="mt-3 space-y-1">
+                            {normalizedRegisteredEvents.slice(0, 3).map((evt, idx) => (
+                              <button
+                                key={`${evt.key || evt.eventId || evt.title}_mini_${idx}`}
+                                type="button"
+                                onClick={() => openRegisteredEvent(evt)}
+                                className="block w-full truncate text-left text-xs text-white/70 hover:text-white transition"
+                                title={String(evt.title || "Event")}
+                              >
+                                • {String(evt.title || "Event")}
+                              </button>
+                            ))}
+                            {normalizedRegisteredEvents.length > 3 ? (
+                              <div className="text-xs text-white/40">
+                                +{normalizedRegisteredEvents.length - 3} more
+                              </div>
+                            ) : null}
+                          </div>
+                        ) : null}
                       </div>
 
                       <div className="rounded-2xl border border-white/10 bg-black/40 p-5 hover:border-[#ff0045]/50 transition duration-300">
@@ -463,6 +584,41 @@ export default function Profile() {
                         </div>
                         <StatusBadge status={statuses.alumni?.status} />
                       </div>
+                    </div>
+
+                    <div className="mt-6 rounded-2xl border border-white/10 bg-black/40 p-5">
+                      <div className="mb-3 flex items-center justify-between">
+                        <div className="text-sm font-semibold uppercase tracking-[0.2em] text-white/60">
+                          Registered Events
+                        </div>
+                      </div>
+
+                      {normalizedRegisteredEvents.length > 0 ? (
+                        <div className="space-y-2">
+                          {normalizedRegisteredEvents.map((evt, idx) => (
+                            <button
+                              key={`${evt.key || evt.eventId || evt.title}_${idx}`}
+                              type="button"
+                              onClick={() => openRegisteredEvent(evt)}
+                              className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-left hover:border-[#ff0045]/50 hover:bg-black/40 transition"
+                            >
+                              <div className="flex flex-wrap items-center justify-between gap-3">
+                                <div className="text-sm font-medium text-white">{String(evt.title || "Event")}</div>
+                                <StatusBadge status={evt.status || "registered"} />
+                              </div>
+                              <div className="mt-1 text-xs text-white/45">
+                                Tap to open this event
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      ) : statuses.events === null ? (
+                        <div className="text-sm text-white/50">Fetching your registered events…</div>
+                      ) : (
+                        <div className="text-sm text-white/50">
+                          {eventsFetchError || "No registered events yet."}
+                        </div>
+                      )}
                     </div>
                   </div>
 

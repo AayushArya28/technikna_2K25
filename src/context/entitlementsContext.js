@@ -5,4 +5,7 @@ export const EntitlementsContext = createContext({
   isBitStudent: false,
   hasDelegatePass: false,
   isEventFreeEligible: false,
+  canAccessAccommodation: true,
+  canAccessDelegate: true,
+  canAccessAlumni: true,
 });

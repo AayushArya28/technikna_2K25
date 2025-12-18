@@ -2,15 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { EntitlementsContext } from "./entitlementsContext";
 import { useAuth } from "./useAuth.jsx";
 import { BASE_API_URL, fetchJson, getAuthHeaders } from "../lib/api.js";
-import { isBitStudentEmail, isPaidLikeStatus } from "../lib/eligibility.js";
+import { computeEntitlements } from "../lib/eligibility.js";
 
 export function EntitlementsProvider({ children }) {
   const { user, loading: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
-  const [hasDelegatePass, setHasDelegatePass] = useState(false);
+  const [delegateStatus, setDelegateStatus] = useState("");
 
-  const isBitStudent = useMemo(() => isBitStudentEmail(user?.email), [user?.email]);
+  const email = user?.email;
 
   useEffect(() => {
     let cancelled = false;
@@ -22,7 +22,7 @@ export function EntitlementsProvider({ children }) {
       }
 
       if (!user) {
-        setHasDelegatePass(false);
+        setDelegateStatus("");
         setLoading(false);
         return;
       }
@@ -37,13 +37,12 @@ export function EntitlementsProvider({ children }) {
 
         if (cancelled) return;
         if (!resp.ok) {
-          setHasDelegatePass(false);
+          setDelegateStatus("");
         } else {
-          const status = data?.status;
-          setHasDelegatePass(isPaidLikeStatus(status));
+          setDelegateStatus(String(data?.status || ""));
         }
       } catch {
-        if (!cancelled) setHasDelegatePass(false);
+        if (!cancelled) setDelegateStatus("");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -56,15 +55,13 @@ export function EntitlementsProvider({ children }) {
     };
   }, [authLoading, user]);
 
-  const value = useMemo(
-    () => ({
+  const value = useMemo(() => {
+    const computed = computeEntitlements({ email, delegateStatus });
+    return {
       loading,
-      isBitStudent,
-      hasDelegatePass,
-      isEventFreeEligible: Boolean(isBitStudent || hasDelegatePass),
-    }),
-    [loading, isBitStudent, hasDelegatePass]
-  );
+      ...computed,
+    };
+  }, [delegateStatus, email, loading]);
 
   return <EntitlementsContext.Provider value={value}>{children}</EntitlementsContext.Provider>;
 }

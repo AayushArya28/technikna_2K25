@@ -24,7 +24,7 @@ function FlipCard({ flipped, front, back, minHeightClassName }) {
 const DelegateGroupRegistration = () => {
     const navigate = useNavigate();
     const popup = usePopup();
-    const { loading: entitlementsLoading, isBitStudent } = useEntitlements();
+    const { loading: entitlementsLoading, canAccessDelegate } = useEntitlements();
 
     const BASE_API_URL = "https://api.technika.co";
 
@@ -41,10 +41,10 @@ const DelegateGroupRegistration = () => {
 
     useEffect(() => {
         if (entitlementsLoading) return;
-        if (!isBitStudent) return;
+        if (canAccessDelegate) return;
         popup.info("BIT Mesra email detected. Delegate pages are locked for BIT students.");
         navigate("/", { replace: true });
-    }, [entitlementsLoading, isBitStudent, navigate, popup]);
+    }, [canAccessDelegate, entitlementsLoading, navigate, popup]);
 
     const ROOM_CACHE_KEY = "technika_delegate_room";
     const readCachedRoom = () => {

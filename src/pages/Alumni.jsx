@@ -38,7 +38,7 @@ const BASE_API_URL = "https://api.technika.co";
 
 const Alumni = () => {
   const popup = usePopup();
-  const { loading: entitlementsLoading, isBitStudent } = useEntitlements();
+  const { loading: entitlementsLoading, canAccessAlumni } = useEntitlements();
 
   const [user, setUser] = useState(null);
   const [dbName, setDbName] = useState("");
@@ -66,11 +66,11 @@ const Alumni = () => {
 
   useEffect(() => {
     if (entitlementsLoading) return;
-    if (!isBitStudent) return;
+    if (canAccessAlumni) return;
 
-    popup.info("BIT Mesra email detected. Alumni page is locked for BIT students.");
+    popup.info("Alumni registration is locked for users with a Delegate Pass.");
     navigate("/", { replace: true });
-  }, [entitlementsLoading, isBitStudent, navigate, popup]);
+  }, [canAccessAlumni, entitlementsLoading, navigate, popup]);
 
   // GSAP entrance
   useEffect(() => {
