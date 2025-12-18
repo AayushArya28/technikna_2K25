@@ -1,8 +1,10 @@
 // Previous Events page retained for reference.
-import React, { useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
+import { useEntitlements } from "../context/useEntitlements.jsx";
+import { usePopup } from "../context/usePopup.jsx";
 
 const heroes = [
   {
@@ -33,6 +35,16 @@ const heroes = [
 export function Events() {
   const [active, setActive] = useState(null);
   const navigate = useNavigate();
+  const popup = usePopup();
+  const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
+
+  useEffect(() => {
+    if (entitlementsLoading) return;
+    if (canAccessEvents) return;
+
+    popup.info("Alumni Pass users can access only the Alumni section.");
+    navigate("/alumni", { replace: true });
+  }, [canAccessEvents, entitlementsLoading, navigate, popup]);
 
   return (
     <>
@@ -44,8 +56,8 @@ export function Events() {
           </h1>
 
           <div className="flex gap-10 flex-wrap justify-center mt-12 perspective-1000">
-            {heroes.map((hero, index) => (
-              <motion.div
+            {heroes.map((hero) => (
+              <Motion.div
                 key={hero.id}
                 onClick={() => {
                   navigate(hero.route);
@@ -84,7 +96,7 @@ export function Events() {
                     {hero.name}
                   </h2>
                 </div>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         </div>
@@ -92,24 +104,3 @@ export function Events() {
     </>
   );
 }
-
-/*
-// Temporary Coming Soon placeholder matching Merchandise page style.
-import React from "react";
-import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
-
-export function Events() {
-  return (
-    <>
-      <BrowserWarningModal />
-      <div className="pt-27 min-h-screen flex items-center justify-center bg-black">
-        <img
-          src="/images/coming-soon.jpg"
-          alt="Coming Soon"
-          className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
-        />
-      </div>
-    </>
-  );
-}
-*/

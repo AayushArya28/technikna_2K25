@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
+import { usePopup } from "../context/usePopup.jsx";
+import { useEntitlements } from "../context/useEntitlements.jsx";
 import { Loader2 } from "lucide-react";
 
 function FlipCard({ flipped, front, back, minHeightClassName }) {
@@ -21,6 +23,8 @@ function FlipCard({ flipped, front, back, minHeightClassName }) {
 
 const DelegateGroupRegistration = () => {
     const navigate = useNavigate();
+    const popup = usePopup();
+    const { loading: entitlementsLoading, canAccessDelegate } = useEntitlements();
 
     const BASE_API_URL = "https://api.technika.co";
 
@@ -34,6 +38,13 @@ const DelegateGroupRegistration = () => {
 
     const [checkingSelfStatus, setCheckingSelfStatus] = useState(false);
     const [selfRegistered, setSelfRegistered] = useState(false);
+
+    useEffect(() => {
+        if (entitlementsLoading) return;
+        if (canAccessDelegate) return;
+        popup.info("BIT Mesra email detected. Delegate pages are locked for BIT students.");
+        navigate("/", { replace: true });
+    }, [canAccessDelegate, entitlementsLoading, navigate, popup]);
 
     const ROOM_CACHE_KEY = "technika_delegate_room";
     const readCachedRoom = () => {
@@ -277,7 +288,6 @@ const DelegateGroupRegistration = () => {
                         roomId: cached.roomId,
                     });
                     markPendingRoom(cached.roomId);
-                    fetchRoomDetails(cached.roomId).catch((err) => console.error(err));
                 }
             }
 
@@ -335,7 +345,6 @@ const DelegateGroupRegistration = () => {
                 !String(memberForm.roomId).trim();
             if (empty) setActiveMode(null);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeMode, ownerForm, memberForm, canCreateOrJoin]);
 
     useEffect(() => {
@@ -384,20 +393,37 @@ const DelegateGroupRegistration = () => {
             setActiveMode("member");
             setOwnerForm((prev) => ({ ...prev, name: "", phone: "", college: "" }));
         }
+
+        if (e.target.name === "roomId") {
+            const raw = String(e.target.value || "");
+            const sanitized = raw.replace(/[^A-Za-z0-9]/g, "").slice(0, 15);
+            setMemberForm((prev) => ({ ...prev, roomId: sanitized }));
+            return;
+        }
+
         setMemberForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const handleRoomIdPaste = (e) => {
+        const text = String(e.clipboardData?.getData("text") || "");
+        const sanitized = text.replace(/[^A-Za-z0-9]/g, "").slice(0, 15);
+        e.preventDefault();
+        setActiveMode("member");
+        setOwnerForm((prev) => ({ ...prev, name: "", phone: "", college: "" }));
+        setMemberForm((prev) => ({ ...prev, roomId: sanitized }));
     };
 
     const validateBasics = (payload) => {
         if (!payload.name.trim()) {
-            alert("Please enter your name.");
+            popup.error("Please enter your name.");
             return false;
         }
         if (String(payload.phone).trim().length < 10) {
-            alert("Please enter a valid phone number (at least 10 digits).");
+            popup.error("Please enter a valid phone number (at least 10 digits).");
             return false;
         }
         if (!payload.college.trim()) {
-            alert("Please enter your college / institute.");
+            popup.error("Please enter your college / institute.");
             return false;
         }
         return true;
@@ -405,7 +431,7 @@ const DelegateGroupRegistration = () => {
 
     const handleCreateRoom = async () => {
         if (!authUser) {
-            alert("Please login first.");
+            popup.error("Please login first.");
             navigate("/login");
             return;
         }
@@ -434,7 +460,7 @@ const DelegateGroupRegistration = () => {
             if (!resp.ok) {
                 const message = data.message || "Failed to create room";
                 setApiError(message);
-                alert(message);
+                popup.error(message);
                 return;
             }
 
@@ -442,7 +468,7 @@ const DelegateGroupRegistration = () => {
             if (!roomId) {
                 const message = "Room created but Room ID was not returned by the server.";
                 setApiError(message);
-                alert(message);
+                popup.error(message);
                 return;
             }
 
@@ -471,7 +497,7 @@ const DelegateGroupRegistration = () => {
             console.error(err);
             const message = "Failed to create room. Please try again.";
             setApiError(message);
-            alert(message);
+            popup.error(message);
         } finally {
             setLoading(false);
         }
@@ -479,7 +505,7 @@ const DelegateGroupRegistration = () => {
 
     const handleJoinRoom = async () => {
         if (!authUser) {
-            alert("Please login first.");
+            popup.error("Please login first.");
             navigate("/login");
             return;
         }
@@ -492,7 +518,11 @@ const DelegateGroupRegistration = () => {
         };
         if (!validateBasics(payload)) return;
         if (!payload.roomId) {
-            alert("Please enter a Room ID.");
+            popup.error("Please enter a Room ID.");
+            return;
+        }
+        if (!/^[A-Za-z0-9]{15}$/.test(payload.roomId)) {
+            popup.error("Room ID must be exactly 15 letters/digits.");
             return;
         }
 
@@ -514,7 +544,7 @@ const DelegateGroupRegistration = () => {
             if (!resp.ok) {
                 const message = data.message || "Failed to join room";
                 setApiError(message);
-                alert(message);
+                popup.error(message);
                 return;
             }
 
@@ -536,7 +566,7 @@ const DelegateGroupRegistration = () => {
             console.error(err);
             const message = "Failed to join room. Please try again.";
             setApiError(message);
-            alert(message);
+            popup.error(message);
         } finally {
             setLoading(false);
         }
@@ -555,7 +585,7 @@ const DelegateGroupRegistration = () => {
 
             const data = await resp.json().catch(() => ({}));
             if (!resp.ok) {
-                alert(data.message || "Failed to leave room");
+                popup.error(data.message || "Failed to leave room");
                 return;
             }
 
@@ -569,7 +599,7 @@ const DelegateGroupRegistration = () => {
             await refreshStatusWithRetry();
         } catch (err) {
             console.error(err);
-            alert("Failed to leave room. Please try again.");
+            popup.error("Failed to leave room. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -590,7 +620,7 @@ const DelegateGroupRegistration = () => {
 
             const data = await resp.json().catch(() => ({}));
             if (!resp.ok) {
-                alert(data.message || "Failed to delete room");
+                popup.error(data.message || "Failed to delete room");
                 return;
             }
 
@@ -604,14 +634,14 @@ const DelegateGroupRegistration = () => {
             await refreshStatusWithRetry();
         } catch (err) {
             console.error(err);
-            alert("Failed to delete room. Please try again.");
+            popup.error("Failed to delete room. Please try again.");
         } finally {
             setLoading(false);
         }
     };
 
     const handlePay = async () => {
-        alert("Payment flow integration pending.");
+        popup.info("Payment flow integration pending.");
     };
 
     const copyRoomId = async () => {
@@ -621,7 +651,7 @@ const DelegateGroupRegistration = () => {
             setCopied(true);
             setTimeout(() => setCopied(false), 1400);
         } catch {
-            alert("Copy failed. Please copy manually.");
+            popup.error("Copy failed. Please copy manually.");
         }
     };
 
@@ -774,7 +804,7 @@ const DelegateGroupRegistration = () => {
                     </div>
                 )}
 
-                {(userReady && (!authUser || !checkingStatus)) && (
+                {(userReady && authUser && !checkingStatus) && (
                     <div className="relative space-y-8">
                         {notice && (
                             <div className="rounded-2xl border border-white/12 bg-white/5 p-4 text-sm text-white/80 backdrop-blur-lg">
@@ -1035,6 +1065,7 @@ const DelegateGroupRegistration = () => {
                                                                 name="roomId"
                                                                 value={memberForm.roomId}
                                                                 onChange={onMemberChange}
+                                                                onPaste={handleRoomIdPaste}
                                                                 placeholder="Room ID"
                                                                 className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
                                                             />

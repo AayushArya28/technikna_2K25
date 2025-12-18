@@ -6,7 +6,7 @@ import { signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import StaggeredMenu from "./StaggeredMenu";
-import { useAuth } from "../context/auth.jsx";
+import { useAuth } from "../context/useAuth.jsx";
 
 const BASE_API_URL = "https://api.technika.co";
 
@@ -21,6 +21,7 @@ function Nav() {
   const location = useLocation();
   const { user } = useAuth();
   const [profileName, setProfileName] = useState("");
+  const uid = user?.uid;
 
   // Scroll to top whenever the route changes
   useEffect(() => {
@@ -39,13 +40,13 @@ function Nav() {
     let cancelled = false;
 
     const loadProfileName = async () => {
-      if (!user?.uid) {
+      if (!uid) {
         setProfileName("");
         return;
       }
 
       try {
-        const docRef = doc(db, "auth", user.uid);
+        const docRef = doc(db, "auth", uid);
         const docSnap = await getDoc(docRef);
         if (cancelled) return;
 
@@ -67,7 +68,13 @@ function Nav() {
       // Fallback: mimic Profile page behavior by trying delegate/alumni status
       // (many users have their name stored server-side, not in Firestore).
       try {
-        const token = await user.getIdToken();
+        const currentUser = auth.currentUser;
+        if (!currentUser || currentUser.uid !== uid) {
+          if (!cancelled) setProfileName("");
+          return;
+        }
+
+        const token = await currentUser.getIdToken();
         const headers = { Authorization: `Bearer ${token}` };
 
         const [delegateRes, alumniRes] = await Promise.all([
@@ -95,7 +102,7 @@ function Nav() {
     return () => {
       cancelled = true;
     };
-  }, [user?.uid]);
+  }, [uid]);
 
   const displayName =
     profileName ||
@@ -117,6 +124,7 @@ function Nav() {
   // Menu items for mobile - matching PC nav exactly
   const menuItems = [
     { label: "Home", ariaLabel: "Go to home page", link: "/", onClick: handleNavClick },
+    { label: "Profile", ariaLabel: "Open profile page", link: "/profile", onClick: handleNavClick },
     { label: "Delegates", ariaLabel: "Delegate page", link: "/delegate", onClick: handleNavClick },
     { label: "Events", ariaLabel: "View events", link: "/events", onClick: handleNavClick },
     { label: "Merchandise", ariaLabel: "Browse merchandise", link: "/merchandise", onClick: handleNavClick },
@@ -129,7 +137,15 @@ function Nav() {
   ];
 
   const desktopNavItems = [
-    { label: "Home", jp: "ホーム", link: "/" },
+    {
+      label: "Home",
+      jp: "ホーム",
+      link: "/",
+      dropdown: [
+        { label: "Home", link: "/" },
+        { label: "Profile", link: "/profile" },
+      ],
+    },
     {
       label: "Registrations",
       jp: "登録",

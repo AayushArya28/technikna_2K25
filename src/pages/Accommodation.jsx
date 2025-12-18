@@ -1,5 +1,8 @@
 /*
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEntitlements } from "../context/useEntitlements.jsx";
+import { usePopup } from "../context/usePopup.jsx";
 
 export default function Accommodation() {
   return (
@@ -42,9 +45,23 @@ export default function Accommodation() {
 }
 */
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useEntitlements } from "../context/useEntitlements.jsx";
+import { usePopup } from "../context/usePopup.jsx";
 
 export default function Accommodation() {
+  const navigate = useNavigate();
+  const popup = usePopup();
+  const { loading: entitlementsLoading, canAccessAccommodation } = useEntitlements();
+
+  useEffect(() => {
+    if (entitlementsLoading) return;
+    if (canAccessAccommodation) return;
+    popup.info("Accommodation is not available for BIT Mesra email users.");
+    navigate("/", { replace: true });
+  }, [canAccessAccommodation, entitlementsLoading, navigate, popup]);
+
   return (
     <div className="pt-25 min-h-screen flex items-center justify-center bg-black">
       <img

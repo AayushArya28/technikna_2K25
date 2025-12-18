@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLenisRef } from '../lib/LenisProvider';
+import { useLenisRef } from '../lib/useLenisRef';
 
 export default function ScrollLink({ to, offset = 0, children, className = '', ...props }) {
   const lenisRef = useLenisRef();

@@ -7,7 +7,6 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { s } from "framer-motion/client";
 
 export default function Login() {
   const [isMobile, setIsMobile] = useState(false);
@@ -17,6 +16,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [college, setCollege] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,6 +40,28 @@ export default function Login() {
     setLoading(true);
     setError("");
     setSuccess("");
+
+    const normalizedPhone = String(phone || "").replace(/\D/g, "").trim();
+
+    if (!signIn) {
+      if (!name.trim()) {
+        setError("Please enter your name.");
+        setLoading(false);
+        return;
+      }
+
+      if (!college.trim()) {
+        setError("Please enter your college.");
+        setLoading(false);
+        return;
+      }
+
+      if (!normalizedPhone || normalizedPhone.length < 10 || normalizedPhone.length > 15) {
+        setError("Please enter a valid phone number.");
+        setLoading(false);
+        return;
+      }
+    }
 
     if (!email || !email.includes("@")) {
       setError("Please enter a valid email.");
@@ -70,6 +92,7 @@ export default function Login() {
           name,
           college,
           email,
+          phone: normalizedPhone,
           password, // kept same as your original (not recommended in production)
           createdAt: new Date(),
         });
@@ -99,7 +122,7 @@ export default function Login() {
       setSuccess(
         "Password reset link sent to your email. Check spam if not found"
       );
-    } catch (err) {
+    } catch {
       setError("Failed to send reset link. Please check your email.");
     }
   };
@@ -145,6 +168,7 @@ style={{ width: "clamp(200px, 90vw, 700px)",
 
       <button
         className="text-xs text-gray-300 mt-2 underline"
+        type="button"
         onClick={handleForgotPassword}
       >
         Forgot your password?
@@ -187,6 +211,15 @@ style={{ width: "clamp(200px, 90vw, 700px)",
         placeholder="College"
         value={college}
         onChange={(e) => setCollege(e.target.value)}
+        className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
+      />
+
+      {/* Phone */}
+      <input
+        type="tel"
+        placeholder="Phone"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
         className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
       />
 
@@ -287,6 +320,13 @@ style={{ width: "clamp(200px, 90vw, 700px)",
               onChange={(e) => setCollege(e.target.value)}
             />
             <input
+              type="tel"
+              placeholder="Phone"
+              className="bg-slate-900/70 border border-white/10 text-gray-100 placeholder-gray-400 font-bold rounded-md py-2.5 sm:py-3 px-3 sm:px-4 my-2 w-full focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <input
               type="email"
               placeholder="Email"
               className="bg-slate-900/70 border border-white/10 text-gray-100 placeholder-gray-400 font-bold rounded-md py-2.5 sm:py-3 px-3 sm:px-4 my-2 w-full focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base"
@@ -374,6 +414,7 @@ style={{ width: "clamp(200px, 90vw, 700px)",
             </div>
             <button
               className="text-[11px] sm:text-xs text-gray-300 font-semibold hover:text-red-300 my-2"
+              type="button"
               onClick={handleForgotPassword}
             >
               Forgot your password?

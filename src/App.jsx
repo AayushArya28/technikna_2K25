@@ -19,12 +19,13 @@ import DelegateRegistration from "./pages/DelegateRegistration";
 import DelegateGroupRegistration from "./pages/DelegateGroupRegistration";
 import Accommodation from "./pages/Accommodation";
 import Profile from "./pages/Profile";
+import Timeline from "./pages/Timeline";
 import { useEffect, useState } from "react";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
 import { AuthProvider } from "./context/auth.jsx";
-import { Analytics } from "@vercel/analytics/react";
-import { path } from "framer-motion/client";
+import { PopupProvider } from "./context/popup.jsx";
+import { EntitlementsProvider } from "./context/EntitlementsProvider.jsx";
 import Lenis from "@studio-freight/lenis";
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
     // { path: "/workshop", Component: Workshop },
     { path: "/login", Component: Login },
     { path: "/contact", Component: ContactUs },
+    { path: "/timeline", Component: Timeline },
     { path: "/devs", Component: Devs },
     { path: "/alumni", Component: Alumni },
     { path: "/delegate", Component: Delegate },
@@ -83,36 +85,40 @@ function App() {
       {!loadingDone && <Loading onFinish={() => setLoadingDone(true)} />}
       {loadingDone && (
         <AuthProvider>
-          <Nav />
-          <TransitionProvider>
-            <Routes>
-              {routes.map(({ path, Component }) => (
-                <Route
-                  key={path}
-                  path={path}
-                  element={
-                    <TransitionComponent>
-                      <>
-                        <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-[9999] overflow-hidden">
-                          <img
-                            src="/images/left-door.jpg"
-                            className="absolute top-0 left-0 w-[50vw] h-full object-cover object-right door left-door translate-x-[-100%]"
-                          />
-                          <img
-                            src="/images/right-door.jpg"
-                            className="absolute top-0 left-[50%] w-[50vw] h-full object-cover object-left door right-door translate-x-[100%]"
-                          />
-                        </div>
-                        {Component && <Component />}
-                      </>
-                    </TransitionComponent>
-                  }
-                  exact
-                />
-              ))}
-            </Routes>
-          </TransitionProvider>
-          <Footer />
+          <PopupProvider>
+            <EntitlementsProvider>
+              <Nav />
+              <TransitionProvider>
+                <Routes>
+                  {routes.map(({ path, Component }) => (
+                    <Route
+                      key={path}
+                      path={path}
+                      element={
+                        <TransitionComponent>
+                          <>
+                            <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-[9999] overflow-hidden">
+                              <img
+                                src="/images/left-door.jpg"
+                                className="absolute top-0 left-0 w-[50vw] h-full object-cover object-right door left-door translate-x-[-100%]"
+                              />
+                              <img
+                                src="/images/right-door.jpg"
+                                className="absolute top-0 left-[50%] w-[50vw] h-full object-cover object-left door right-door translate-x-[100%]"
+                              />
+                            </div>
+                            {Component && <Component />}
+                          </>
+                        </TransitionComponent>
+                      }
+                      exact
+                    />
+                  ))}
+                </Routes>
+              </TransitionProvider>
+              <Footer />
+            </EntitlementsProvider>
+          </PopupProvider>
         </AuthProvider>
       )}
     </BrowserRouter>

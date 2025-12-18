@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 export default function Loading({ onFinish }) {
@@ -11,36 +11,7 @@ export default function Loading({ onFinish }) {
   const maskRef = useRef(null);
   const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
-    gsap.to(diamondRef.current, {
-      rotate: 360,
-      duration: 10,
-      repeat: -1,
-      ease: "linear",
-    });
-
-    gsap.to(squareRef.current, {
-      scale: 1.05,
-      boxShadow: "0 0 60px rgba(255,0,0,0.7)",
-      duration: 1.4,
-      repeat: -1,
-      yoyo: true,
-      ease: "power2.inOut",
-    });
-
-    gsap.to({}, {
-      duration: 5,
-      ease: "power2.inOut",
-      onUpdate() {
-        setProgress(Math.floor(this.progress() * 100));
-      },
-      onComplete() {
-        exitLoader();
-      },
-    });
-  }, []);
-
-  const exitLoader = () => {
+  const exitLoader = useCallback(() => {
     const tl = gsap.timeline({ onComplete: onFinish });
 
     // Scanlines appear
@@ -91,7 +62,36 @@ export default function Loading({ onFinish }) {
       opacity: 0,
       duration: 0.2,
     }, "-=0.3");
-  };
+  }, [onFinish]);
+
+  useEffect(() => {
+    gsap.to(diamondRef.current, {
+      rotate: 360,
+      duration: 10,
+      repeat: -1,
+      ease: "linear",
+    });
+
+    gsap.to(squareRef.current, {
+      scale: 1.05,
+      boxShadow: "0 0 60px rgba(255,0,0,0.7)",
+      duration: 1.4,
+      repeat: -1,
+      yoyo: true,
+      ease: "power2.inOut",
+    });
+
+    gsap.to({}, {
+      duration: 5,
+      ease: "power2.inOut",
+      onUpdate() {
+        setProgress(Math.floor(this.progress() * 100));
+      },
+      onComplete() {
+        exitLoader();
+      },
+    });
+  }, [exitLoader]);
 
   return (
     <div
@@ -113,7 +113,7 @@ export default function Loading({ onFinish }) {
           <h1 className="text-red-600 text-sm mb-2">TECHNIKA 2k26</h1>
           <p className="text-xs text-gray-300 leading-relaxed">
             ENTER THE FEST <br />
-            FROM THE UPSIDE DOWN.
+            FORGED IN HONOR.
           </p>
         </div>
 

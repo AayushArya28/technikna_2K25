@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
+import { useEntitlements } from "../context/useEntitlements.jsx";
+import { usePopup } from "../context/usePopup.jsx";
 import {
   User,
   Mail,
@@ -35,6 +37,14 @@ const PaymentStatus = {
 const BASE_API_URL = "https://api.technika.co";
 
 const Alumni = () => {
+  const popup = usePopup();
+  const {
+    loading: entitlementsLoading,
+    canAccessAlumni,
+    isBitStudent,
+    hasDelegatePass,
+  } = useEntitlements();
+
   const [user, setUser] = useState(null);
   const [dbName, setDbName] = useState("");
   const [loadingAuth, setLoadingAuth] = useState(true);
@@ -58,6 +68,20 @@ const Alumni = () => {
   const formRef = useRef(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (entitlementsLoading) return;
+    if (canAccessAlumni) return;
+
+    if (isBitStudent) {
+      popup.info("Alumni page is not available for BIT students.");
+    } else if (hasDelegatePass) {
+      popup.info("Alumni registration is locked for users with a Delegate Pass.");
+    } else {
+      popup.info("Alumni page is not available for your account.");
+    }
+    navigate("/", { replace: true });
+  }, [canAccessAlumni, entitlementsLoading, hasDelegatePass, isBitStudent, navigate, popup]);
 
   // GSAP entrance
   useEffect(() => {
@@ -204,7 +228,7 @@ const Alumni = () => {
       const text = await resp.text();
       try {
         data = JSON.parse(text);
-      } catch (e) {
+      } catch {
         console.error("Non-JSON response:", text);
         throw new Error(`Server returned unexpected response (${resp.status})`);
       }
@@ -264,7 +288,7 @@ const Alumni = () => {
       const text = await resp.text();
       try {
         data = JSON.parse(text);
-      } catch (e) {
+      } catch {
         console.error("Non-JSON status response:", text);
         // If status check fails with non-JSON, just return
         return;
