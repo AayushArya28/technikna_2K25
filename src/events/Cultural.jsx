@@ -107,7 +107,7 @@ const events = [
     participation: "Solo entry",
     allowedModes: ["solo"],
     rulebookText:
-      "Rulebook\n\n1. The competition will be of 3 hours.\n2. Theme will be revealed on the day of competition.\n3. Items provided at venue: Plain white T-shirt, 1 box of acrylic paint, 2 paint brushes.\n4. Participants can bring extra paint brushes and other stationery as needed.\n5. Medium: acrylic.\n6. Use of markers, pens, glitters will lead to disqualification.\n7. Decision of judges and organizing committee will be final.\n8. Judging criteria: (A) Color palette (B) Novelty (C) Creation (D) Execution",
+      "Rulebook\n\n1. The competition will be of 3 hours.\n2. Theme will be revealed on the day of competition.\n3. Items that will be provided to each participant at the venue: Plain white T-shirt, 1 box of acrylic paint and 2 paint brushes.\n4. Participants can bring extra paint brushes and other stationery as per their requirement.\n5. Medium: acrylic.\n6. Use of markers, pens, glitters will lead to disqualification.\n7. Decision of the judges and organizing committee will be final and abiding.\n8. Judging criteria:\n(A) Color palette\n(B) Novelty\n(C) Creation\n(D) Execution",
   },
   {
     key: "street_dance",
@@ -117,7 +117,7 @@ const events = [
     participation: "Solo entry",
     allowedModes: ["solo"],
     rulebookText:
-      "Rulebook\n\n1. This is a solo event.\n2. Performers will enter the stage and perform on the songs given by organizers.\n3. It is an impromptu performance.\n4. Any dance form is allowed (B-boying, Popping and Locking, Hip Hop, freestyle, semi-classical, Krump etc.).\n5. Decision of judges will be final.",
+      "Rulebook\n\n1. This is a solo event.\n2. Performers will enter the stage and perform on the songs given by organizers.\n3. It is an impromptu performance.\n4. Any dance form is allowed (B-boying, Popping and Locking, Hip Hop, freestyle, semiclassical, Krump etc.).\n5. Decision of the judges will be final and abiding.",
   },
   {
     key: "pencil_perfection",
@@ -127,7 +127,7 @@ const events = [
     participation: "Solo entry",
     allowedModes: ["solo"],
     rulebookText:
-      "Rulebook\n\n• Theme will be announced on the spot.\n• Complete the artwork within 60–90 minutes (organizers finalize time).\n• Drawing must be original and created live at the venue.\n• One entry per participant.\n• Participants must carry their own drawing materials.\n\nJudging Criteria\n• Creativity & Original Interpretation of Theme\n• Relevance to Theme\n• Color Usage & Technique\n• Neatness & Presentation\n• Overall Visual Impact",
+      "Rulebook\n\n• The theme will be announced on the spot.\n• Participants must complete the artwork within 60–90 minutes (organizers can finalize time).\n• Drawing must be original and created live at the venue.\n• One entry per participant.\n• Participants must carry their own drawing materials.\n\nJudging Criteria\n• Creativity & Original Interpretation of Theme\n• Relevance to Theme\n• Color Usage & Technique\n• Neatness & Presentation\n• Overall Visual Impact",
   },
   {
     key: "wall_painting",
@@ -139,7 +139,7 @@ const events = [
     groupMinTotal: 3,
     groupMaxTotal: 5,
     rulebookText:
-      "General Rules\n\n1. Each clan (team) may consist of 3–5 warriors (participants).\n2. A wall/panel section will be assigned to every clan. Complete the artwork within the given time.\n3. Artwork must be original and created only during the event — no pre-drawn outlines or tracing.\n4. Theme will be provided before the event begins.\n5. Maintain discipline — no misconduct or disturbance to others.",
+      "Rulebook\n\n🛡️ General Rules\n1. Each clan (team) may consist of 3–5 warriors (participants).\n2. A wall/panel section will be assigned to every clan. You must complete your artwork within the given time.\n3. The artwork must be original and created only during the event — no pre-drawn outlines or tracing.\n4. The theme will be provided before the battle begins (or you may define if already decided).\n5. Participants must maintain the discipline of the dojo — no misconduct or disturbance to others.",
   },
   {
     key: "musical_marvel",
