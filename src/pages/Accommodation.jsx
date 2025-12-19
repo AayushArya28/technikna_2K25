@@ -19,7 +19,7 @@ export default function Accommodation() {
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [accommodationStatus, setAccommodationStatus] = useState(null);
 
-  /* ---------------- Entitlement Guard ---------------- */
+  /* Entitlement Guard*/
   useEffect(() => {
     if (entitlementsLoading) return;
 
@@ -36,7 +36,7 @@ export default function Accommodation() {
     navigate,
   ]);
 
-  /* ---------------- Status Check ---------------- */
+  /* Status Check */
   useEffect(() => {
     if (entitlementsLoading) return;
 
@@ -71,7 +71,7 @@ export default function Accommodation() {
     <>
       <main className="min-h-screen bg-black text-white pt-28 pb-20 px-6 md:px-12 lg:px-20">
         <div className="mx-auto flex max-w-5xl flex-col gap-8">
-          {/* ---------------- Header ---------------- */}
+          {/*Header */}
           <header className="space-y-3">
             <p className="text-sm uppercase tracking-[0.2em] text-white/60">
               Stay support
@@ -85,7 +85,7 @@ export default function Accommodation() {
             </p>
           </header>
 
-          {/* ---------------- Content ---------------- */}
+          {/*Content*/}
           <section className="grid gap-6 md:grid-cols-2">
             {/* Info Card */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg shadow-black/40">
@@ -140,7 +140,7 @@ export default function Accommodation() {
         </div>
       </main>
 
-      {/* ---------------- Modal ---------------- */}
+      {/*  Modal  */}
       <AccommodationForm
         open={openForm}
         onClose={() => setOpenForm(false)}

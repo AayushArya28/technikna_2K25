@@ -32,7 +32,7 @@ export default function AccommodationForm({ open, onClose }) {
     preferences: "",
   });
 
-  /* ================= PROFILE PREFILL ================= */
+  /*PROFILE PREFILL */
   useEffect(() => {
     if (!open) return;
 
@@ -72,7 +72,7 @@ export default function AccommodationForm({ open, onClose }) {
     run();
   }, [open, popup, onClose]);
 
-  /* ================= STATUS CHECK ================= */
+  /* STATUS CHECK */
   useEffect(() => {
     if (!open) return;
 
@@ -99,7 +99,7 @@ export default function AccommodationForm({ open, onClose }) {
     run();
   }, [open]);
 
-  /* ================= SUBMIT ================= */
+  /*  SUBMIT  */
   const submit = async () => {
     const user = auth.currentUser;
 
@@ -118,7 +118,7 @@ export default function AccommodationForm({ open, onClose }) {
       return;
     }
 
-    /* 🔒 BIT students */
+    /* BIT students */
     if (isBitStudent) {
       popup.info("Accommodation is not applicable for BIT students.");
       return;
@@ -185,7 +185,7 @@ export default function AccommodationForm({ open, onClose }) {
         return;
       }
 
-      /* 💳 ALWAYS redirect to payment for non-BIT */
+      /*  ALWAYS redirect to payment for non-BIT */
       const redirectUrl = data?.paymentUrl || data?.url;
 
       if (typeof redirectUrl === "string" && redirectUrl.trim()) {
@@ -202,8 +202,6 @@ export default function AccommodationForm({ open, onClose }) {
   };
 
   if (!open) return null;
-
-  /* ================= UI ================= */
   return (
     <div className="fixed inset-0 z-[10040] flex items-start justify-center bg-black/70 px-3 py-4 overflow-y-auto">
       <div className="w-full max-w-3xl max-h-[85vh] rounded-3xl border border-white/12 bg-black/70 backdrop-blur-xl flex flex-col shadow-[0_40px_120px_rgba(0,0,0,0.8)]">
