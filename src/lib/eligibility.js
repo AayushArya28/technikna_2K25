@@ -1,5 +1,5 @@
 export function isBitStudentEmail(email) {
-  return /^[a-z]+[0-9]{3}\.[12][0-9]@bitmesra\.ac\.in$/.test(String(email || "").toLowerCase());
+  return /^[a-z]+15[0-9]{3}\.[12][0-9]@bitmesra\.ac\.in$/.test(String(email || "").toLowerCase());
 }
 
 export function isPaidLikeStatus(status) {

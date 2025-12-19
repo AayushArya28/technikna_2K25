@@ -89,3 +89,35 @@ html, body {
   object-position: center;
   display: block;
 }
+
+/* Rolling band / marquee utility (used on Events landing page) */
+.marquee {
+  overflow: hidden;
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-scroll 18s linear infinite;
+}
+
+.marquee__content {
+  white-space: nowrap;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track {
+    /* Keep motion, but make it very slow instead of stopping. */
+    animation: marquee-scroll 60s linear infinite;
+  }
+}
