@@ -38,6 +38,14 @@ export function Events() {
   const popup = usePopup();
   const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
 
+  const downloadOrComingSoon = (href) => {
+    if (typeof href === "string" && href.trim()) {
+      window.open(href, "_blank", "noopener,noreferrer");
+      return;
+    }
+    popup.info("Coming soon.");
+  };
+
   useEffect(() => {
     if (entitlementsLoading) return;
     if (canAccessEvents) return;
@@ -49,8 +57,51 @@ export function Events() {
   return (
     <>
       <BrowserWarningModal />
-      <div className="min-h-screen bg-black flex items-center justify-center px-6">
-        <div className="max-w-6xl w-full mt-10">
+      <div className="min-h-screen bg-black px-6 pt-24">
+        <div>
+          <div className="mx-auto max-w-6xl w-full rounded-2xl overflow-hidden border border-red-500/20 bg-black/60 shadow-[0_0_40px_rgba(239,68,68,0.45)]">
+            <div className="marquee py-2.5">
+              <div className="marquee__track">
+                <div className="marquee__content px-6 text-xs sm:text-sm uppercase tracking-[0.35em] text-white/85">
+                  Prize Pool of Events: 5 Lakhs+ <span className="mx-6 text-white/30">•</span> Prize Pool of Events: 5 Lakhs+ <span className="mx-6 text-white/30">•</span> Prize Pool of Events: 5 Lakhs+
+                </div>
+                <div
+                  className="marquee__content px-6 text-xs sm:text-sm uppercase tracking-[0.35em] text-white/85"
+                  aria-hidden="true"
+                >
+                  Prize Pool of Events: 5 Lakhs+ <span className="mx-6 text-white/30">•</span> Prize Pool of Events: 5 Lakhs+ <span className="mx-6 text-white/30">•</span> Prize Pool of Events: 5 Lakhs+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/rulebooks/about-technika.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Technical PDF
+          </a>
+          <a
+            href="/rulebooks/cultural-events-2025-26.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Cultural PDF
+          </a>
+          <button
+            type="button"
+            onClick={() => downloadOrComingSoon("")}
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Fun PDF
+          </button>
+        </div>
+
+        <div className="flex items-center justify-center">
+        <div className="max-w-6xl w-full mt-12">
           <h1 className="text-white text-4xl font-bold mb-12 tracking-wide text-center">
             Events
           </h1>
@@ -99,6 +150,7 @@ export function Events() {
               </Motion.div>
             ))}
           </div>
+        </div>
         </div>
       </div>
     </>

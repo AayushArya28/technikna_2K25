@@ -9,7 +9,16 @@ function sanitizePhone(phone) {
   return String(phone || "").replace(/\D/g, "").trim();
 }
 
-export default function EventForm({ eventId, eventTitle, eventCategory, open, onClose }) {
+export default function EventForm({
+  eventId,
+  eventTitle,
+  eventCategory,
+  open,
+  onClose,
+  allowedModes = ["solo", "group"],
+  groupMinTotal = 2,
+  groupMaxTotal = null,
+}) {
   const popup = usePopup();
   const { loading: entitlementsLoading, isEventFreeEligible, isBitStudent, hasDelegatePass } =
     useEntitlements();
@@ -27,6 +36,41 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
 
   const [type, setType] = useState("solo");
   const [group, setGroup] = useState([{ name: "", email: "", phone: "", college: "" }]);
+
+  const safeAllowedModes = Array.isArray(allowedModes) ? allowedModes : ["solo", "group"];
+  const safeGroupMinTotal = Number.isFinite(Number(groupMinTotal)) ? Number(groupMinTotal) : 2;
+  const safeGroupMaxTotal =
+    groupMaxTotal == null
+      ? null
+      : Number.isFinite(Number(groupMaxTotal))
+        ? Number(groupMaxTotal)
+        : null;
+
+  const groupMinAdditional = Math.max(0, safeGroupMinTotal - 1);
+  const groupMaxAdditional = safeGroupMaxTotal == null ? null : Math.max(0, safeGroupMaxTotal - 1);
+
+  useEffect(() => {
+    if (!open) return;
+    if (!Array.isArray(safeAllowedModes) || safeAllowedModes.length === 0) return;
+    if (safeAllowedModes.includes(type)) return;
+    setType(safeAllowedModes[0]);
+  }, [open, safeAllowedModes, type]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (type !== "group") return;
+
+    setGroup((prev) => {
+      const next = Array.isArray(prev) ? [...prev] : [];
+      if (groupMaxAdditional != null && next.length > groupMaxAdditional) {
+        next.length = groupMaxAdditional;
+      }
+      while (next.length < Math.max(1, groupMinAdditional)) {
+        next.push({ name: "", email: "", phone: "", college: "" });
+      }
+      return next;
+    });
+  }, [open, type, groupMinAdditional, groupMaxAdditional]);
 
   useEffect(() => {
     if (!open) return;
@@ -151,6 +195,11 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
       return;
     }
 
+    if (!safeAllowedModes.includes(type)) {
+      popup.error("This event does not support the selected registration mode.");
+      return;
+    }
+
     const base = {
       name: String(profile.name || "").trim(),
       email: String(profile.email || "").trim(),
@@ -164,8 +213,16 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
     }
 
     if (type === "group") {
-      if (!Array.isArray(group) || group.length < 2) {
-        popup.error("Add at least 2 members for group registration.");
+      if (!Array.isArray(group) || group.length < groupMinAdditional) {
+        popup.error(
+          `Add at least ${groupMinAdditional} member${groupMinAdditional === 1 ? "" : "s"} for group registration.`
+        );
+        return;
+      }
+      if (groupMaxAdditional != null && group.length > groupMaxAdditional) {
+        popup.error(
+          `You can add at most ${groupMaxAdditional} member${groupMaxAdditional === 1 ? "" : "s"} for this event.`
+        );
         return;
       }
       for (let i = 0; i < group.length; i += 1) {
@@ -195,6 +252,7 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
         type,
         eventTitle: String(eventTitle || ""),
         eventCategory: String(eventCategory || ""),
+        callbackUrl: window.location.href,
         // Back-compat (older backend): was used to mark free event bookings.
         isFreeEligible: freeEligible,
         // New backend flags:
@@ -204,7 +262,6 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
         email: leader.email,
         phone: leader.phone,
         college: leader.college,
-        members: [leader],
       };
 
       if (type === "group") {
@@ -216,7 +273,9 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
         }));
 
         payload.group = normalizedGroup;
-        payload.members = [leader, ...normalizedGroup];
+        // Important: backend already knows the owner from top-level fields.
+        // Sending owner again inside `members` can cause off-by-one totals.
+        payload.members = normalizedGroup;
       }
 
       const { resp, data } = await fetchJson(`${BASE_API_URL}/event/book`, {
@@ -279,28 +338,32 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold text-white/80">Mode</div>
               <div className="flex flex-wrap justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setType("solo")}
-                  className={`rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.22em] border transition sm:px-4 sm:text-xs ${
-                    type === "solo"
-                      ? "border-[#ff0045]/50 bg-[#ff0045]/20 text-white"
-                      : "border-white/20 bg-white/10 text-white/80 hover:bg-white/20"
-                  }`}
-                >
-                  Solo
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setType("group")}
-                  className={`rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.22em] border transition sm:px-4 sm:text-xs ${
-                    type === "group"
-                      ? "border-[#ff0045]/50 bg-[#ff0045]/20 text-white"
-                      : "border-white/20 bg-white/10 text-white/80 hover:bg-white/20"
-                  }`}
-                >
-                  Group
-                </button>
+                {safeAllowedModes.includes("solo") && (
+                  <button
+                    type="button"
+                    onClick={() => setType("solo")}
+                    className={`rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.22em] border transition sm:px-4 sm:text-xs ${
+                      type === "solo"
+                        ? "border-[#ff0045]/50 bg-[#ff0045]/20 text-white"
+                        : "border-white/20 bg-white/10 text-white/80 hover:bg-white/20"
+                    }`}
+                  >
+                    Solo
+                  </button>
+                )}
+                {safeAllowedModes.includes("group") && (
+                  <button
+                    type="button"
+                    onClick={() => setType("group")}
+                    className={`rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.22em] border transition sm:px-4 sm:text-xs ${
+                      type === "group"
+                        ? "border-[#ff0045]/50 bg-[#ff0045]/20 text-white"
+                        : "border-white/20 bg-white/10 text-white/80 hover:bg-white/20"
+                    }`}
+                  >
+                    Group
+                  </button>
+                )}
               </div>
             </div>
 
@@ -358,10 +421,11 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
                 <div className="text-sm font-semibold text-white/80">Group members</div>
                 <button
                   type="button"
+                  disabled={groupMaxAdditional != null && group.length >= groupMaxAdditional}
                   onClick={() =>
                     setGroup((prev) => [...prev, { name: "", email: "", phone: "", college: "" }])
                   }
-                  className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.25em] text-white hover:bg-white/20 transition"
+                  className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.25em] text-white hover:bg-white/20 transition disabled:opacity-40"
                 >
                   Add
                 </button>
@@ -405,7 +469,7 @@ export default function EventForm({ eventId, eventTitle, eventCategory, open, on
                       />
                       <button
                         type="button"
-                        disabled={group.length <= 1}
+                        disabled={group.length <= Math.max(1, groupMinAdditional)}
                         onClick={() => setGroup((prev) => prev.filter((_, i) => i !== idx))}
                         className="rounded-2xl border border-white/20 bg-white/10 px-3 py-2.5 text-xs text-white hover:bg-white/20 transition disabled:opacity-40 sm:py-3"
                         title="Remove"

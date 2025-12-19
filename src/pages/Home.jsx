@@ -7,6 +7,8 @@ import ImageCarousel from "../components/ImageCarousel";
 import { Fade } from "react-awesome-reveal";
 import RollingGallery from "../components/RollingGallery";
 import { AboutTechnika, AboutPatna } from "../components/AboutSections";
+import { motion as Motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const isFirstLoad = useFirstLoad();
@@ -14,6 +16,51 @@ const Home = () => {
   return (
     <div className="overflow-x-hidden bg-gradient-to-b from-[#050509] via-[#0a0a0f] to-[#050509] text-gray-100">
       <Landing animate={isFirstLoad} />
+
+      {/* Prize Pool */}
+      <div className="px-4 sm:px-6 lg:px-8 mt-10">
+        <div className="mx-auto max-w-6xl rounded-3xl border border-white/10 bg-black/40 p-6 text-center">
+          <div className="text-xs uppercase tracking-[0.35em] text-gray-400">Prize Pool</div>
+          <Motion.div
+            className="mt-2 text-4xl sm:text-5xl lg:text-6xl font-black mb-2 bg-gradient-to-r from-[#ff001e] via-pink-500 to-red-600 bg-clip-text text-transparent drop-shadow-lg"
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+          >
+            5 Lakhs+
+          </Motion.div>
+          <div className="w-28 h-1.5 bg-gradient-to-r from-[#ff001e] to-pink-600 mx-auto rounded-full shadow-lg shadow-[#ff001e]/50"></div>
+          <div className="mt-3 text-sm text-gray-300">
+            Cash prizes + goodies across Technical, Cultural & Fun.
+          </div>
+
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              to="/events"
+              className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+            >
+              All Events
+            </Link>
+            <Link
+              to="/technical"
+              className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+            >
+              Technical
+            </Link>
+            <Link
+              to="/cultural"
+              className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+            >
+              Cultural
+            </Link>
+            <Link
+              to="/fun"
+              className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+            >
+              Fun
+            </Link>
+          </div>
+        </div>
+      </div>
 
       {/* Pre-Technika Photos */}
       <div className="relative flex flex-col justify-center items-center z-0 py-20 px-4">

@@ -31,6 +31,15 @@ export const EVENT_ID_MAP = Object.freeze({
     kavi_sammelan: 111,
     debate: 112,
     fashion_insta: 113,
+
+    // Cultural (new)
+    teeverse: 114,
+    street_dance: 115,
+    pencil_perfection: 116,
+    wall_painting: 117,
+
+    // Fun
+    escape_room: 201,
 });
 
 // Optional display titles (used by Profile when backend does not return event titles).
@@ -64,6 +73,15 @@ export const EVENT_TITLE_BY_KEY = Object.freeze({
     kavi_sammelan: "Kavi Sammelan",
     debate: "Vaad-Vivaad (Debate)",
     fashion_insta: "Fashion Insta",
+
+    // Cultural (new)
+    teeverse: "T-Shirt Painting (Teeverse)",
+    street_dance: "Street Dance",
+    pencil_perfection: "Pencil Sketching (Pencil Perfection)",
+    wall_painting: "Wall Painting: Colors of Culture",
+
+    // Fun
+    escape_room: "Escape Room",
 });
 
 export const EVENT_KEY_BY_ID = Object.freeze(
@@ -96,6 +114,7 @@ export function getEventCategoryById(eventId) {
     if (!Number.isFinite(n)) return null;
     if (n > 0 && n < 100) return "Technical";
     if (n >= 100 && n < 200) return "Cultural";
+    if (n >= 200 && n < 300) return "Fun";
     return null;
 }
 
@@ -103,5 +122,6 @@ export function getEventRouteById(eventId) {
     const category = getEventCategoryById(eventId);
     if (category === "Technical") return "/technical";
     if (category === "Cultural") return "/cultural";
+    if (category === "Fun") return "/fun";
     return "/events";
 }
