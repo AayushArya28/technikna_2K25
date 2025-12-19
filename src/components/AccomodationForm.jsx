@@ -16,6 +16,9 @@ export default function AccommodationForm({ open, onClose }) {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const [checkingStatus, setCheckingStatus] = useState(false);
+  const [accommodationStatus, setAccommodationStatus] = useState(null);
+
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -69,6 +72,33 @@ export default function AccommodationForm({ open, onClose }) {
     run();
   }, [open, popup, onClose]);
 
+  /* ================= STATUS CHECK ================= */
+  useEffect(() => {
+    if (!open) return;
+
+    const run = async () => {
+      try {
+        setCheckingStatus(true);
+        const headers = await getAuthHeaders({ json: false });
+
+        const { resp, data } = await fetchJson(
+          `${BASE_API_URL}/accommodation/status`,
+          { method: "GET", headers }
+        );
+
+        if (resp.ok) {
+          setAccommodationStatus(data?.status || null);
+        }
+      } catch {
+        // silent fail
+      } finally {
+        setCheckingStatus(false);
+      }
+    };
+
+    run();
+  }, [open]);
+
   /* ================= SUBMIT ================= */
   const submit = async () => {
     const user = auth.currentUser;
@@ -87,12 +117,20 @@ export default function AccommodationForm({ open, onClose }) {
       popup.info("Checking eligibility…");
       return;
     }
+
+    /* 🔒 BIT students */
     if (isBitStudent) {
       popup.info("Accommodation is not applicable for BIT students.");
       return;
     }
 
-    /* Non-BIT users must have access */
+    /* Already confirmed */
+    if (accommodationStatus === "CONFIRMED") {
+      popup.info("Your accommodation is already confirmed.");
+      return;
+    }
+
+    /* Non-BIT must be allowed */
     if (!canAccessAccommodation) {
       popup.error("Accommodation not available for your account.");
       return;
@@ -147,7 +185,7 @@ export default function AccommodationForm({ open, onClose }) {
         return;
       }
 
-      /* 💳 NON-BIT USERS → ALWAYS PAYMENT REDIRECT */
+      /* 💳 ALWAYS redirect to payment for non-BIT */
       const redirectUrl = data?.paymentUrl || data?.url;
 
       if (typeof redirectUrl === "string" && redirectUrl.trim()) {
@@ -190,17 +228,25 @@ export default function AccommodationForm({ open, onClose }) {
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
+
+          {/* CONFIRMED STATE */}
+          {accommodationStatus === "CONFIRMED" && (
+            <div className="rounded-2xl border border-green-500/30 bg-green-500/10 p-4 text-green-400">
+              <div className="text-sm uppercase tracking-wider">
+                Accommodation Confirmed
+              </div>
+              <div className="mt-1 text-sm text-green-300">
+                Your stay has been successfully confirmed. No further action is required.
+              </div>
+            </div>
+          )}
+
           {/* Personal Details */}
           <div className="grid gap-4 md:grid-cols-2">
-            {[
-              { key: "name", label: "Name" },
-              { key: "email", label: "Email" },
-              { key: "phone", label: "Phone" },
-              { key: "college", label: "College" },
-            ].map(({ key, label }) => (
+            {["name", "email", "phone", "college"].map((key) => (
               <div key={key}>
                 <div className="mb-1 text-xs uppercase tracking-wider text-white/40">
-                  {label}
+                  {key}
                 </div>
                 <input
                   value={profile[key]}
@@ -215,49 +261,34 @@ export default function AccommodationForm({ open, onClose }) {
 
           {/* Dates */}
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <div className="mb-1 text-xs uppercase tracking-wider text-white/40">
-                Check-in date
-              </div>
-              <input
-                type="date"
-                value={form.checkIn}
-                onChange={(e) =>
-                  setForm({ ...form, checkIn: e.target.value })
-                }
-                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white focus:border-[#ff1744] focus:ring-2 focus:ring-[#ff1744]/40 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <div className="mb-1 text-xs uppercase tracking-wider text-white/40">
-                Check-out date
-              </div>
-              <input
-                type="date"
-                value={form.checkOut}
-                onChange={(e) =>
-                  setForm({ ...form, checkOut: e.target.value })
-                }
-                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white focus:border-[#ff1744] focus:ring-2 focus:ring-[#ff1744]/40 focus:outline-none"
-              />
-            </div>
+            <input
+              type="date"
+              value={form.checkIn}
+              onChange={(e) =>
+                setForm({ ...form, checkIn: e.target.value })
+              }
+              className="rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white"
+            />
+            <input
+              type="date"
+              value={form.checkOut}
+              onChange={(e) =>
+                setForm({ ...form, checkOut: e.target.value })
+              }
+              className="rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white"
+            />
           </div>
 
           {/* Preferences */}
-          <div>
-            <div className="mb-1 text-xs uppercase tracking-wider text-white/40">
-              Preferences (optional)
-            </div>
-            <textarea
-              rows={3}
-              value={form.preferences}
-              onChange={(e) =>
-                setForm({ ...form, preferences: e.target.value })
-              }
-              className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white focus:border-[#ff1744] focus:ring-2 focus:ring-[#ff1744]/40 focus:outline-none"
-            />
-          </div>
+          <textarea
+            rows={3}
+            value={form.preferences}
+            onChange={(e) =>
+              setForm({ ...form, preferences: e.target.value })
+            }
+            placeholder="Preferences (optional)"
+            className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white"
+          />
 
           {/* BIT Notice */}
           {isBitStudent && (
@@ -270,11 +301,20 @@ export default function AccommodationForm({ open, onClose }) {
         {/* Footer */}
         <div className="border-t border-white/10 p-5">
           <button
-            disabled={submitting || loadingProfile || isBitStudent}
+            disabled={
+              submitting ||
+              loadingProfile ||
+              isBitStudent ||
+              accommodationStatus === "CONFIRMED"
+            }
             onClick={submit}
-            className="w-full rounded-full bg-[#ff0045]/90 px-6 py-3 text-sm font-semibold uppercase tracking-[0.30em] text-white transition hover:bg-[#ff0045]/80 disabled:opacity-50"
+            className="w-full rounded-full bg-[#ff0045]/90 px-6 py-3 text-sm font-semibold uppercase tracking-[0.30em] text-white disabled:opacity-50"
           >
-            {submitting ? "Redirecting…" : "Submit Request"}
+            {submitting
+              ? "Redirecting…"
+              : accommodationStatus === "CONFIRMED"
+              ? "Accommodation Confirmed"
+              : "Submit Request"}
           </button>
         </div>
       </div>
