@@ -164,6 +164,20 @@ export default function EventForm({
     run();
   }, [open, eventId]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const prevOverflow = document.body.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.touchAction = prevTouchAction;
+    };
+  }, [open]);
+
   const autofillLockedMessage = useMemo(
     () => "This is auto-filled from your profile. Update it in Profile.",
     []
@@ -315,7 +329,7 @@ export default function EventForm({
 
   return (
     <div className="fixed inset-0 z-[10040] flex items-start justify-center bg-black/70 px-3 py-4 overflow-y-auto sm:px-4 sm:py-6">
-      <div className="w-full max-w-2xl rounded-3xl border border-white/12 bg-black/70 p-4 shadow-[0_40px_120px_rgba(0,0,0,0.8)] backdrop-blur-xl max-h-[85vh] overflow-y-auto sm:p-6">
+      <div className="w-full max-w-2xl rounded-3xl border border-white/12 bg-black/70 p-4 shadow-[0_40px_120px_rgba(0,0,0,0.8)] backdrop-blur-xl max-h-[85vh] overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] sm:p-6">
         <div className="flex items-center justify-between gap-4">
           <div>
             <div className="text-xs uppercase tracking-[0.35em] text-white/50">

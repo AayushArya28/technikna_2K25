@@ -18,6 +18,18 @@ export default function RulebookModal({
 }) {
   if (!open) return null;
 
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.touchAction = prevTouchAction;
+    };
+  }, []);
+
   const pageNumber = useMemo(() => {
     const parsed = Number(pdfPage);
     return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 1;
@@ -39,8 +51,8 @@ export default function RulebookModal({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[10060] flex items-start justify-center bg-black/70 px-3 py-4 overflow-y-auto sm:px-4 sm:py-6">
-      <div className="w-full max-w-3xl rounded-3xl border border-white/12 bg-black/70 p-4 shadow-[0_40px_120px_rgba(0,0,0,0.8)] backdrop-blur-xl sm:p-6">
+    <div className="fixed inset-0 z-[10060] flex items-center justify-center bg-black/70 px-3 py-4 overflow-hidden sm:px-4 sm:py-6">
+      <div className="flex max-h-[92dvh] w-full max-w-3xl flex-col rounded-3xl border border-white/12 bg-black/70 p-4 shadow-[0_40px_120px_rgba(0,0,0,0.8)] backdrop-blur-xl sm:max-h-[90vh] sm:p-5 lg:p-4">
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="text-xs uppercase tracking-[0.35em] text-white/50">Rulebook</div>
@@ -55,9 +67,9 @@ export default function RulebookModal({
           </button>
         </div>
 
-        <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
+        <div className="mt-4 min-h-0 flex-1 overflow-hidden rounded-2xl border border-white/10 bg-black/40">
           {typeof pdfUrl === "string" && pdfUrl.trim() ? (
-            <div className="space-y-3">
+            <div className="flex h-full flex-col gap-3 p-4">
               <div className="flex items-center justify-end">
                 <a
                   href={pdfUrl}
@@ -71,7 +83,7 @@ export default function RulebookModal({
 
               <div
                 ref={pdfContainerRef}
-                className="max-h-[72vh] w-full overflow-auto rounded-2xl border border-white/10 bg-black/50 p-2"
+                className="min-h-0 w-full flex-1 overflow-auto [-webkit-overflow-scrolling:touch] overscroll-contain rounded-2xl border border-white/10 bg-black/50 p-2"
               >
                 <Document
                   file={pdfUrl}
@@ -93,9 +105,11 @@ export default function RulebookModal({
               </div>
             </div>
           ) : (
-            <pre className="whitespace-pre-wrap text-sm text-white/85 leading-relaxed">
-              {String(content || "")}
-            </pre>
+            <div className="h-full overflow-y-auto [-webkit-overflow-scrolling:touch] overscroll-contain p-4">
+              <pre className="whitespace-pre-wrap text-sm text-white/85 leading-relaxed">
+                {String(content || "")}
+              </pre>
+            </div>
           )}
         </div>
       </div>
