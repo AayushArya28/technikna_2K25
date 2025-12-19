@@ -83,6 +83,12 @@ export default function EventForm({
         return;
       }
 
+      if (!user.emailVerified) {
+        popup.error("Please verify your email before registering for events.");
+        onClose?.();
+        return;
+      }
+
       setLoadingProfile(true);
       try {
         const snap = await getDoc(doc(db, "auth", user.uid));
@@ -143,6 +149,8 @@ export default function EventForm({
       const user = auth.currentUser;
       if (!user) return;
 
+      if (!user.emailVerified) return;
+
       setChecking(true);
       try {
         const headers = await getAuthHeaders({ json: false });
@@ -178,6 +186,20 @@ export default function EventForm({
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const prevOverflow = document.body.style.overflow;
+    const prevTouchAction = document.body.style.touchAction;
+    document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.body.style.touchAction = prevTouchAction;
+    };
+  }, [open]);
+
   const autofillLockedMessage = useMemo(
     () => "This is auto-filled from your profile. Update it in Profile.",
     []
@@ -198,6 +220,11 @@ export default function EventForm({
     const user = auth.currentUser;
     if (!user) {
       popup.error("Please sign in to register.");
+      return;
+    }
+
+    if (!user.emailVerified) {
+      popup.error("Please verify your email before registering.");
       return;
     }
     if (entitlementsLoading) {
