@@ -77,7 +77,7 @@ const DelegateRegistration = () => {
         setCheckingStatus(true);
         try {
             const token = await user.getIdToken();
-            const response = await fetch(`${BASE_API_URL}/delegate/status-self`, {
+            const response = await fetch(`${BASE_API_URL}/delegate/status/user`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

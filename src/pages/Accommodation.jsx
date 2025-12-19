@@ -94,6 +94,8 @@ export default function Accommodation() {
                 <li>• Clear check-in & check-out guidance</li>
                 <li>• Directions and campus entry assistance</li>
                 <li>• Dedicated point of contact during stay</li>
+                <li>• All basic amenities like pillows, blankets, and beds</li>
+                <li>• Food included (Breakfast, Lunch, Snacks, and Dinner)</li>
               </ul>
             </div>
 

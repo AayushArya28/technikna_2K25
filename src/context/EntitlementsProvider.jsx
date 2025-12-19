@@ -33,7 +33,7 @@ export function EntitlementsProvider({ children }) {
       try {
         const headers = await getAuthHeaders({ json: false });
         const [delegateRes, alumniRes] = await Promise.all([
-          fetchJson(`${BASE_API_URL}/delegate/status-self`, { method: "GET", headers }),
+          fetchJson(`${BASE_API_URL}/delegate/status/user`, { method: "GET", headers }),
           fetchJson(`${BASE_API_URL}/alumni/status`, { method: "GET", headers }),
         ]);
 

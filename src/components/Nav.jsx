@@ -78,7 +78,7 @@ function Nav() {
         const headers = { Authorization: `Bearer ${token}` };
 
         const [delegateRes, alumniRes] = await Promise.all([
-          fetch(`${BASE_API_URL}/delegate/status`, { headers }),
+          fetch(`${BASE_API_URL}/delegate/status/user`, { headers }),
           fetch(`${BASE_API_URL}/alumni/status`, { headers }),
         ]);
 

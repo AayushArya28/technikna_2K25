@@ -38,8 +38,18 @@ export const EVENT_ID_MAP = Object.freeze({
     pencil_perfection: 116,
     wall_painting: 117,
 
+    // Frame & Focus (Photography & Film)
+    motion_e_magic: 118,
+    capture_the_unseen: 119,
+
     // Fun
     escape_room: 201,
+
+    // ESports
+    bgmi: 301,
+    valorant: 302,
+    fifa: 303,
+    tekken: 304,
 });
 
 // Optional display titles (used by Profile when backend does not return event titles).
@@ -55,9 +65,9 @@ export const EVENT_TITLE_BY_KEY = Object.freeze({
     bridge_the_gap: "Aerofilia (Bridge the Gap)",
     multisim_mavericks: "Multisim Mavericks",
     startup_sphere: "Startup Sphere",
-    cad_modelling: "CAD Modelling",
+    cad_modelling: "CAD Master (AutoCAD / SketchUp Design Challenge)",
     brain_brawl: "Brain Brawl",
-    utility_bot: "Utility Bot",
+    utility_bot: "MachUtility Extreme (Utility Machine)",
 
     // Cultural
     solo_saga: "Solo Saga",
@@ -67,11 +77,11 @@ export const EVENT_TITLE_BY_KEY = Object.freeze({
     fusion_fiesta: "Fusion Fiesta",
     musical_marvel: "Musical Marvel",
     ekanki: "Ekanki",
-    matargasthi: "Matargasthi",
+    matargasthi: "Matargashti",
     hulchul: "Hulchul",
-    poetry: "Poetry",
+    poetry: "Jashn-e-Jazbaat (Poetry)",
     kavi_sammelan: "Kavi Sammelan",
-    debate: "Vaad-Vivaad (Debate)",
+    debate: "Vaad Vivaad (Debate)",
     fashion_insta: "Fashion Insta",
 
     // Cultural (new)
@@ -80,8 +90,18 @@ export const EVENT_TITLE_BY_KEY = Object.freeze({
     pencil_perfection: "Pencil Sketching (Pencil Perfection)",
     wall_painting: "Wall Painting: Colors of Culture",
 
+    // Frame & Focus
+    motion_e_magic: "Motion-e-Magic",
+    capture_the_unseen: "Capture the Unseen",
+
     // Fun
     escape_room: "Escape Room",
+
+    // ESports
+    bgmi: "BGMI",
+    valorant: "Valorant",
+    fifa: "FIFA",
+    tekken: "Tekken",
 });
 
 export const EVENT_KEY_BY_ID = Object.freeze(
@@ -115,13 +135,19 @@ export function getEventCategoryById(eventId) {
     if (n > 0 && n < 100) return "Technical";
     if (n >= 100 && n < 200) return "Cultural";
     if (n >= 200 && n < 300) return "Fun";
+    if (n >= 300 && n < 400) return "Esports";
     return null;
 }
 
 export function getEventRouteById(eventId) {
+    const key = getEventKeyById(eventId);
+    if (key === "pencil_perfection" || key === "wall_painting") return "/art-craft";
+    if (key === "motion_e_magic" || key === "capture_the_unseen") return "/frame-focus";
+
     const category = getEventCategoryById(eventId);
     if (category === "Technical") return "/technical";
     if (category === "Cultural") return "/cultural";
     if (category === "Fun") return "/fun";
+    if (category === "Esports") return "/esports";
     return "/events";
 }
