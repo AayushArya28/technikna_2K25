@@ -333,7 +333,8 @@ export default function EventForm({
       const redirectUrl = data?.paymentUrl || data?.url;
       if (typeof redirectUrl === "string" && redirectUrl.trim()) {
         if (!freeEligible) {
-          window.location.href = redirectUrl;
+          const opened = window.open(redirectUrl, "_blank", "noopener,noreferrer");
+          if (!opened) window.location.href = redirectUrl;
           return;
         }
       }
