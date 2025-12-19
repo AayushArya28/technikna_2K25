@@ -16,9 +16,9 @@ export default function RulebookModal({
   pdfPage,
   onClose,
 }) {
-  if (!open) return null;
-
   useEffect(() => {
+    if (!open) return;
+
     const prevOverflow = document.body.style.overflow;
     const prevTouchAction = document.body.style.touchAction;
     document.body.style.overflow = "hidden";
@@ -28,7 +28,7 @@ export default function RulebookModal({
       document.body.style.overflow = prevOverflow;
       document.body.style.touchAction = prevTouchAction;
     };
-  }, []);
+  }, [open]);
 
   const pageNumber = useMemo(() => {
     const parsed = Number(pdfPage);
@@ -39,6 +39,7 @@ export default function RulebookModal({
   const [pdfWidth, setPdfWidth] = useState(0);
 
   useEffect(() => {
+    if (!open) return;
     if (!pdfContainerRef.current) return;
 
     const element = pdfContainerRef.current;
@@ -48,7 +49,9 @@ export default function RulebookModal({
     const ro = new ResizeObserver(update);
     ro.observe(element);
     return () => ro.disconnect();
-  }, []);
+  }, [open]);
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-[10060] flex items-center justify-center bg-black/70 px-3 py-4 overflow-hidden sm:px-4 sm:py-6">

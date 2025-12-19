@@ -4,7 +4,9 @@ import { auth, db } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendEmailVerification,
   sendPasswordResetEmail,
+  signOut,
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -77,26 +79,48 @@ export default function Login() {
 
     try {
       if (signIn) {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        if (!userCredential.user.emailVerified) {
+          try {
+            await sendEmailVerification(userCredential.user);
+          } finally {
+            await signOut(auth);
+          }
+
+          setError(
+            "Please verify your email to sign in. We just sent you a verification email (check spam too)."
+          );
+          return;
+        }
+
         setSuccess("Login successful!");
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
+        setTimeout(() => navigate("/"), 1000);
       } else {
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
           password
         );
+
+        await sendEmailVerification(userCredential.user);
+
         await setDoc(doc(db, "auth", userCredential.user.uid), {
           name,
           college,
           email,
           phone: normalizedPhone,
-          password, // kept same as your original (not recommended in production)
           createdAt: new Date(),
         });
-        setSuccess("Account created successfully! You can now login.");
+
+        await signOut(auth);
+        setSuccess(
+          "Account created! Please verify your email (we sent you a link), then sign in."
+        );
       }
     } catch (err) {
       if (err.code === "auth/invalid-credential") {
