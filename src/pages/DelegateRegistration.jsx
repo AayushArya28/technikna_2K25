@@ -68,6 +68,7 @@ const DelegateRegistration = () => {
     const PaymentStatus = {
         Confirmed: "confirmed",
         Pending: "pending",
+        Failed: "failed",
     };
 
     const checkStatus = async () => {
@@ -98,6 +99,22 @@ const DelegateRegistration = () => {
                 } else if (status === "pending" || status === "pending_payment") {
                     setSubmitted(true);
                     setPaymentStatus(PaymentStatus.Pending);
+                    setFormData({
+                        name: data.name || "",
+                        email: data.email || user.email || "",
+                        phone: data.phone || "",
+                        college: data.college || "",
+                        address: data.address || "",
+                    });
+                } else if (
+                    status === "failed" ||
+                    status === "payment_failed" ||
+                    status === "payment failed" ||
+                    status === "cancelled" ||
+                    status === "canceled"
+                ) {
+                    setSubmitted(true);
+                    setPaymentStatus(PaymentStatus.Failed);
                     setFormData({
                         name: data.name || "",
                         email: data.email || user.email || "",

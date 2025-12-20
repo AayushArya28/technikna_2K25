@@ -21,6 +21,28 @@ const UserProfileModal = ({ onClose }) => {
     const BASE_API_URL = "https://api.technika.co";
 
     const extractRegisteredEventsList = (raw) => {
+        const asEventMap = (m) => m && typeof m === 'object' && !Array.isArray(m);
+
+        // API shape: { success: true, events: { [eventId]: "confirmed" | "pending" | "payment_failed" | ... } }
+        if (asEventMap(raw?.events)) {
+            return Object.entries(raw.events)
+                .map(([k, v]) => {
+                    const asNum = Number(String(k || '').trim());
+                    const eventId = Number.isFinite(asNum) ? asNum : null;
+                    const status =
+                        typeof v === 'string'
+                            ? v
+                            : v && typeof v === 'object'
+                                ? (v.status ?? v.paymentStatus ?? v.payment_status ?? v.state ?? null)
+                                : v === true
+                                    ? 'registered'
+                                    : null;
+                    if (eventId == null) return null;
+                    return { eventId, status };
+                })
+                .filter(Boolean);
+        }
+
         const list =
             Array.isArray(raw)
                 ? raw
@@ -137,8 +159,13 @@ const UserProfileModal = ({ onClose }) => {
         const s = String(status).toLowerCase();
         if (s === 'paid' || s === 'confirmed' || s === 'success') {
             colorClass = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            label = 'Confirmed';
         } else if (s === 'pending' || s === 'pending_payment') {
             colorClass = "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
+            label = 'Pending';
+        } else if (s === 'failed' || s === 'payment_failed' || s === 'payment failed' || s === 'cancelled' || s === 'canceled') {
+            colorClass = "bg-red-500/20 text-red-400 border border-red-500/30";
+            label = 'Payment Failed';
         }
 
         return (

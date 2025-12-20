@@ -44,9 +44,21 @@ function StatusBadge({ status }) {
   ) {
     colorClass =
       "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+    label = "Confirmed";
   } else if (normalized === "pending" || normalized === "pending_payment") {
     colorClass =
       "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
+    label = "Pending";
+  } else if (
+    normalized === "failed" ||
+    normalized === "payment_failed" ||
+    normalized === "payment failed" ||
+    normalized === "cancelled" ||
+    normalized === "canceled"
+  ) {
+    colorClass =
+      "bg-red-500/20 text-red-400 border border-red-500/30";
+    label = "Payment Failed";
   }
 
   return (
@@ -90,6 +102,54 @@ export default function Profile() {
   const [eventsFetchError, setEventsFetchError] = useState("");
 
   const extractRegisteredEventsList = (raw) => {
+    const asEventMap = (m) =>
+      m && typeof m === "object" && !Array.isArray(m);
+
+    // API shape: { success: true, events: { [eventId]: "confirmed" | "pending" | "payment_failed" | ... } }
+    if (asEventMap(raw?.events)) {
+      return Object.entries(raw.events)
+        .map(([k, v]) => {
+          const asNum = Number(String(k || "").trim());
+          const eventId = Number.isFinite(asNum) ? asNum : null;
+          const status =
+            typeof v === "string"
+              ? v
+              : v && typeof v === "object"
+                ? v.status ?? v.paymentStatus ?? v.payment_status ?? v.state ?? null
+                : v === true
+                  ? "registered"
+                  : null;
+
+          if (eventId == null) return null;
+          return { eventId, status };
+        })
+        .filter(Boolean);
+    }
+
+    // Some sources store event registrations as a direct map.
+    if (asEventMap(raw) && !Array.isArray(raw)) {
+      const keys = Object.keys(raw);
+      const looksLikeMap = keys.some((k) => /\d+/.test(String(k)));
+      if (looksLikeMap) {
+        return Object.entries(raw)
+          .map(([k, v]) => {
+            const asNum = Number(String(k || "").trim());
+            const eventId = Number.isFinite(asNum) ? asNum : null;
+            const status =
+              typeof v === "string"
+                ? v
+                : v && typeof v === "object"
+                  ? v.status ?? v.paymentStatus ?? v.payment_status ?? v.state ?? null
+                  : v === true
+                    ? "registered"
+                    : null;
+            if (eventId == null) return null;
+            return { eventId, status };
+          })
+          .filter(Boolean);
+      }
+    }
+
     const list =
       Array.isArray(raw)
         ? raw
@@ -260,26 +320,9 @@ export default function Profile() {
   const normalizedRegisteredEvents = (() => {
     const raw = statuses.events;
 
-    const list =
-      Array.isArray(raw)
-        ? raw
-        : Array.isArray(raw?.events)
-          ? raw.events
-          : Array.isArray(raw?.data)
-            ? raw.data
-            : Array.isArray(raw?.registeredEvents)
-              ? raw.registeredEvents
-              : Array.isArray(raw?.registered_events)
-                ? raw.registered_events
-                : Array.isArray(raw?.registrations)
-                  ? raw.registrations
-                  : Array.isArray(raw?.results)
-                    ? raw.results
-                    : Array.isArray(raw?.items)
-                      ? raw.items
-                      : [];
+    const list = extractRegisteredEventsList(raw);
 
-    return list
+    return (Array.isArray(list) ? list : [])
       .map((item) => {
         if (typeof item === "number") {
           const eventId = item;
