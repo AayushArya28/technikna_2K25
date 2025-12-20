@@ -1,3 +1,42 @@
+// Events page (temporarily Coming Soon).
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
+import { useEntitlements } from "../context/useEntitlements.jsx";
+import { usePopup } from "../context/usePopup.jsx";
+
+export function Events() {
+  const navigate = useNavigate();
+  const popup = usePopup();
+  const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
+
+  useEffect(() => {
+    if (entitlementsLoading) return;
+    if (canAccessEvents) return;
+
+    popup.info("Alumni Pass users can access only the Alumni section.");
+    navigate("/alumni", { replace: true });
+  }, [canAccessEvents, entitlementsLoading, navigate, popup]);
+
+  return (
+    <>
+      <BrowserWarningModal />
+      <main className="min-h-screen bg-black px-6 pt-24 flex items-center justify-center">
+        <img
+          src="/images/coming-soon.jpg"
+          alt="Events coming soon"
+          className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
+        />
+      </main>
+    </>
+  );
+}
+
+/*
+================================================================================
+PREVIOUS EVENTS PAGE CODE (COMMENTED OUT)
+================================================================================
+
 // Events page.
 import React, { useEffect, useState } from "react";
 import { motion as Motion } from "framer-motion";
@@ -108,63 +147,61 @@ export function Events() {
 
         <div className="flex items-center justify-center">
           <div className="max-w-6xl w-full mt-12">
-            <h1 className="text-white text-4xl font-bold mb-12 tracking-wide text-center">
-              Events
-            </h1>
+            <h1 className="text-white text-4xl font-bold mb-12 tracking-wide text-center">Events</h1>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10 justify-items-center mt-12 perspective-1000">
-            {heroes.map((hero) => (
-              <Motion.div
-                key={hero.id}
-                onClick={() => {
-                  navigate(hero.route);
-                }}
-                initial={{ opacity: 0, y: 80, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0, duration: 0.1 }}
-                whileHover={{
-                  scale: 1,
-                  y: -22,
-                  rotateX: 10,
-                  boxShadow:
-                    "0 0 45px rgba(239,68,68,0.65)",
-                }}
-                onHoverStart={() => setActive(hero.id)}
-                onHoverEnd={() => setActive(null)}
-                className={`relative w-full max-w-[240px] h-[380px] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 transform-gpu lg:col-span-2 ${
-                  active === hero.id
-                    ? "ring-4 ring-red-500/80 shadow-[0_0_40px_rgba(239,68,68,0.45)] scale-105"
-                    : "opacity-85"
-                } ${
-                  hero.id === 4
-                    ? "lg:col-start-2"
-                    : hero.id === 5
-                      ? "lg:col-start-4"
-                      : ""
-                }`}
-              >
-                <div className="absolute -inset-3 bg-red-800/10 blur-2xl rounded-3xl -z-10" />
-                <img
-                  src={hero.img}
-                  alt={hero.name}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
+              {heroes.map((hero) => (
+                <Motion.div
+                  key={hero.id}
+                  onClick={() => {
+                    navigate(hero.route);
+                  }}
+                  initial={{ opacity: 0, y: 80, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0, duration: 0.1 }}
+                  whileHover={{
+                    scale: 1,
+                    y: -22,
+                    rotateX: 10,
+                    boxShadow: "0 0 45px rgba(239,68,68,0.65)",
+                  }}
+                  onHoverStart={() => setActive(hero.id)}
+                  onHoverEnd={() => setActive(null)}
+                  className={`relative w-full max-w-[240px] h-[380px] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 transform-gpu lg:col-span-2 ${
+                    active === hero.id
+                      ? "ring-4 ring-red-500/80 shadow-[0_0_40px_rgba(239,68,68,0.45)] scale-105"
+                      : "opacity-85"
+                  } ${
+                    hero.id === 4
+                      ? "lg:col-start-2"
+                      : hero.id === 5
+                        ? "lg:col-start-4"
+                        : ""
+                  }`}
+                >
+                  <div className="absolute -inset-3 bg-red-800/10 blur-2xl rounded-3xl -z-10" />
+                  <img
+                    src={hero.img}
+                    alt={hero.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
-                <div className="absolute bottom-6 left-6">
-                  <h2 className="text-white text-lg font-semibold tracking-wide">
-                    {hero.name}
-                  </h2>
-                </div>
-              </Motion.div>
-            ))}
+                  <div className="absolute bottom-6 left-6">
+                    <h2 className="text-white text-lg font-semibold tracking-wide">{hero.name}</h2>
+                  </div>
+                </Motion.div>
+              ))}
+            </div>
           </div>
-        </div>
         </div>
       </div>
     </>
   );
 }
+
+================================================================================
+*/
