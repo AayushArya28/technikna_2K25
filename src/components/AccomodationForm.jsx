@@ -27,12 +27,14 @@ export default function AccommodationForm({ open, onClose }) {
   });
 
   const [form, setForm] = useState({
-    checkIn: "",
-    checkOut: "",
+    checkIn: "2026-01-16",
+    checkOut: "2026-01-18",
     preferences: "",
   });
 
-  /*PROFILE PREFILL */
+  const [seats, setSeats] = useState(1);
+
+  /* PROFILE PREFILL */
   useEffect(() => {
     if (!open) return;
 
@@ -90,7 +92,7 @@ export default function AccommodationForm({ open, onClose }) {
           setAccommodationStatus(data?.status || null);
         }
       } catch {
-        // silent fail
+        // silent
       } finally {
         setCheckingStatus(false);
       }
@@ -99,7 +101,7 @@ export default function AccommodationForm({ open, onClose }) {
     run();
   }, [open]);
 
-  /*  SUBMIT  */
+  /* SUBMIT */
   const submit = async () => {
     const user = auth.currentUser;
 
@@ -118,19 +120,16 @@ export default function AccommodationForm({ open, onClose }) {
       return;
     }
 
-    /* BIT students */
     if (isBitStudent) {
       popup.info("Accommodation is not applicable for BIT students.");
       return;
     }
 
-    /* Already confirmed */
     if (accommodationStatus === "CONFIRMED") {
       popup.info("Your accommodation is already confirmed.");
       return;
     }
 
-    /* Non-BIT must be allowed */
     if (!canAccessAccommodation) {
       popup.error("Accommodation not available for your account.");
       return;
@@ -141,32 +140,19 @@ export default function AccommodationForm({ open, onClose }) {
       return;
     }
 
-    if (!form.checkIn || !form.checkOut) {
-      popup.error("Please select check-in and check-out dates.");
-      return;
-    }
-
-    if (new Date(form.checkOut) <= new Date(form.checkIn)) {
-      popup.error("Check-out must be after check-in.");
-      return;
-    }
-
     setSubmitting(true);
     try {
       const headers = await getAuthHeaders({ json: true });
 
       const payload = {
-        seats: 1,
-
+        seats,
         checkIn: form.checkIn,
         checkOut: form.checkOut,
         preferences: form.preferences,
-
         name: profile.name,
         email: profile.email,
         phone: profile.phone,
         college: profile.college,
-
         isBitStudent: false,
         callbackUrl: window.location.href,
       };
@@ -185,10 +171,8 @@ export default function AccommodationForm({ open, onClose }) {
         return;
       }
 
-      /*  ALWAYS redirect to payment for non-BIT */
       const redirectUrl = data?.paymentUrl || data?.url;
-
-      if (typeof redirectUrl === "string" && redirectUrl.trim()) {
+      if (redirectUrl) {
         window.location.href = redirectUrl;
         return;
       }
@@ -202,9 +186,10 @@ export default function AccommodationForm({ open, onClose }) {
   };
 
   if (!open) return null;
+
   return (
-    <div className="fixed inset-0 z-[10040] flex items-start justify-center bg-black/70 px-3 py-4 overflow-y-auto">
-      <div className="w-full max-w-3xl max-h-[85vh] rounded-3xl border border-white/12 bg-black/70 backdrop-blur-xl flex flex-col shadow-[0_40px_120px_rgba(0,0,0,0.8)]">
+    <div className="fixed inset-0 z-[10040] flex items-start justify-center bg-black/70 px-3 py-4">
+      <div className="w-full max-w-3xl max-h-[85vh] flex flex-col rounded-3xl border border-white/12 bg-black/70 backdrop-blur-xl shadow-[0_40px_120px_rgba(0,0,0,0.8)]">
 
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 p-5">
@@ -218,66 +203,48 @@ export default function AccommodationForm({ open, onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20 transition"
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm text-white"
           >
             Close
           </button>
         </div>
 
-        {/* Body */}
+        {/* Body (SCROLLS) */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
 
-          {/* CONFIRMED STATE */}
-          {accommodationStatus === "CONFIRMED" && (
-            <div className="rounded-2xl border border-green-500/30 bg-green-500/10 p-4 text-green-400">
-              <div className="text-sm uppercase tracking-wider">
-                Accommodation Confirmed
-              </div>
-              <div className="mt-1 text-sm text-green-300">
-                Your stay has been successfully confirmed. No further action is required.
-              </div>
+          <div className="grid gap-4 md:grid-cols-2 text-sm text-white/70">
+            <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
+              <div className="text-xs uppercase text-white/40">Check-in</div>
+              16 January 2026
             </div>
-          )}
+            <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3">
+              <div className="text-xs uppercase text-white/40">Check-out</div>
+              18 January 2026
+            </div>
+          </div>
 
-          {/* Personal Details */}
           <div className="grid gap-4 md:grid-cols-2">
             {["name", "email", "phone", "college"].map((key) => (
-              <div key={key}>
-                <div className="mb-1 text-xs uppercase tracking-wider text-white/40">
-                  {key}
-                </div>
-                <input
-                  value={profile[key]}
-                  onChange={(e) =>
-                    setProfile({ ...profile, [key]: e.target.value })
-                  }
-                  className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white focus:border-[#ff1744] focus:ring-2 focus:ring-[#ff1744]/40 focus:outline-none"
-                />
-              </div>
+              <input
+                key={key}
+                value={profile[key]}
+                onChange={(e) =>
+                  setProfile({ ...profile, [key]: e.target.value })
+                }
+                className="rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white"
+                placeholder={key}
+              />
             ))}
           </div>
 
-          {/* Dates */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <input
-              type="date"
-              value={form.checkIn}
-              onChange={(e) =>
-                setForm({ ...form, checkIn: e.target.value })
-              }
-              className="rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white"
-            />
-            <input
-              type="date"
-              value={form.checkOut}
-              onChange={(e) =>
-                setForm({ ...form, checkOut: e.target.value })
-              }
-              className="rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white"
-            />
-          </div>
+          <select
+            value={seats}
+            onChange={(e) => setSeats(Number(e.target.value))}
+            className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white"
+          >
+            <option value={1}>1</option>
+          </select>
 
-          {/* Preferences */}
           <textarea
             rows={3}
             value={form.preferences}
@@ -287,32 +254,16 @@ export default function AccommodationForm({ open, onClose }) {
             placeholder="Preferences (optional)"
             className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white"
           />
-
-          {/* BIT Notice */}
-          {isBitStudent && (
-            <div className="text-sm text-red-400">
-              Accommodation is not applicable for BIT students.
-            </div>
-          )}
         </div>
 
         {/* Footer */}
         <div className="border-t border-white/10 p-5">
           <button
-            disabled={
-              submitting ||
-              loadingProfile ||
-              isBitStudent ||
-              accommodationStatus === "CONFIRMED"
-            }
             onClick={submit}
-            className="w-full rounded-full bg-[#ff0045]/90 px-6 py-3 text-sm font-semibold uppercase tracking-[0.30em] text-white disabled:opacity-50"
+            disabled={submitting || loadingProfile || isBitStudent}
+            className="w-full rounded-full bg-[#ff0045]/90 px-6 py-3 text-sm font-semibold uppercase tracking-widest text-white"
           >
-            {submitting
-              ? "Redirecting…"
-              : accommodationStatus === "CONFIRMED"
-              ? "Accommodation Confirmed"
-              : "Submit Request"}
+            {submitting ? "Redirecting…" : "Submit Request"}
           </button>
         </div>
       </div>
