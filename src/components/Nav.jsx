@@ -192,7 +192,7 @@ function Nav() {
       border border-white/10
       shadow-[0_18px_55px_rgba(0,0,0,0.9)]
       backdrop-blur-lg
-      text-white/80           /* ✅ readable */
+      text-white/90           /* ✅ readable */
       text-[0.95rem]          /* ✅ proper size */
       font-medium
       ks-font
@@ -219,7 +219,7 @@ function Nav() {
               border border-white/20
               bg-white/5
               px-4 py-1.5
-              text-white/80
+              text-white/90
               hover:bg-white/10
               transition
             "
@@ -251,7 +251,7 @@ function Nav() {
                 border border-white/20
                 bg-white/5
                 px-4 py-1.5
-                text-white/80
+                text-white/90
                 hover:bg-white/10
                 transition
               "
@@ -312,14 +312,14 @@ function DropdownNavItem({ item, onClick }) {
         className="nav-link
         px-4 py-1.5          /* ⬅️ slimmer */
         rounded-full
-        text-white/60
+        text-white/90
         transition-all duration-300
         hover:text-white
         hover:bg-white/5
         hover:shadow-[0_0_12px_rgba(120,240,255,0.35)]"
       >
         <span className="en-label">{item.label}{hasDropdown && " ▾"}</span>
-        <span className="jp-label pointer-events-none absolute top-full mt-1 text-xs opacity-0">
+        <span className="jp-label pointer-events-none absolute top-full mt-1 text-xs text-white/70 opacity-0">
           {item.jp}
         </span>
       </Link>
@@ -327,7 +327,12 @@ function DropdownNavItem({ item, onClick }) {
       {hasDropdown && open && (
         <div className="absolute left-1/2 -translate-x-1/2 mt-2 rounded-xl bg-black/60 border border-white/10 backdrop-blur-xl">
           {item.dropdown.map((d) => (
-            <Link key={d.label} to={d.link} onClick={onClick} className="block px-4 py-3">
+            <Link
+              key={d.label}
+              to={d.link}
+              onClick={onClick}
+              className="block px-4 py-3 text-white/90 hover:bg-white/10"
+            >
               {d.label}
             </Link>
           ))}
