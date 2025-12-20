@@ -21,12 +21,43 @@ export function Events() {
   return (
     <>
       <BrowserWarningModal />
-      <main className="min-h-screen bg-black px-6 pt-24 flex items-center justify-center">
+      <main className="min-h-screen bg-black px-6 pt-24 flex flex-col items-center justify-center gap-8">
         <img
           src="/images/coming-soon.jpg"
           alt="Events coming soon"
           className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
         />
+
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="/rulebooks/technika-event-brochure.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Event Brochure
+          </a>
+          <a
+            href="/rulebooks/cultural-rulebook.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Cultural Rulebook PDF
+          </a>
+          <a
+            href="/rulebooks/art-and-craft-rulebook.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Art & Craft Rulebook PDF
+          </a>
+          <a
+            href="/rulebooks/frame-and-focus-rulebook.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Frame & Focus Rulebook PDF
+          </a>
+        </div>
       </main>
     </>
   );
@@ -130,18 +161,25 @@ export function Events() {
             Download Event Brochure
           </a>
           <a
-            href="/rulebooks/about-technika.pdf"
+            href="/rulebooks/art-and-craft-rulebook.pdf"
             download
             className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
           >
-            Download Technical Rulebook PDF
+            Download Art & Craft Rulebook PDF
           </a>
           <a
-            href="/rulebooks/cultural-events-2025-26.pdf"
+            href="/rulebooks/cultural-rulebook.pdf"
             download
             className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
           >
             Download Cultural Rulebook PDF
+          </a>
+          <a
+            href="/rulebooks/frame-and-focus-rulebook.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Frame & Focus Rulebook PDF
           </a>
         </div>
 
