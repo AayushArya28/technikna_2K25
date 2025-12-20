@@ -3,10 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import EventForm from "../components/EventForm.jsx";
-import RulebookModal from "../components/RulebookModal.jsx";
 import { getEventId, getEventKeyById } from "../lib/eventIds.js";
 import { useEntitlements } from "../context/useEntitlements.jsx";
 import { usePopup } from "../context/usePopup.jsx";
+
+const RULEBOOK_PDF_URL = "/rulebooks/cultural-rulebook.pdf";
 
 const cleanPdfExtract = (text) =>
   String(text || "")
@@ -89,7 +90,6 @@ const events = [
     section: "DANCE",
     participation: "Solo",
     allowedModes: ["solo"],
-    rulebookText: CULTURAL_RULEBOOK_TEXT.solo_saga,
   },
   {
     key: "synced_showdown",
@@ -101,7 +101,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 2,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.synced_showdown,
   },
   {
     key: "exuberance",
@@ -113,7 +112,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 3,
     groupMaxTotal: 14,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.exuberance,
   },
   {
     key: "street_dance",
@@ -125,8 +123,6 @@ const events = [
     allowedModes: ["solo", "group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
-    rulebookText:
-      "RULEBOOK\n\nOBJECTIVE\nShowcase freestyle street dance skills with energy, creativity, and stage presence.\n\nDURATION\nAs per schedule.\n\nRULES\n• Participation: Solo or a team of up to 3.\n• Participants must bring their music track in .mp3 format (pendrive).\n• Any dance style is allowed.\n• Vulgarity/obscenity is not allowed and may lead to disqualification.\n• Organizers may update the round format as per participation.\n\nJUDGING CRITERIA\n• Musicality and rhythm.\n• Creativity and choreography.\n• Energy and stage presence.\n• Synchronization (for teams).\n\nNOTE\nJudges’ decision will be final.",
   },
   {
     key: "raag_unreleased",
@@ -136,7 +132,6 @@ const events = [
     section: "MUSIC",
     participation: "Solo",
     allowedModes: ["solo"],
-    rulebookText: CULTURAL_RULEBOOK_TEXT.raag_unreleased,
   },
   {
     key: "fusion_fiesta",
@@ -148,7 +143,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 6,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.fusion_fiesta,
   },
   {
     key: "musical_marvel",
@@ -160,7 +154,6 @@ const events = [
     allowedModes: ["solo", "group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.musical_marvel,
   },
   {
     key: "ekanki",
@@ -170,7 +163,6 @@ const events = [
     section: "DRAMA",
     participation: "Solo",
     allowedModes: ["solo"],
-    rulebookText: CULTURAL_RULEBOOK_TEXT.ekanki,
   },
   {
     key: "matargasthi",
@@ -182,7 +174,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 8,
     groupMaxTotal: 10,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.matargasthi,
   },
   {
     key: "hulchul",
@@ -194,7 +185,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 10,
     groupMaxTotal: 25,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.hulchul,
   },
   {
     key: "debate",
@@ -204,7 +194,6 @@ const events = [
     section: "LITERARY",
     participation: "Solo",
     allowedModes: ["solo"],
-    rulebookText: CULTURAL_RULEBOOK_TEXT.debate,
   },
   {
     key: "poetry",
@@ -214,10 +203,6 @@ const events = [
     section: "LITERARY",
     participation: "Solo",
     allowedModes: ["solo"],
-    rulebookTexts: {
-      english: CULTURAL_RULEBOOK_TEXT.poetry_english,
-      hindi: CULTURAL_RULEBOOK_TEXT.poetry_hindi,
-    },
   },
   {
     key: "fashion_insta",
@@ -229,16 +214,12 @@ const events = [
     allowedModes: ["solo", "group"],
     groupMinTotal: 2,
     groupMaxTotal: 14,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.fashion_insta,
   },
 ];
 
 export default function Cultural() {
   const [active, setActive] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
-  const [rulebookOpen, setRulebookOpen] = useState(false);
-  const [rulebookTitle, setRulebookTitle] = useState("");
-  const [rulebookText, setRulebookText] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sliderRef = useRef(null);
@@ -246,32 +227,11 @@ export default function Cultural() {
   const popup = usePopup();
   const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
 
-  const openRulebookText = (title, text) => {
-    if (typeof text === "string" && text.trim()) {
-      setRulebookTitle(String(title || "Event"));
-      setRulebookText(text);
-      setRulebookOpen(true);
+  const openRulebook = () => {
+    if (typeof RULEBOOK_PDF_URL === "string" && RULEBOOK_PDF_URL.trim()) {
+      window.open(RULEBOOK_PDF_URL, "_blank", "noopener,noreferrer");
       return;
     }
-
-    popup.info("Rulebook coming soon.");
-  };
-
-  const openRulebook = (event) => {
-    const text = event?.rulebookText;
-    if (typeof text === "string" && text.trim()) {
-      setRulebookTitle(String(event?.title || "Event"));
-      setRulebookText(text);
-      setRulebookOpen(true);
-      return;
-    }
-
-    const pdf = event?.rulebookPdf;
-    if (typeof pdf === "string" && pdf.trim()) {
-      window.open(pdf, "_blank", "noopener,noreferrer");
-      return;
-    }
-
     popup.info("Rulebook coming soon.");
   };
 
@@ -369,6 +329,7 @@ export default function Cultural() {
         <AnimatePresence mode="wait">
           <Motion.div
             key={events[active].title}
+            className="h-full flex flex-col"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
@@ -381,6 +342,8 @@ export default function Cultural() {
             )}
 
             <h2 className="text-3xl text-white font-bold mb-3">{events[active].title}</h2>
+
+            <div className="flex-1 overflow-y-auto pr-2">
 
             {(() => {
               const meta = splitDescMeta(events?.[active]?.desc);
@@ -410,42 +373,13 @@ export default function Cultural() {
             })()}
 
             <div className="mb-6">
-              {events?.[active]?.key === "poetry" && events?.[active]?.rulebookTexts ? (
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      openRulebookText(
-                        `${events?.[active]?.title} (English)`,
-                        events?.[active]?.rulebookTexts?.english,
-                      )
-                    }
-                    className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-                  >
-                    Rulebook (English)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      openRulebookText(
-                        `${events?.[active]?.title} (Hindi)`,
-                        events?.[active]?.rulebookTexts?.hindi,
-                      )
-                    }
-                    className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-                  >
-                    Rulebook (Hindi)
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => openRulebook(events?.[active])}
-                  className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-                >
-                  Rulebook
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={openRulebook}
+                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+              >
+                Rulebook
+              </button>
             </div>
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
@@ -453,6 +387,8 @@ export default function Cultural() {
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>
+
+            </div>
 
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <button
@@ -541,13 +477,6 @@ export default function Cultural() {
         allowedModes={events?.[active]?.allowedModes}
         groupMinTotal={events?.[active]?.groupMinTotal}
         groupMaxTotal={events?.[active]?.groupMaxTotal}
-      />
-
-      <RulebookModal
-        open={rulebookOpen}
-        title={rulebookTitle}
-        content={rulebookText}
-        onClose={() => setRulebookOpen(false)}
       />
     </div>
   );

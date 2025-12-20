@@ -3,16 +3,17 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import EventForm from "../components/EventForm.jsx";
-import RulebookModal from "../components/RulebookModal.jsx";
 import { getEventId, getEventKeyById } from "../lib/eventIds.js";
 import { useEntitlements } from "../context/useEntitlements.jsx";
 import { usePopup } from "../context/usePopup.jsx";
+
+const RULEBOOK_PDF_URL = "/rulebooks/technika-event-brochure.pdf";
 
 const events = [
   {
     key: "bgmi",
     title: "BGMI",
-    desc: "Battle it out in BGMI with your squad. Bring strategy, coordination, and clutch plays to the lobby. Venue: As per schedule.",
+    desc: "Online event — Battle it out in BGMI with your squad. Bring strategy, coordination, and clutch plays to the lobby. Venue: As per schedule.",
     img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80",
     participation: "Team (2–4 participants)",
     allowedModes: ["group"],
@@ -22,7 +23,7 @@ const events = [
   {
     key: "valorant",
     title: "Valorant",
-    desc: "Compete in Valorant with your team and dominate the bracket with crisp aim and smart utility. Venue: As per schedule.",
+    desc: "Online event — Compete in Valorant with your team and dominate the bracket with crisp aim and smart utility. Venue: As per schedule.",
     img: "https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=800&q=80",
     participation: "Team (2–5 participants)",
     allowedModes: ["group"],
@@ -32,27 +33,26 @@ const events = [
   {
     key: "fifa",
     title: "FIFA",
-    desc: "On-spot FIFA matches. Show your skills and game sense in quick competitive fixtures. Venue: As per schedule.",
+    desc: "Offline event — FIFA matches. On-site registration. Venue: As per schedule.",
     img: "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80",
     participation: "On-Spot (Solo)",
     allowedModes: ["solo"],
+    onSiteRegistration: true,
   },
   {
     key: "tekken",
     title: "Tekken",
-    desc: "On-spot Tekken matches. Pick your main and fight through the rounds. Venue: As per schedule.",
+    desc: "Offline event — Tekken matches. On-site registration. Venue: As per schedule.",
     img: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80",
     participation: "On-Spot (Solo)",
     allowedModes: ["solo"],
+    onSiteRegistration: true,
   },
 ];
 
 export default function Esports() {
   const [active, setActive] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
-  const [rulebookOpen, setRulebookOpen] = useState(false);
-  const [rulebookTitle, setRulebookTitle] = useState("");
-  const [rulebookText, setRulebookText] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sliderRef = useRef(null);
@@ -60,21 +60,11 @@ export default function Esports() {
   const popup = usePopup();
   const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
 
-  const openRulebook = (event) => {
-    const text = event?.rulebookText;
-    if (typeof text === "string" && text.trim()) {
-      setRulebookTitle(String(event?.title || "Event"));
-      setRulebookText(text);
-      setRulebookOpen(true);
+  const openRulebook = () => {
+    if (typeof RULEBOOK_PDF_URL === "string" && RULEBOOK_PDF_URL.trim()) {
+      window.open(RULEBOOK_PDF_URL, "_blank", "noopener,noreferrer");
       return;
     }
-
-    const pdf = event?.rulebookPdf;
-    if (typeof pdf === "string" && pdf.trim()) {
-      window.open(pdf, "_blank", "noopener,noreferrer");
-      return;
-    }
-
     popup.info("Rulebook coming soon.");
   };
 
@@ -172,12 +162,15 @@ export default function Esports() {
         <AnimatePresence mode="wait">
           <Motion.div
             key={events[active].title}
+            className="h-full flex flex-col"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
             <h2 className="text-3xl text-white font-bold mb-3">{events[active].title}</h2>
+
+            <div className="flex-1 overflow-y-auto pr-2">
 
             <p className="text-white mb-10">{events[active].desc}</p>
 
@@ -197,14 +190,22 @@ export default function Esports() {
               <li>• On-Spot Evaluation</li>
             </ul>
 
+            </div>
+
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-              <button
-                type="button"
-                onClick={() => setFormOpen(true)}
-                className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg text-white font-bold"
-              >
-                Register Now
-              </button>
+              {events?.[active]?.onSiteRegistration ? (
+                <div className="px-6 py-3 rounded-lg border border-white/20 bg-white/10 text-white font-bold">
+                  On-site registration
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setFormOpen(true)}
+                  className="bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg text-white font-bold"
+                >
+                  Register Now
+                </button>
+              )}
 
               <div className="flex items-center justify-between gap-6 w-full sm:w-auto">
                 <div className="flex items-end gap-2 text-white/60">
@@ -284,13 +285,6 @@ export default function Esports() {
         allowedModes={events?.[active]?.allowedModes}
         groupMinTotal={events?.[active]?.groupMinTotal}
         groupMaxTotal={events?.[active]?.groupMaxTotal}
-      />
-
-      <RulebookModal
-        open={rulebookOpen}
-        title={rulebookTitle}
-        content={rulebookText}
-        onClose={() => setRulebookOpen(false)}
       />
     </div>
   );

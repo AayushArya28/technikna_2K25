@@ -1,6 +1,5 @@
 import Landing from "./Landing";
 import PreTechnika from "./PreTechnika";
-import { Slider } from "../components/Slider";
 import CircularGallery from "../components/CircularGallery";
 import { useFirstLoad } from "../hooks/useFirstLoad";
 import ImageCarousel from "../components/ImageCarousel";
@@ -141,7 +140,6 @@ const Home = () => {
           scrollEase={0.02}
         />
       </div> */}
-      {/* <Slider /> */}
     </div>
   );
 };

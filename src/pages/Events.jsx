@@ -91,6 +91,13 @@ export function Events() {
             Download Event Brochure
           </a>
           <a
+            href="/rulebooks/technical-rulebook.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Technical Rulebook PDF
+          </a>
+          <a
             href="/rulebooks/art-and-craft-rulebook.pdf"
             download
             className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"

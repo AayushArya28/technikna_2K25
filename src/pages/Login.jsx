@@ -35,7 +35,7 @@ export default function Login() {
     if (didShowBitSignupNoticeRef.current) return;
 
     popup.info(
-      "If you are a currently studying BIT Patna student, please sign up / login using your college email ID.",
+      "If you're currently a BIT Patna Student then use your college email ID to sign up.",
       { ttlMs: 8000 }
     );
     didShowBitSignupNoticeRef.current = true;

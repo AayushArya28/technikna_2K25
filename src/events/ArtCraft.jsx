@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import EventForm from "../components/EventForm.jsx";
-import RulebookModal from "../components/RulebookModal.jsx";
 import { getEventId, getEventKeyById } from "../lib/eventIds.js";
 import { useEntitlements } from "../context/useEntitlements.jsx";
 import { usePopup } from "../context/usePopup.jsx";
@@ -44,8 +43,6 @@ const events = [
     img: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
     participation: "Solo",
     allowedModes: ["solo"],
-    rulebookText:
-      "RULEBOOK\n\nOBJECTIVE\nCreate an on-the-spot pencil sketch based on the announced theme, focusing on originality and presentation.\n\nDURATION\n60–90 minutes.\n\nRULES\n• Theme will be announced on the spot.\n• Artwork must be original and created during the event.\n• Participants must carry their own drawing materials.\n\nJUDGING CRITERIA\n• Creativity and concept.\n• Detailing and neatness.\n• Overall composition and presentation.\n\nNOTE\nJudges’ decision will be final.",
   },
   {
     key: "wall_painting",
@@ -56,17 +53,14 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 3,
     groupMaxTotal: 5,
-    rulebookText:
-      "RULEBOOK\n\nOBJECTIVE\nCreate a team wall painting on the provided theme, focusing on originality, teamwork, and execution.\n\nDURATION\nAs per schedule.\n\nRULES\n1. Team size: 3–5 participants.\n2. Theme will be provided by organizers.\n3. Artwork must be original and created during the event.\n4. No pre-drawn outlines/tracing.\n\nJUDGING CRITERIA\n• Creativity and theme interpretation.\n• Neatness and finishing.\n• Team coordination and overall impact.\n\nNOTE\nJudges’ decision will be final.",
   },
 ];
+
+const RULEBOOK_PDF_URL = "/rulebooks/art-and-craft-rulebook.pdf";
 
 export default function ArtCraft() {
   const [active, setActive] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
-  const [rulebookOpen, setRulebookOpen] = useState(false);
-  const [rulebookTitle, setRulebookTitle] = useState("");
-  const [rulebookText, setRulebookText] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sliderRef = useRef(null);
@@ -74,21 +68,11 @@ export default function ArtCraft() {
   const popup = usePopup();
   const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
 
-  const openRulebook = (event) => {
-    const text = event?.rulebookText;
-    if (typeof text === "string" && text.trim()) {
-      setRulebookTitle(String(event?.title || "Event"));
-      setRulebookText(text);
-      setRulebookOpen(true);
+  const openRulebook = () => {
+    if (typeof RULEBOOK_PDF_URL === "string" && RULEBOOK_PDF_URL.trim()) {
+      window.open(RULEBOOK_PDF_URL, "_blank", "noopener,noreferrer");
       return;
     }
-
-    const pdf = event?.rulebookPdf;
-    if (typeof pdf === "string" && pdf.trim()) {
-      window.open(pdf, "_blank", "noopener,noreferrer");
-      return;
-    }
-
     popup.info("Rulebook coming soon.");
   };
 
@@ -186,12 +170,15 @@ export default function ArtCraft() {
         <AnimatePresence mode="wait">
           <Motion.div
             key={events[active].title}
+            className="h-full flex flex-col"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
             <h2 className="text-3xl text-white font-bold mb-3">{events[active].title}</h2>
+
+            <div className="flex-1 overflow-y-auto pr-2">
 
             {(() => {
               const meta = splitDescMeta(events?.[active]?.desc);
@@ -223,7 +210,7 @@ export default function ArtCraft() {
             <div className="mb-6">
               <button
                 type="button"
-                onClick={() => openRulebook(events?.[active])}
+                onClick={openRulebook}
                 className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
               >
                 Rulebook
@@ -235,6 +222,8 @@ export default function ArtCraft() {
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>
+
+            </div>
 
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <button
@@ -323,13 +312,6 @@ export default function ArtCraft() {
         allowedModes={events?.[active]?.allowedModes}
         groupMinTotal={events?.[active]?.groupMinTotal}
         groupMaxTotal={events?.[active]?.groupMaxTotal}
-      />
-
-      <RulebookModal
-        open={rulebookOpen}
-        title={rulebookTitle}
-        content={rulebookText}
-        onClose={() => setRulebookOpen(false)}
       />
     </div>
   );

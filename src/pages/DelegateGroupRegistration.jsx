@@ -652,6 +652,21 @@ const DelegateGroupRegistration = () => {
             return;
         }
 
+        // Try to open in a new tab. If blocked, fall back to same-tab redirect.
+        const paymentTab = window.open("about:blank", "_blank");
+        const closePaymentTab = () => {
+            if (paymentTab && !paymentTab.closed) paymentTab.close();
+        };
+        try {
+            if (paymentTab) paymentTab.opener = null;
+        } catch {
+            // ignore
+        }
+        const willUseNewTab = Boolean(paymentTab);
+        if (!willUseNewTab) {
+            popup.info("Popup blocked in your browser. Continuing to payment in this tab…");
+        }
+
         setLoading(true);
         setApiError("");
         try {
@@ -670,6 +685,7 @@ const DelegateGroupRegistration = () => {
                 const message = data.message || "Failed to start payment. Please try again.";
                 setApiError(message);
                 popup.error(message);
+                closePaymentTab();
                 return;
             }
 
@@ -680,18 +696,33 @@ const DelegateGroupRegistration = () => {
                 popup.success("Group delegate registration confirmed.");
                 await refreshSelfDelegateStatus();
                 await refreshStatusWithRetry();
+                closePaymentTab();
                 return;
             }
 
             const paymentUrl = data.paymentUrl || data.url || "";
             if (paymentUrl) {
+                if (willUseNewTab) {
+                    try {
+                        if (paymentTab && !paymentTab.closed) {
+                            paymentTab.location.href = paymentUrl;
+                            return;
+                        }
+                    } catch {
+                        closePaymentTab();
+                    }
+                }
+
+                closePaymentTab();
                 window.location.href = paymentUrl;
                 return;
             }
 
+            closePaymentTab();
             popup.error("Payment link not received. Please try again.");
         } catch (err) {
             console.error(err);
+            closePaymentTab();
             popup.error("Failed to start payment. Please try again.");
         } finally {
             setLoading(false);

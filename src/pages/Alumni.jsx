@@ -23,6 +23,8 @@ import {
   query,
   where,
   getDocs,
+  doc,
+  getDoc,
 } from "firebase/firestore";
 
 /**
@@ -62,6 +64,13 @@ const Alumni = () => {
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [checkingStatus, setCheckingStatus] = useState(false);
   const [registrationDetails, setRegistrationDetails] = useState(null);
+  const didShowProfileHintRef = useRef(false);
+
+  const showProfileHintOnce = () => {
+    if (didShowProfileHintRef.current) return;
+    popup.info("To update these details, update them in Profile page.");
+    didShowProfileHintRef.current = true;
+  };
 
   const titleRef = useRef(null);
   const contentRef = useRef(null);
@@ -113,6 +122,27 @@ const Alumni = () => {
         setFormData((p) => ({ ...p, email: currentUser.email || "" }));
         let foundName = currentUser.displayName || "";
 
+        // Prefer profile details stored under `auth/{uid}`
+        try {
+          const snap = await getDoc(doc(getFirestore(), "auth", currentUser.uid));
+          if (snap.exists()) {
+            const profile = snap.data() || {};
+            const profileName = String(profile?.name || "").trim();
+            const profilePhone = String(profile?.phone || "").trim();
+            const profileEmail = String(profile?.email || currentUser.email || "").trim();
+
+            if (profileName) foundName = profileName;
+            setFormData((p) => ({
+              ...p,
+              name: profileName || p.name,
+              phone: profilePhone || p.phone,
+              email: profileEmail,
+            }));
+          }
+        } catch {
+          // ignore
+        }
+
         if (!foundName) {
           try {
             const db = getFirestore();
@@ -122,6 +152,14 @@ const Alumni = () => {
             if (!snap.empty) {
               const doc = snap.docs[0].data();
               if (doc.name) foundName = doc.name;
+              if (doc.name || doc.phone || doc.email) {
+                setFormData((p) => ({
+                  ...p,
+                  name: String(p.name || doc.name || "").trim(),
+                  phone: String(p.phone || doc.phone || "").trim(),
+                  email: String(doc.email || currentUser.email || p.email || "").trim(),
+                }));
+              }
             }
           } catch (err) {
             console.error("fetch user name error:", err);
@@ -135,6 +173,13 @@ const Alumni = () => {
         setDbName("");
         setPaymentStatus(null);
         setRegistrationDetails(null);
+        setFormData({
+          name: "",
+          yearOfPassing: "",
+          phone: "",
+          email: "",
+          size: "",
+        });
       }
       setLoadingAuth(false);
     });
@@ -189,11 +234,40 @@ const Alumni = () => {
     e.preventDefault();
     setErrorMessage("");
 
+    // Pre-open payment tab to avoid popup blockers; we'll close it if payment isn't needed.
+    const paymentTab = window.open("about:blank", "_blank");
+    const closePaymentTab = () => {
+      if (paymentTab && !paymentTab.closed) paymentTab.close();
+    };
+    try {
+      if (paymentTab) paymentTab.opener = null;
+    } catch {
+      // ignore
+    }
+    const willUseNewTab = Boolean(paymentTab);
+    if (!willUseNewTab) {
+      // Don't block payment entirely; fall back to same-tab redirect.
+      setErrorMessage("Popup blocked in your browser. Continuing to payment in this tab…");
+    }
+
+    const missingProfile =
+      !String(formData.name || "").trim() ||
+      !String(formData.phone || "").trim() ||
+      !String(formData.email || "").trim();
+
+    if (missingProfile) {
+      setStatus("ERROR");
+      setErrorMessage("Please update your Profile (name, phone) before registering.");
+      closePaymentTab();
+      return;
+    }
+
     // Force HTML validation to run (Safari fix)
     if (formRef.current && typeof formRef.current.reportValidity === "function") {
       const ok = formRef.current.reportValidity();
       if (!ok) {
         // reportValidity shows messages on inputs — bail out
+          closePaymentTab();
         return;
       }
     }
@@ -201,12 +275,14 @@ const Alumni = () => {
     // Additional JS validation
     if (!simpleValidate()) {
       setStatus("ERROR");
+      closePaymentTab();
       return;
     }
 
     if (!user) {
       setStatus("ERROR");
       setErrorMessage("You must be logged in to register.");
+      closePaymentTab();
       return;
     }
 
@@ -236,6 +312,7 @@ const Alumni = () => {
       console.log("register resp:", resp.status, data);
 
       if (!resp.ok) {
+        closePaymentTab();
         throw new Error(data.message || `Server returned ${resp.status}`);
       }
 
@@ -245,9 +322,23 @@ const Alumni = () => {
         setPaymentStatus(PaymentStatus.Confirmed);
         setRegistrationDetails(data.details || null);
         setStatus("SUCCESS");
+        closePaymentTab();
       } else if (data.paymentUrl) {
-        // open payment link in new tab (user initiated context is preserved since this is inside click handler)
-        window.open(data.paymentUrl, "_blank");
+        if (willUseNewTab) {
+          try {
+            if (paymentTab && !paymentTab.closed) {
+              paymentTab.location.href = data.paymentUrl;
+              setPaymentStatus(PaymentStatus.PendingPayment);
+              setStatus("IDLE");
+              return;
+            }
+          } catch {
+            closePaymentTab();
+          }
+        }
+
+        closePaymentTab();
+        window.location.href = data.paymentUrl;
         setPaymentStatus(PaymentStatus.PendingPayment);
         setStatus("IDLE");
       } else {
@@ -256,11 +347,13 @@ const Alumni = () => {
         setPaymentStatus(null);
         setErrorMessage("Unexpected server response. Try refreshing status.");
         setStatus("ERROR");
+        closePaymentTab();
       }
     } catch (err) {
       console.error("submit error:", err);
       setErrorMessage(err.message || "Registration failed. Try again.");
       setStatus("ERROR");
+      closePaymentTab();
     }
   };
 
@@ -474,9 +567,12 @@ const Alumni = () => {
                             required
                             minLength={3}
                             value={formData.name}
-                            onChange={handleInputChange}
-                            className="w-full pl-10 pr-4 py-2 border border-white/20 rounded-lg bg-black/70 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none transition-all"
-                            placeholder="Your Full Name"
+                            readOnly
+                            aria-readonly="true"
+                            onFocus={showProfileHintOnce}
+                            onClick={showProfileHintOnce}
+                            className="w-full pl-10 pr-4 py-2 border border-white/20 rounded-lg bg-black/50 text-gray-400 cursor-not-allowed focus:outline-none"
+                            placeholder="Update via Profile"
                           />
                         </div>
                       </div>
@@ -512,11 +608,18 @@ const Alumni = () => {
                             name="phone"
                             required
                             value={formData.phone}
-                            onChange={handleInputChange}
-                            className="w-full pl-10 pr-4 py-2 border border-white/20 rounded-lg bg-black/70 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 outline-none transition-all"
-                            placeholder="+91 123 456 7890"
+                            readOnly
+                            aria-readonly="true"
+                            onFocus={showProfileHintOnce}
+                            onClick={showProfileHintOnce}
+                            className="w-full pl-10 pr-4 py-2 border border-white/20 rounded-lg bg-black/50 text-gray-400 cursor-not-allowed focus:outline-none"
+                            placeholder="Update via Profile"
                           />
                         </div>
+                      </div>
+
+                      <div className="text-xs text-gray-400">
+                        To change name/phone/email, update Profile.
                       </div>
 
                       <div>
@@ -530,6 +633,8 @@ const Alumni = () => {
                             value={formData.email}
                             readOnly
                             aria-readonly="true"
+                            onFocus={showProfileHintOnce}
+                            onClick={showProfileHintOnce}
                             className="w-full pl-10 pr-4 py-2 border border-white/20 rounded-lg bg-black/50 text-gray-400 cursor-not-allowed focus:outline-none"
                           />
                         </div>
