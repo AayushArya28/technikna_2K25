@@ -23,11 +23,14 @@ export default function Accommodation() {
   useEffect(() => {
     if (entitlementsLoading) return;
 
-    // BIT students should still be able to see page
-    if (!canAccessAccommodation && !isBitStudent) {
+    if (canAccessAccommodation) return;
+
+    if (isBitStudent) {
+      popup.info("Accommodation page is locked for BIT students.");
+    } else {
       popup.info("Accommodation assistance is not available for your account.");
-      navigate("/", { replace: true });
     }
+    navigate("/", { replace: true });
   }, [
     entitlementsLoading,
     canAccessAccommodation,
@@ -94,6 +97,8 @@ export default function Accommodation() {
                 <li>• Clear check-in & check-out guidance</li>
                 <li>• Directions and campus entry assistance</li>
                 <li>• Dedicated point of contact during stay</li>
+                <li>• All basic amenities like pillows, blankets, and beds</li>
+                <li>• Food included (Breakfast, Lunch, Snacks, and Dinner)</li>
               </ul>
             </div>
 

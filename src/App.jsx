@@ -6,7 +6,10 @@ import { Events } from "./pages/Events";
 import Technical from "./events/Technical.jsx";
 import Fun from "./events/Fun.jsx";
 import Cultural from "./events/Cultural.jsx";
+import Esports from "./events/Esports.jsx";
 import Workshop from "./events/Workshop.jsx";
+import ArtCraft from "./events/ArtCraft.jsx";
+import FrameFocus from "./events/FrameFocus.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
 import { Core } from "./pages/Core.jsx";
 import Merchandise from "./pages/Merchandise.jsx";
@@ -35,6 +38,9 @@ function App() {
     { path: "/technical", Component: Technical },
     { path: "/fun", Component: Fun },
     { path: "/cultural", Component: Cultural },
+    { path: "/art-craft", Component: ArtCraft },
+    { path: "/frame-focus", Component: FrameFocus },
+    { path: "/esports", Component: Esports },
     { path: "/workshops", Component: Workshop },
     { path: "/merchandise", Component: Merchandise },
     { path: "/core", Component: Core },

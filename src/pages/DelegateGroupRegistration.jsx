@@ -310,7 +310,7 @@ const DelegateGroupRegistration = () => {
         setCheckingSelfStatus(true);
         try {
             const token = await authUser.getIdToken();
-            const resp = await fetch(`${BASE_API_URL}/delegate/status-self`, {
+            const resp = await fetch(`${BASE_API_URL}/delegate/status/user`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

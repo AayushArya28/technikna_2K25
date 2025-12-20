@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { X, User, Mail, School, Calendar, Award, GraduationCap, Loader2 } from 'lucide-react';
 import { auth, db } from '../firebase';
 import { createPortal } from 'react-dom';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, query, where } from 'firebase/firestore';
 
 const UserProfileModal = ({ onClose }) => {
     const [loading, setLoading] = useState(true);
@@ -20,6 +20,38 @@ const UserProfileModal = ({ onClose }) => {
 
     const BASE_API_URL = "https://api.technika.co";
 
+    const extractRegisteredEventsList = (raw) => {
+        const list =
+            Array.isArray(raw)
+                ? raw
+                : Array.isArray(raw?.events)
+                    ? raw.events
+                    : Array.isArray(raw?.data)
+                        ? raw.data
+                        : Array.isArray(raw?.registeredEvents)
+                            ? raw.registeredEvents
+                            : Array.isArray(raw?.registered_events)
+                                ? raw.registered_events
+                                : Array.isArray(raw?.registrations)
+                                    ? raw.registrations
+                                    : Array.isArray(raw?.results)
+                                        ? raw.results
+                                        : Array.isArray(raw?.items)
+                                            ? raw.items
+                                            : [];
+        return Array.isArray(list) ? list : [];
+    };
+
+    const countFromEventRegistrationDoc = (docData) => {
+        const eventsMap = docData?.events;
+        if (!eventsMap || typeof eventsMap !== 'object') return 0;
+        return Object.keys(eventsMap).length;
+    };
+
+    const [firebaseRegCount, setFirebaseRegCount] = useState(0);
+
+    const registeredEventsCount = extractRegisteredEventsList(statuses.events).length || Number(firebaseRegCount || 0);
+
     useEffect(() => {
         const fetchData = async () => {
             const user = auth.currentUser;
@@ -30,15 +62,32 @@ const UserProfileModal = ({ onClose }) => {
                 const headers = { Authorization: `Bearer ${token}` };
 
                 // Fetch all statuses in parallel
-                const [eventRes, delegateRes, alumniRes] = await Promise.all([
+                const [eventRes, delegateRes, alumniRes, directEventRegDoc] = await Promise.all([
                     fetch(`${BASE_API_URL}/event/registered`, { headers }),
-                    fetch(`${BASE_API_URL}/delegate/status`, { headers }),
-                    fetch(`${BASE_API_URL}/alumni/status`, { headers })
+                    fetch(`${BASE_API_URL}/delegate/status/user`, { headers }),
+                    fetch(`${BASE_API_URL}/alumni/status`, { headers }),
+                    getDoc(doc(db, 'event_registration', user.uid))
                 ]);
 
                 const eventData = eventRes.ok ? await eventRes.json() : null;
                 const delegateData = delegateRes.ok ? await delegateRes.json() : null;
                 const alumniData = alumniRes.ok ? await alumniRes.json() : null;
+
+                let regCount = 0;
+                if (directEventRegDoc?.exists?.()) {
+                    regCount = countFromEventRegistrationDoc(directEventRegDoc.data());
+                } else if (user.email) {
+                    try {
+                        const snap = await getDocs(
+                            query(collection(db, 'event_registration'), where('email', '==', String(user.email)), limit(1))
+                        );
+                        const first = snap.docs?.[0];
+                        if (first) regCount = countFromEventRegistrationDoc(first.data());
+                    } catch {
+                        // ignore
+                    }
+                }
+                setFirebaseRegCount(regCount);
 
                 setStatuses({
                     events: eventData,
@@ -187,8 +236,7 @@ const UserProfileModal = ({ onClose }) => {
                                             <Calendar className="h-5 w-5 text-white/70" />
                                         </div>
                                         <div className="text-sm text-white/60 mb-2">Events</div>
-                                        {/* Events might be an array or object? Assuming array for now or single registration object */}
-                                        <StatusBadge status={Array.isArray(statuses.events) ? `${statuses.events.length} Registered` : (statuses.events ? "Registered" : null)} />
+                                            <StatusBadge status={registeredEventsCount > 0 ? `${registeredEventsCount} Registered` : (statuses.events ? "Registered" : null)} />
                                     </div>
 
                                     {/* Alumni Status */}

@@ -58,7 +58,7 @@ const Delegate = () => {
 
                 // Self status: if backend returns a status that indicates pending/paid/etc, treat as registered
                 try {
-                    const resp = await fetch(`${BASE_API_URL}/delegate/status-self`, { headers });
+                    const resp = await fetch(`${BASE_API_URL}/delegate/status/user`, { headers });
                     if (resp.ok) {
                         const data = await resp.json().catch(() => ({}));
                         const status = String(data?.status || "").toLowerCase();
@@ -125,7 +125,7 @@ const Delegate = () => {
                     <div className="relative flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
                         <div className="space-y-4">
                             <span className="inline-flex w-fit items-center rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.38em] text-white/70">
-                                Technika 2K25
+                                Technika 2K26
                             </span>
                             <h1 className="text-4xl font-semibold uppercase tracking-[0.22em] text-white md:text-5xl">
                                 Delegate Access Pass

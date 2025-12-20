@@ -8,6 +8,34 @@ import { getEventId, getEventKeyById } from "../lib/eventIds.js";
 import { useEntitlements } from "../context/useEntitlements.jsx";
 import { usePopup } from "../context/usePopup.jsx";
 
+const splitDescMeta = (desc) => {
+  const raw = String(desc || "").trim();
+  if (!raw) return { text: "", venue: "", date: "" };
+
+  let text = raw;
+  let venue = "";
+  let date = "";
+
+  const venueSplit = text.split(/\s*Venue:\s*/i);
+  if (venueSplit.length > 1) {
+    text = venueSplit[0].trim().replace(/[\s.]+$/g, "");
+    const afterVenue = venueSplit.slice(1).join("Venue:").trim();
+    const dateSplit = afterVenue.split(/\s*Date:\s*/i);
+    venue = dateSplit[0].trim().replace(/[\s.]+$/g, "");
+    if (dateSplit.length > 1) {
+      date = dateSplit.slice(1).join("Date:").trim().replace(/[\s.]+$/g, "");
+    }
+  } else {
+    const dateSplit = text.split(/\s*Date:\s*/i);
+    if (dateSplit.length > 1) {
+      text = dateSplit[0].trim().replace(/[\s.]+$/g, "");
+      date = dateSplit.slice(1).join("Date:").trim().replace(/[\s.]+$/g, "");
+    }
+  }
+
+  return { text, venue, date };
+};
+
 const events = [
   {
     key: "escape_room",
@@ -19,7 +47,7 @@ const events = [
     groupMinTotal: 3,
     groupMaxTotal: 4,
     rulebookText:
-      "Rulebook\n\n1. Teams of 3–4 warriors will be locked inside a guarded Shogun fortress.\n2. Hidden within the fortress are ancient scrolls, symbols, and challenges that will help you regain freedom before the final gong.\n3. No prior knowledge of martial arts or history is required — every clue needed to escape lies within the fortress walls.\n4. No food or snacks shall be carried inside — a true Samurai remains disciplined.\n5. No forceful destruction of props, scrolls, or fortress items. Damaging the sacred artifacts leads to instant dishonor and disqualification.\n6. You will have 25 minutes to break free. Your escape time will be recorded and added to the Warrior Leaderboard.\n7. You may seek up to 3 divine hints from the Grand Game Master. But beware — 4 minutes will be added to your final time for each hint used. Choose with the wisdom of a Samurai.\n8. None of the trials require raw strength or brute force. If a piece does not move easily, it is not the Samurai way.\n9. Any locks you encounter will require the secret combination or key hidden within the fortress — do not attempt to break them.\n10. Once you escape, guard the secrets of the fortress. Do not reveal puzzles or solutions to fellow warriors who have yet to face the challenge.",
+      "RULEBOOK\n\nOBJECTIVE\nEscape the themed room by solving puzzles and completing challenges within the given time limit.\n\nDURATION\n25 minutes (time penalty of +4 minutes per hint, up to 3 hints).\n\nRULES\n1. Team size: 3–4 participants.\n2. No forceful damage to props, locks, or room items.\n3. No food or snacks allowed inside.\n4. Hints: Up to 3 hints are allowed; each hint adds 4 minutes to the final time.\n5. Do not reveal puzzles/solutions to other participants.\n\nJUDGING CRITERIA\n• Fastest successful escape time (including hint penalties).\n• Rule compliance and fair play.\n\nNOTE\nOrganizers’ and judges’ decision will be final.",
   },
 ];
 
@@ -149,7 +177,33 @@ export default function Fun() {
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
             <h2 className="text-3xl text-white font-bold mb-3">{events[active].title}</h2>
-            <p className="text-white mb-10">{events[active].desc}</p>
+
+            {(() => {
+              const meta = splitDescMeta(events?.[active]?.desc);
+              return (
+                <>
+                  <p className="text-white mb-4">{meta.text}</p>
+                  {(meta.venue || meta.date) && (
+                    <div className="mb-8 flex flex-col gap-1 text-sm text-white/70 sm:flex-row sm:items-baseline sm:justify-between">
+                      {meta.venue ? (
+                        <div>
+                          <span className="text-white/70">Venue:</span>{" "}
+                          <span className="text-white/85">{meta.venue}</span>
+                        </div>
+                      ) : (
+                        <div />
+                      )}
+                      {meta.date && (
+                        <div className="sm:text-right">
+                          <span className="text-white/70">Date:</span>{" "}
+                          <span className="text-white/85">{meta.date}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
 
             <div className="mb-6">
               <button
@@ -162,9 +216,9 @@ export default function Fun() {
             </div>
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
-              <li>➤ {events?.[active]?.participation || "Solo & Team Participation"}</li>
-              <li>➤ Certificates & Cash Prizes</li>
-              <li>➤ On-Spot Evaluation</li>
+              <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              <li>• Certificates & Cash Prizes</li>
+              <li>• On-Spot Evaluation</li>
             </ul>
 
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">

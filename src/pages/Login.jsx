@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
+import { usePopup } from "../context/usePopup.jsx";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -13,6 +14,7 @@ import { doc, setDoc } from "firebase/firestore";
 export default function Login() {
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+  const popup = usePopup();
   const [signIn, setSignIn] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +25,21 @@ export default function Login() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const didShowBitSignupNoticeRef = useRef(false);
+
+  useEffect(() => {
+    if (signIn) {
+      didShowBitSignupNoticeRef.current = false;
+      return;
+    }
+    if (didShowBitSignupNoticeRef.current) return;
+
+    popup.info(
+      "If you are a currently studying BIT Patna student, please sign up / login using your college email ID.",
+      { ttlMs: 8000 }
+    );
+    didShowBitSignupNoticeRef.current = true;
+  }, [popup, signIn]);
 
   // Check screen size on mount and resize
   useEffect(() => {
