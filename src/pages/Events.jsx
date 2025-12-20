@@ -1,4 +1,4 @@
-// Previous Events page retained for reference.
+// Events page.
 import React, { useEffect, useState } from "react";
 import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -15,21 +15,27 @@ const heroes = [
   },
   {
     id: 2,
-    name: "Fun",
-    img: "https://img.pikbest.com/illustration/20240607/the-soldiers-of-samurai-warrior_10600894.jpg!bw700",
-    route: "/fun",
-  },
-  {
-    id: 3,
     name: "Cultural",
     img: "https://tse2.mm.bing.net/th/id/OIP.DYk6BjV4Sjjm0vC0VkFhJAHaEJ?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3",
     route: "/cultural",
   },
   {
+    id: 3,
+    name: "Art & Craft",
+    img: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=80",
+    route: "/art-craft",
+  },
+  {
     id: 4,
-    name: "Workshops",
-    img: "https://tse1.explicit.bing.net/th/id/OIP.fPRomGdpeIgwomQpBnE1WgHaNK?cb=ucfimg2&ucfimg=1&w=1080&h=1920&rs=1&pid=ImgDetMain&o=7&rm=3",
-    route: "/workshops",
+    name: "Frame & Focus",
+    img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",
+    route: "/frame-focus",
+  },
+  {
+    id: 5,
+    name: "Esports",
+    img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+    route: "/esports",
   },
 ];
 export function Events() {
@@ -78,35 +84,35 @@ export function Events() {
 
         <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
           <a
+            href="/rulebooks/technika-event-brochure.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Event Brochure
+          </a>
+          <a
             href="/rulebooks/about-technika.pdf"
             download
             className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
           >
-            Download Technical PDF
+            Download Technical Rulebook PDF
           </a>
           <a
             href="/rulebooks/cultural-events-2025-26.pdf"
             download
             className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
           >
-            Download Cultural PDF
+            Download Cultural Rulebook PDF
           </a>
-          <button
-            type="button"
-            onClick={() => downloadOrComingSoon("")}
-            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-          >
-            Download Fun PDF
-          </button>
         </div>
 
         <div className="flex items-center justify-center">
-        <div className="max-w-6xl w-full mt-12">
-          <h1 className="text-white text-4xl font-bold mb-12 tracking-wide text-center">
-            Events
-          </h1>
+          <div className="max-w-6xl w-full mt-12">
+            <h1 className="text-white text-4xl font-bold mb-12 tracking-wide text-center">
+              Events
+            </h1>
 
-          <div className="flex gap-10 flex-wrap justify-center mt-12 perspective-1000">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-10 justify-items-center mt-12 perspective-1000">
             {heroes.map((hero) => (
               <Motion.div
                 key={hero.id}
@@ -125,10 +131,16 @@ export function Events() {
                 }}
                 onHoverStart={() => setActive(hero.id)}
                 onHoverEnd={() => setActive(null)}
-                className={`relative w-[240px] h-[380px] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 transform-gpu ${
+                className={`relative w-full max-w-[240px] h-[380px] rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 transform-gpu lg:col-span-2 ${
                   active === hero.id
                     ? "ring-4 ring-red-500/80 shadow-[0_0_40px_rgba(239,68,68,0.45)] scale-105"
                     : "opacity-85"
+                } ${
+                  hero.id === 4
+                    ? "lg:col-start-2"
+                    : hero.id === 5
+                      ? "lg:col-start-4"
+                      : ""
                 }`}
               >
                 <div className="absolute -inset-3 bg-red-800/10 blur-2xl rounded-3xl -z-10" />

@@ -16,17 +16,111 @@ export default function RulebookModal({
   pdfPage,
   onClose,
 }) {
+  const normalizedText = useMemo(() => {
+    const text = String(content || "")
+      .replace(/\r\n?/g, "\n")
+      .replace(/\u00a0/g, " ")
+      .replace(/OBJECTIV\s*\n\s*E/gi, "OBJECTIVE")
+      .replace(/JUDG(?:ING)?\s*\n\s*CRITERIA/gi, "JUDGING CRITERIA")
+      .replace(/-\s*\n\s*/g, "-")
+      .trim();
+
+    return text;
+  }, [content]);
+
+  const textLines = useMemo(() => {
+    if (!normalizedText) return [];
+
+    const raw = normalizedText
+      // Normalize common extracted bullet symbols
+      .replace(/[ò]/g, "•")
+      .replace(/[➢]/g, "•")
+      .split("\n")
+      .map((l) => l.replace(/\s+$/g, ""));
+
+    const isHeadingLine = (line) => {
+      const trimmed = String(line || "").trim();
+      if (!trimmed) return false;
+      if (/^(rulebook|objective|rules?|judging criteria|note|duration)\b/i.test(trimmed)) {
+        return true;
+      }
+
+      // Lines that are mostly uppercase (titles/section names)
+      const letters = trimmed.replace(/[^A-Za-z]/g, "");
+      if (letters.length >= 6) {
+        const upper = letters.replace(/[^A-Z]/g, "").length;
+        if (upper / letters.length >= 0.85) return true;
+      }
+
+      return false;
+    };
+
+    const isListLine = (line) =>
+      /^\s*(?:\d+\s*[\.)]|•|-)\s+/.test(String(line || "").trim());
+
+    const merged = [];
+    for (const originalLine of raw) {
+      const line = String(originalLine || "").trim();
+
+      if (!line) {
+        if (merged.length === 0 || merged[merged.length - 1] !== "") merged.push("");
+        continue;
+      }
+
+      if (merged.length === 0) {
+        merged.push(line);
+        continue;
+      }
+
+      const prev = merged[merged.length - 1];
+      if (!prev) {
+        merged.push(line);
+        continue;
+      }
+
+      if (isHeadingLine(line) || isListLine(line) || isHeadingLine(prev) || isListLine(prev)) {
+        merged.push(line);
+        continue;
+      }
+
+      // Merge wrapped sentence lines from PDF extraction.
+      const joiner = /[-–]$/.test(prev) ? "" : " ";
+      merged[merged.length - 1] = `${prev}${joiner}${line}`;
+    }
+
+    // Avoid leading/trailing blank lines
+    while (merged[0] === "") merged.shift();
+    while (merged[merged.length - 1] === "") merged.pop();
+    return merged;
+  }, [normalizedText]);
+
   useEffect(() => {
     if (!open) return;
 
-    const prevOverflow = document.body.style.overflow;
-    const prevTouchAction = document.body.style.touchAction;
+    const scrollY = window.scrollY || 0;
+
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevBodyPosition = document.body.style.position;
+    const prevBodyTop = document.body.style.top;
+    const prevBodyWidth = document.body.style.width;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+
+    // Strong scroll lock (works even with smooth-scroll libraries)
     document.body.style.overflow = "hidden";
-    document.body.style.touchAction = "none";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.documentElement.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = prevOverflow;
-      document.body.style.touchAction = prevTouchAction;
+      document.body.style.overflow = prevBodyOverflow;
+      document.body.style.position = prevBodyPosition;
+      document.body.style.top = prevBodyTop;
+      document.body.style.width = prevBodyWidth;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+
+      // Restore scroll position after unlocking
+      window.scrollTo(0, scrollY);
     };
   }, [open]);
 
@@ -87,6 +181,8 @@ export default function RulebookModal({
               <div
                 ref={pdfContainerRef}
                 className="min-h-0 w-full flex-1 overflow-auto [-webkit-overflow-scrolling:touch] overscroll-contain rounded-2xl border border-white/10 bg-black/50 p-2"
+                onWheelCapture={(e) => e.stopPropagation()}
+                onTouchMoveCapture={(e) => e.stopPropagation()}
               >
                 <Document
                   file={pdfUrl}
@@ -108,10 +204,74 @@ export default function RulebookModal({
               </div>
             </div>
           ) : (
-            <div className="h-full overflow-y-auto [-webkit-overflow-scrolling:touch] overscroll-contain p-4">
-              <pre className="whitespace-pre-wrap text-sm text-white/85 leading-relaxed">
-                {String(content || "")}
-              </pre>
+            <div
+              className="h-full overflow-y-auto [-webkit-overflow-scrolling:touch] overscroll-contain p-4"
+              onWheelCapture={(e) => e.stopPropagation()}
+              onTouchMoveCapture={(e) => e.stopPropagation()}
+            >
+              <div className="text-sm text-white/85 leading-relaxed">
+                {textLines.map((line, idx) => {
+                  if (!line) {
+                    return <div key={`sp-${idx}`} className="h-3" />;
+                  }
+
+                  const trimmed = line.trim();
+
+                  const headingMatch = trimmed.match(
+                    /^(rulebook|objective|rules?|judging criteria|note|duration)\b\s*:?(.*)$/i,
+                  );
+                  if (headingMatch) {
+                    const label = headingMatch[1].toUpperCase();
+                    const rest = String(headingMatch[2] || "").trim();
+                    return (
+                      <div key={`h-${idx}`} className="mt-3 text-base font-semibold text-white">
+                        {rest ? `${label}: ${rest}` : label}
+                      </div>
+                    );
+                  }
+
+                  const numbered = trimmed.match(/^(\d+)\s*[\.)]\s*(.*)$/);
+                  if (numbered) {
+                    return (
+                      <div key={`n-${idx}`} className="flex gap-2 py-0.5">
+                        <span className="shrink-0 text-white/80">{numbered[1]}.</span>
+                        <span className="min-w-0">{numbered[2] || ""}</span>
+                      </div>
+                    );
+                  }
+
+                  const bulleted = trimmed.match(/^(?:•|-)\s*(.*)$/);
+                  if (bulleted) {
+                    const bulletText = String(bulleted[1] || "").trim();
+                    const letters = bulletText.replace(/[^A-Za-z]/g, "");
+                    const upperRatio =
+                      letters.length > 0
+                        ? letters.replace(/[^A-Z]/g, "").length / letters.length
+                        : 0;
+
+                    if (bulletText && letters.length >= 6 && upperRatio >= 0.85 && bulletText.length <= 60) {
+                      return (
+                        <div key={`bh-${idx}`} className="mt-3 text-base font-semibold text-white">
+                          {bulletText}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div key={`b-${idx}`} className="flex gap-2 py-0.5">
+                        <span className="shrink-0 text-white/80">•</span>
+                        <span className="min-w-0">{bulletText}</span>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div key={`p-${idx}`} className="py-0.5 text-sm text-white/85">
+                      {trimmed}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

@@ -121,3 +121,9 @@ html, body {
     animation: marquee-scroll 60s linear infinite;
   }
 }
+
+/* color calender for dark ui */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.85;
+}

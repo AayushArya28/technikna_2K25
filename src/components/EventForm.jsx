@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { BASE_API_URL, fetchJson, getAuthHeaders } from "../lib/api.js";
@@ -22,10 +22,13 @@ export default function EventForm({
   const popup = usePopup();
   const { loading: entitlementsLoading, isEventFreeEligible, isBitStudent, hasDelegatePass } =
     useEntitlements();
+  const modalRef = useRef(null);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [checking, setChecking] = useState(false);
   const [status, setStatus] = useState(null);
+
+  const registrationPaused = String(eventId || "") === "1";
 
   const [profile, setProfile] = useState({
     name: "",
@@ -111,7 +114,7 @@ export default function EventForm({
           try {
             const headers = await getAuthHeaders({ json: false });
             const [delegateRes, alumniRes] = await Promise.all([
-              fetchJson(`${BASE_API_URL}/delegate/status`, { method: "GET", headers }),
+              fetchJson(`${BASE_API_URL}/delegate/status/user`, { method: "GET", headers }),
               fetchJson(`${BASE_API_URL}/alumni/status`, { method: "GET", headers }),
             ]);
 
@@ -175,28 +178,30 @@ export default function EventForm({
   useEffect(() => {
     if (!open) return;
 
-    const prevOverflow = document.body.style.overflow;
-    const prevTouchAction = document.body.style.touchAction;
+    const scrollY = window.scrollY || 0;
+
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevBodyPosition = document.body.style.position;
+    const prevBodyTop = document.body.style.top;
+    const prevBodyWidth = document.body.style.width;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+
+    // Strong scroll lock (works even with smooth-scroll libraries)
     document.body.style.overflow = "hidden";
-    document.body.style.touchAction = "none";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.documentElement.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = prevOverflow;
-      document.body.style.touchAction = prevTouchAction;
-    };
-  }, [open]);
+      document.body.style.overflow = prevBodyOverflow;
+      document.body.style.position = prevBodyPosition;
+      document.body.style.top = prevBodyTop;
+      document.body.style.width = prevBodyWidth;
+      document.documentElement.style.overflow = prevHtmlOverflow;
 
-  useEffect(() => {
-    if (!open) return;
-
-    const prevOverflow = document.body.style.overflow;
-    const prevTouchAction = document.body.style.touchAction;
-    document.body.style.overflow = "hidden";
-    document.body.style.touchAction = "none";
-
-    return () => {
-      document.body.style.overflow = prevOverflow;
-      document.body.style.touchAction = prevTouchAction;
+      // Restore scroll position after unlocking
+      window.scrollTo(0, scrollY);
     };
   }, [open]);
 
@@ -217,6 +222,11 @@ export default function EventForm({
   };
 
   const submit = async () => {
+    if (registrationPaused) {
+      popup.info("Hackathon registration is temporarily paused.");
+      return;
+    }
+
     const user = auth.currentUser;
     if (!user) {
       popup.error("Please sign in to register.");
@@ -333,7 +343,8 @@ export default function EventForm({
       const redirectUrl = data?.paymentUrl || data?.url;
       if (typeof redirectUrl === "string" && redirectUrl.trim()) {
         if (!freeEligible) {
-          window.location.href = redirectUrl;
+          const opened = window.open(redirectUrl, "_blank", "noopener,noreferrer");
+          if (!opened) window.location.href = redirectUrl;
           return;
         }
       }
@@ -355,8 +366,13 @@ export default function EventForm({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[10040] flex items-start justify-center bg-black/70 px-3 py-4 overflow-y-auto sm:px-4 sm:py-6">
-      <div className="w-full max-w-2xl rounded-3xl border border-white/12 bg-black/70 p-4 shadow-[0_40px_120px_rgba(0,0,0,0.8)] backdrop-blur-xl max-h-[85vh] overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] sm:p-6">
+    <div className="fixed inset-0 z-[10040] flex items-start justify-center bg-blue-950/45 px-3 py-4 overflow-hidden overscroll-contain backdrop-blur-sm sm:px-4 sm:py-6">
+      <div
+        ref={modalRef}
+        onWheelCapture={(e) => e.stopPropagation()}
+        onTouchMoveCapture={(e) => e.stopPropagation()}
+        className="w-full max-w-2xl rounded-3xl border border-white/12 bg-black/70 p-4 shadow-[0_40px_120px_rgba(0,0,0,0.8)] backdrop-blur-xl h-[85vh] overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] sm:p-6"
+      >
         <div className="flex items-center justify-between gap-4">
           <div>
             <div className="text-xs uppercase tracking-[0.35em] text-white/50">
@@ -375,6 +391,11 @@ export default function EventForm({
         </div>
 
         <div className="mt-4 space-y-3 sm:mt-5 sm:space-y-4">
+          {registrationPaused && (
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-sm text-white/80 sm:p-4">
+              Hackathon registration is temporarily paused.
+            </div>
+          )}
           <div className="rounded-2xl border border-white/10 bg-black/40 p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold text-white/80">Mode</div>
@@ -526,11 +547,11 @@ export default function EventForm({
 
           <button
             type="button"
-            disabled={submitting || loadingProfile}
+            disabled={registrationPaused || submitting || loadingProfile}
             onClick={submit}
             className="w-full rounded-full bg-[#ff0045]/90 px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.30em] text-white transition hover:bg-[#ff0045]/80 disabled:opacity-60 sm:py-3 sm:tracking-[0.35em]"
           >
-            {submitting ? "Submitting..." : "Submit"}
+            {registrationPaused ? "Registration Paused" : submitting ? "Submitting..." : "Submit"}
           </button>
 
           <div className="text-xs text-white/50">

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, query, updateDoc, where } from "firebase/firestore";
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
@@ -89,6 +89,174 @@ export default function Profile() {
   });
   const [eventsFetchError, setEventsFetchError] = useState("");
 
+  const extractRegisteredEventsList = (raw) => {
+    const list =
+      Array.isArray(raw)
+        ? raw
+        : Array.isArray(raw?.events)
+          ? raw.events
+          : Array.isArray(raw?.data)
+            ? raw.data
+            : Array.isArray(raw?.registeredEvents)
+              ? raw.registeredEvents
+              : Array.isArray(raw?.registered_events)
+                ? raw.registered_events
+                : Array.isArray(raw?.registrations)
+                  ? raw.registrations
+                  : Array.isArray(raw?.results)
+                    ? raw.results
+                    : Array.isArray(raw?.items)
+                      ? raw.items
+                      : [];
+    return Array.isArray(list) ? list : [];
+  };
+
+  const mergeRegisteredEventItems = (a, b) => {
+    const out = [];
+    const seen = new Set();
+    const add = (item) => {
+      if (item == null) return;
+
+      let eventId = null;
+      let key = null;
+      let title = null;
+
+      if (typeof item === "number") {
+        eventId = item;
+      } else if (typeof item === "string") {
+        const trimmed = item.trim();
+        const asNum = Number(trimmed);
+        if (Number.isFinite(asNum) && trimmed !== "") eventId = asNum;
+        else title = trimmed;
+      } else if (typeof item === "object") {
+        eventId =
+          item.eventId ??
+          item.id ??
+          item.event_id ??
+          item.eventID ??
+          item.eventIdFk ??
+          null;
+        key = item.eventKey ?? item.key ?? null;
+        title = item.title ?? item.name ?? item.eventTitle ?? item.event ?? null;
+      }
+
+      const dedupeKey =
+        eventId != null
+          ? `id:${String(eventId)}`
+          : key
+            ? `key:${String(key)}`
+            : title
+              ? `title:${String(title)}`
+              : null;
+
+      if (!dedupeKey) {
+        out.push(item);
+        return;
+      }
+      if (seen.has(dedupeKey)) return;
+      seen.add(dedupeKey);
+      out.push(item);
+    };
+
+    (Array.isArray(a) ? a : []).forEach(add);
+    (Array.isArray(b) ? b : []).forEach(add);
+    return out;
+  };
+
+  const getFirestoreRegisteredEvents = async (uid, email, authDocData) => {
+    const fromAuthDoc =
+      extractRegisteredEventsList(authDocData?.registeredEvents) ||
+      extractRegisteredEventsList(authDocData?.registered_events) ||
+      extractRegisteredEventsList(authDocData?.events) ||
+      extractRegisteredEventsList(authDocData?.eventRegistrations) ||
+      extractRegisteredEventsList(authDocData?.registrations) ||
+      [];
+
+    const normalizeEventRegistrationEventsMap = (eventsMap) => {
+      if (!eventsMap || typeof eventsMap !== "object") return [];
+      return Object.entries(eventsMap)
+        .map(([k, v]) => {
+          const asNum = Number(String(k || "").trim());
+          const eventId = Number.isFinite(asNum) ? asNum : null;
+          const status = v?.status ?? v?.paymentStatus ?? v?.payment_status ?? v?.state ?? null;
+          const eventKey = v?.eventKey ?? v?.event_key ?? v?.key ?? null;
+          if (!eventId && !eventKey) return null;
+          return { eventId, eventKey, status };
+        })
+        .filter(Boolean);
+    };
+
+    // Known schema: collection `event_registration`, per-user doc has `events: { [eventId]: {status, paymentUrl, ...} }`
+    let eventRegistrationDocData = null;
+    try {
+      const direct = await getDoc(doc(db, "event_registration", uid));
+      if (direct.exists()) {
+        eventRegistrationDocData = direct.data();
+      }
+    } catch {
+      // ignore
+    }
+
+    if (!eventRegistrationDocData && email) {
+      try {
+        const snap = await getDocs(
+          query(collection(db, "event_registration"), where("email", "==", String(email)), limit(1))
+        );
+        const first = snap.docs?.[0];
+        if (first) eventRegistrationDocData = first.data();
+      } catch {
+        // ignore
+      }
+    }
+
+    const fromEventRegistration = normalizeEventRegistrationEventsMap(eventRegistrationDocData?.events);
+
+    if (fromEventRegistration.length > 0) {
+      return mergeRegisteredEventItems(fromAuthDoc, fromEventRegistration);
+    }
+
+    const tryGetSubcollection = async (subPath) => {
+      try {
+        const snap = await getDocs(query(collection(db, "auth", uid, subPath), limit(200)));
+        return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      } catch {
+        return [];
+      }
+    };
+
+    const [subRegs, subEvents] = await Promise.all([
+      tryGetSubcollection("registrations"),
+      tryGetSubcollection("events"),
+    ]);
+
+    const normalizeDocs = (docs) =>
+      (Array.isArray(docs) ? docs : [])
+        .map((d) => {
+          if (!d || typeof d !== "object") return null;
+          const eventId =
+            d.eventId ?? d.event_id ?? d.eventID ?? d.event ?? d.eventIdFk ?? d.eventIdRef ?? null;
+          const eventKey = d.eventKey ?? d.event_key ?? d.key ?? null;
+          const status = d.status ?? d.paymentStatus ?? d.state ?? null;
+
+          if (eventId == null && !eventKey) {
+            const docId = String(d.id || "");
+            const asNum = Number(docId);
+            if (Number.isFinite(asNum) && docId.trim() !== "") {
+              return { eventId: asNum, status };
+            }
+            if (docId) return { eventKey: docId, status };
+            return null;
+          }
+
+          return { eventId, eventKey, status };
+        })
+        .filter(Boolean);
+
+    const fromFirestoreDocs = mergeRegisteredEventItems(normalizeDocs(subRegs), normalizeDocs(subEvents));
+
+    return mergeRegisteredEventItems(fromAuthDoc, fromFirestoreDocs);
+  };
+
   const normalizedRegisteredEvents = (() => {
     const raw = statuses.events;
 
@@ -151,6 +319,31 @@ export default function Profile() {
       .filter(Boolean);
   })();
 
+  const eventsBadgeStatus = (() => {
+    if (normalizedRegisteredEvents.length > 0) {
+      return `${normalizedRegisteredEvents.length} Registered`;
+    }
+
+    const raw = statuses.events;
+    const count =
+      raw?.count ??
+      raw?.total ??
+      raw?.registeredCount ??
+      raw?.registered_count ??
+      raw?.eventsCount ??
+      raw?.events_count;
+
+    if (Number.isFinite(Number(count)) && Number(count) > 0) {
+      return `${Number(count)} Registered`;
+    }
+
+    if (!raw) return null;
+    if (raw === true) return "Registered";
+    if (typeof raw === "string") return raw;
+    if (typeof raw === "object" && raw?.status) return String(raw.status);
+    return "Registered";
+  })();
+
   const openRegisteredEvent = (evt) => {
     const key = evt?.key;
     const eventId = evt?.eventId ?? (key ? getEventId(key) : null);
@@ -206,10 +399,13 @@ export default function Profile() {
         const token = await user.getIdToken();
         const headers = { Authorization: `Bearer ${token}` };
 
-        const [eventRes, delegateRes, alumniRes] = await Promise.all([
+        const docRef = doc(db, "auth", user.uid);
+
+        const [eventRes, delegateRes, alumniRes, docSnap] = await Promise.all([
           fetch(`${BASE_API_URL}/event/registered`, { headers }),
-          fetch(`${BASE_API_URL}/delegate/status`, { headers }),
+          fetch(`${BASE_API_URL}/delegate/status/user`, { headers }),
           fetch(`${BASE_API_URL}/alumni/status`, { headers }),
+          getDoc(docRef),
         ]);
 
         setEventsFetchError("");
@@ -225,22 +421,35 @@ export default function Profile() {
         const delegateData = delegateRes.ok ? await delegateRes.json() : null;
         const alumniData = alumniRes.ok ? await alumniRes.json() : null;
 
+        let firestoreUserData = {};
+        if (docSnap?.exists?.()) {
+          firestoreUserData = docSnap.data();
+        }
+
+        let firestoreEvents = [];
+        try {
+          firestoreEvents = await getFirestoreRegisteredEvents(user.uid, user.email, firestoreUserData);
+        } catch {
+          firestoreEvents = [];
+        }
+
+        const apiList = extractRegisteredEventsList(eventData);
+        const mergedEvents =
+          apiList.length > 0
+            ? mergeRegisteredEventItems(apiList, firestoreEvents)
+            : firestoreEvents.length > 0
+              ? firestoreEvents
+              : eventData;
+
+        if (firestoreEvents.length > 0 && !eventRes.ok) {
+          setEventsFetchError("");
+        }
+
         setStatuses({
-          events: eventData,
+          events: mergedEvents,
           delegate: delegateData,
           alumni: alumniData,
         });
-
-        let firestoreUserData = {};
-        try {
-          const docRef = doc(db, "auth", user.uid);
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            firestoreUserData = docSnap.data();
-          }
-        } catch (err) {
-          console.error("Error fetching user from DB:", err);
-        }
 
         const sourceData = delegateData || alumniData || {};
 
@@ -527,7 +736,7 @@ export default function Profile() {
                     <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-white/50 mb-4 border-b border-white/10 pb-2">
                       Registration Status
                     </h3>
-                    <div className="grid gap-4 md:grid-cols-3">
+                    <div className="grid gap-4 md:grid-cols-2">
                       <div className="rounded-2xl border border-white/10 bg-black/40 p-5 hover:border-[#ff0045]/50 transition duration-300">
                         <div className="mb-3 flex items-center justify-between">
                           <Award className="h-5 w-5 text-white/70" />
@@ -536,43 +745,6 @@ export default function Profile() {
                           Delegate Pass
                         </div>
                         <StatusBadge status={statuses.delegate?.status} />
-                      </div>
-
-                      <div className="rounded-2xl border border-white/10 bg-black/40 p-5 hover:border-[#ff0045]/50 transition duration-300">
-                        <div className="mb-3 flex items-center justify-between">
-                          <Calendar className="h-5 w-5 text-white/70" />
-                        </div>
-                        <div className="text-sm text-white/60 mb-2">Events</div>
-                        <StatusBadge
-                          status={
-                            Array.isArray(statuses.events)
-                              ? `${statuses.events.length} Registered`
-                              : statuses.events
-                                ? "Registered"
-                                : null
-                          }
-                        />
-
-                        {normalizedRegisteredEvents.length > 0 ? (
-                          <div className="mt-3 space-y-1">
-                            {normalizedRegisteredEvents.slice(0, 3).map((evt, idx) => (
-                              <button
-                                key={`${evt.key || evt.eventId || evt.title}_mini_${idx}`}
-                                type="button"
-                                onClick={() => openRegisteredEvent(evt)}
-                                className="block w-full truncate text-left text-xs text-white/70 hover:text-white transition"
-                                title={String(evt.title || "Event")}
-                              >
-                                • {String(evt.title || "Event")}
-                              </button>
-                            ))}
-                            {normalizedRegisteredEvents.length > 3 ? (
-                              <div className="text-xs text-white/40">
-                                +{normalizedRegisteredEvents.length - 3} more
-                              </div>
-                            ) : null}
-                          </div>
-                        ) : null}
                       </div>
 
                       <div className="rounded-2xl border border-white/10 bg-black/40 p-5 hover:border-[#ff0045]/50 transition duration-300">
