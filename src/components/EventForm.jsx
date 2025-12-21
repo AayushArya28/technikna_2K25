@@ -23,6 +23,7 @@ export default function EventForm({
   const { loading: entitlementsLoading, isEventFreeEligible, isBitStudent, hasDelegatePass } =
     useEntitlements();
   const modalRef = useRef(null);
+  const submitLockRef = useRef(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -222,32 +223,40 @@ export default function EventForm({
   };
 
   const submit = async () => {
+    if (submitLockRef.current) return;
+    submitLockRef.current = true;
     if (registrationPaused) {
       popup.info("Hackathon registration is temporarily paused.");
+      submitLockRef.current = false;
       return;
     }
 
     const user = auth.currentUser;
     if (!user) {
       popup.error("Please sign in to register.");
+      submitLockRef.current = false;
       return;
     }
 
     if (!user.emailVerified) {
       popup.error("Please verify your email before registering.");
+      submitLockRef.current = false;
       return;
     }
     if (entitlementsLoading) {
       popup.info("Checking eligibility… please try again in a moment.");
+      submitLockRef.current = false;
       return;
     }
     if (!eventId) {
       popup.error("Missing/invalid event id. Please contact the team.");
+      submitLockRef.current = false;
       return;
     }
 
     if (!safeAllowedModes.includes(type)) {
       popup.error("This event does not support the selected registration mode.");
+      submitLockRef.current = false;
       return;
     }
 
@@ -260,6 +269,7 @@ export default function EventForm({
 
     if (!base.name || !base.email || !base.college || !base.phone) {
       popup.error("Complete your profile (name, email, phone, college) before registering.");
+      submitLockRef.current = false;
       return;
     }
 
@@ -268,20 +278,39 @@ export default function EventForm({
         popup.error(
           `Add at least ${groupMinAdditional} member${groupMinAdditional === 1 ? "" : "s"} for group registration.`
         );
+        submitLockRef.current = false;
         return;
       }
       if (groupMaxAdditional != null && group.length > groupMaxAdditional) {
         popup.error(
           `You can add at most ${groupMaxAdditional} member${groupMaxAdditional === 1 ? "" : "s"} for this event.`
         );
+        submitLockRef.current = false;
         return;
       }
       for (let i = 0; i < group.length; i += 1) {
         const msg = validateGroupRow(group[i], i);
         if (msg) {
           popup.error(msg);
+          submitLockRef.current = false;
           return;
         }
+      }
+    }
+
+    const freeEligible = Boolean(isEventFreeEligible);
+    // Popup blockers usually allow window.open only in the direct click handler.
+    // So we open a blank tab first (synchronously), then navigate it after the API responds.
+    let paymentTab = null;
+    if (!freeEligible) {
+      paymentTab = window.open("about:blank", "_blank");
+      try {
+        if (paymentTab) paymentTab.opener = null;
+      } catch {
+        // ignore
+      }
+      if (!paymentTab) {
+        popup.info("Popup blocked in your browser. Continuing to payment in this tab…");
       }
     }
 
@@ -294,8 +323,6 @@ export default function EventForm({
         phone: base.phone,
         college: base.college,
       };
-
-      const freeEligible = Boolean(isEventFreeEligible);
       const delegateEligible = Boolean(hasDelegatePass);
 
       const payload = {
@@ -337,14 +364,28 @@ export default function EventForm({
 
       if (!resp.ok) {
         popup.error(data?.message || `Event registration failed (${resp.status}).`);
+        if (paymentTab && !paymentTab.closed) paymentTab.close();
         return;
       }
 
       const redirectUrl = data?.paymentUrl || data?.url;
       if (typeof redirectUrl === "string" && redirectUrl.trim()) {
         if (!freeEligible) {
-          const opened = window.open(redirectUrl, "_blank", "noopener,noreferrer");
-          if (!opened) window.location.href = redirectUrl;
+          if (paymentTab && !paymentTab.closed) {
+            try {
+              paymentTab.location.href = redirectUrl;
+              return;
+            } catch {
+              // If we can't navigate the pre-opened tab, close it before falling back.
+              try {
+                paymentTab.close();
+              } catch {
+                // ignore
+              }
+            }
+          }
+
+          window.location.href = redirectUrl;
           return;
         }
       }
@@ -358,8 +399,10 @@ export default function EventForm({
       onClose?.();
     } catch (e) {
       popup.error(e?.message || "Event registration failed.");
+      if (paymentTab && !paymentTab.closed) paymentTab.close();
     } finally {
       setSubmitting(false);
+      submitLockRef.current = false;
     }
   };
 

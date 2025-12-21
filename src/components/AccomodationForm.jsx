@@ -105,38 +105,71 @@ export default function AccommodationForm({ open, onClose }) {
   const submit = async () => {
     const user = auth.currentUser;
 
+    // Pre-open payment tab to avoid popup blockers; we'll navigate it after API response.
+    const paymentTab = window.open("about:blank", "_blank");
+    const closePaymentTab = () => {
+      if (paymentTab && !paymentTab.closed) paymentTab.close();
+    };
+    try {
+      if (paymentTab) paymentTab.opener = null;
+    } catch {
+      // ignore
+    }
+
+    const tryNavigatePaymentTab = (url) => {
+      if (!paymentTab || paymentTab.closed) return false;
+      try {
+        paymentTab.location.href = url;
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const willUseNewTab = Boolean(paymentTab);
+    if (!willUseNewTab) {
+      popup.info("Popup blocked in your browser. Continuing to payment in this tab…");
+    }
+
     if (!user) {
       popup.error("Please sign in to continue.");
+      closePaymentTab();
       return;
     }
 
     if (!user.emailVerified) {
       popup.error("Please verify your email.");
+      closePaymentTab();
       return;
     }
 
     if (entitlementsLoading) {
       popup.info("Checking eligibility…");
+      closePaymentTab();
       return;
     }
 
     if (isBitStudent) {
       popup.info("Accommodation is not applicable for BIT students.");
+      closePaymentTab();
       return;
     }
 
     if (accommodationStatus === "CONFIRMED") {
       popup.info("Your accommodation is already confirmed.");
+      closePaymentTab();
       return;
     }
 
     if (!canAccessAccommodation) {
       popup.error("Accommodation not available for your account.");
+      closePaymentTab();
       return;
     }
 
     if (!profile.name || !profile.email || !profile.phone || !profile.college) {
       popup.error("Please complete all personal details.");
+      closePaymentTab();
       return;
     }
 
@@ -168,17 +201,27 @@ export default function AccommodationForm({ open, onClose }) {
 
       if (!resp.ok) {
         popup.error(data?.message || "Accommodation request failed.");
+        closePaymentTab();
         return;
       }
 
       const redirectUrl = data?.paymentUrl || data?.url;
       if (redirectUrl) {
+        if (willUseNewTab) {
+          const ok = tryNavigatePaymentTab(redirectUrl);
+          if (ok) return;
+          // Could not navigate the opened tab (some browsers restrict it). Close it and fallback.
+          closePaymentTab();
+        }
+
         window.location.href = redirectUrl;
         return;
       }
 
+      closePaymentTab();
       popup.error("Payment link not generated. Please contact support.");
     } catch (e) {
+      closePaymentTab();
       popup.error(e?.message || "Submission failed.");
     } finally {
       setSubmitting(false);

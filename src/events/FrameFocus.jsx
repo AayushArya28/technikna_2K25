@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import EventForm from "../components/EventForm.jsx";
-import RulebookModal from "../components/RulebookModal.jsx";
 import { getEventId, getEventKeyById } from "../lib/eventIds.js";
 import { useEntitlements } from "../context/useEntitlements.jsx";
 import { usePopup } from "../context/usePopup.jsx";
@@ -43,11 +42,10 @@ const events = [
     desc: "A filmmaking event where teams script, shoot, and edit short films, showcasing cinematic storytelling and technical skills. Venue: As per schedule.",
     img: "https://images.unsplash.com/photo-1517602302552-471fe67acf66?auto=format&fit=crop&w=800&q=80",
     participation: "Team",
+    fee: "₹99",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
-    rulebookText:
-      "RULEBOOK\n\nOBJECTIVE\nCreate a short film that demonstrates strong storytelling and technical filmmaking skills.\n\nDURATION\nAs per schedule.\n\nRULES\n• Teams must submit a final edited short film in the format specified by organizers.\n• Content must be original and suitable for general audiences.\n• Organizers may announce constraints (theme/time limit) at the event.\n\nJUDGING CRITERIA\n• Storytelling and screenplay.\n• Cinematography and editing.\n• Sound design and overall impact.\n\nNOTE\nJudges’ decision will be final.",
   },
   {
     key: "capture_the_unseen",
@@ -55,18 +53,16 @@ const events = [
     desc: "An online photography event encouraging participants to capture subtle moments and hidden stories with complete creative freedom. Venue: Online.",
     img: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=800&q=80",
     participation: "Solo",
+    fee: "₹99",
     allowedModes: ["solo"],
-    rulebookText:
-      "RULEBOOK\n\nOBJECTIVE\nCapture and submit an original photograph that tells a compelling story through composition and creativity.\n\nDURATION\nAs per schedule.\n\nRULES\n• Photo must be original and clicked by the participant.\n• Basic edits are allowed; heavy manipulation may be restricted as per organizer guidelines.\n• Submission format and deadline will be announced by organizers.\n\nJUDGING CRITERIA\n• Composition and framing.\n• Story/idea and creativity.\n• Overall visual impact.\n\nNOTE\nJudges’ decision will be final.",
   },
 ];
+
+const RULEBOOK_PDF_URL = "/rulebooks/frame-and-focus-rulebook.pdf";
 
 export default function FrameFocus() {
   const [active, setActive] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
-  const [rulebookOpen, setRulebookOpen] = useState(false);
-  const [rulebookTitle, setRulebookTitle] = useState("");
-  const [rulebookText, setRulebookText] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sliderRef = useRef(null);
@@ -74,21 +70,11 @@ export default function FrameFocus() {
   const popup = usePopup();
   const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
 
-  const openRulebook = (event) => {
-    const text = event?.rulebookText;
-    if (typeof text === "string" && text.trim()) {
-      setRulebookTitle(String(event?.title || "Event"));
-      setRulebookText(text);
-      setRulebookOpen(true);
+  const openRulebook = () => {
+    if (typeof RULEBOOK_PDF_URL === "string" && RULEBOOK_PDF_URL.trim()) {
+      window.open(RULEBOOK_PDF_URL, "_blank", "noopener,noreferrer");
       return;
     }
-
-    const pdf = event?.rulebookPdf;
-    if (typeof pdf === "string" && pdf.trim()) {
-      window.open(pdf, "_blank", "noopener,noreferrer");
-      return;
-    }
-
     popup.info("Rulebook coming soon.");
   };
 
@@ -186,12 +172,15 @@ export default function FrameFocus() {
         <AnimatePresence mode="wait">
           <Motion.div
             key={events[active].title}
+            className="h-full flex flex-col"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
           >
             <h2 className="text-3xl text-white font-bold mb-3">{events[active].title}</h2>
+
+            <div className="flex-1 overflow-y-auto pr-2">
 
             {(() => {
               const meta = splitDescMeta(events?.[active]?.desc);
@@ -223,7 +212,7 @@ export default function FrameFocus() {
             <div className="mb-6">
               <button
                 type="button"
-                onClick={() => openRulebook(events?.[active])}
+                onClick={openRulebook}
                 className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
               >
                 Rulebook
@@ -232,9 +221,12 @@ export default function FrameFocus() {
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
               <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>
+
+            </div>
 
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <button
@@ -323,13 +315,6 @@ export default function FrameFocus() {
         allowedModes={events?.[active]?.allowedModes}
         groupMinTotal={events?.[active]?.groupMinTotal}
         groupMaxTotal={events?.[active]?.groupMaxTotal}
-      />
-
-      <RulebookModal
-        open={rulebookOpen}
-        title={rulebookTitle}
-        content={rulebookText}
-        onClose={() => setRulebookOpen(false)}
       />
     </div>
   );

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { usePopup } from "../context/usePopup.jsx";
 import { useEntitlements } from "../context/useEntitlements.jsx";
 import { onAuthStateChanged } from "firebase/auth";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
+import { doc, getDoc } from "firebase/firestore";
 
 const DetailRow = ({ label, value }) => (
     <div className="flex items-start gap-4 font-mono">
@@ -31,7 +32,6 @@ const DelegateRegistration = () => {
         name: "",
         email: "",
         phone: "",
-        address: "",
         college: "",
     });
 
@@ -42,6 +42,13 @@ const DelegateRegistration = () => {
     const [inGroupDelegate, setInGroupDelegate] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [agreed, setAgreed] = useState(false);
+    const [didShowProfileHint, setDidShowProfileHint] = useState(false);
+
+    const showProfileHintOnce = () => {
+        if (didShowProfileHint) return;
+        popup.info("To update these details, update them in Profile page.");
+        setDidShowProfileHint(true);
+    };
 
     useEffect(() => {
         if (entitlementsLoading) return;
@@ -57,13 +64,6 @@ const DelegateRegistration = () => {
         });
         return () => unsub();
     }, []);
-
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
 
     const PaymentStatus = {
         Confirmed: "confirmed",
@@ -90,21 +90,19 @@ const DelegateRegistration = () => {
                     setSubmitted(true);
                     setPaymentStatus(PaymentStatus.Confirmed);
                     setFormData({
-                        name: data.name || "",
-                        email: data.email || user.email || "",
-                        phone: data.phone || "",
-                        college: data.college || "",
-                        address: data.address || "",
+                        name: formData.name || data.name || "",
+                        email: formData.email || data.email || user.email || "",
+                        phone: formData.phone || data.phone || "",
+                        college: formData.college || data.college || "",
                     });
                 } else if (status === "pending" || status === "pending_payment") {
                     setSubmitted(true);
                     setPaymentStatus(PaymentStatus.Pending);
                     setFormData({
-                        name: data.name || "",
-                        email: data.email || user.email || "",
-                        phone: data.phone || "",
-                        college: data.college || "",
-                        address: data.address || "",
+                        name: formData.name || data.name || "",
+                        email: formData.email || data.email || user.email || "",
+                        phone: formData.phone || data.phone || "",
+                        college: formData.college || data.college || "",
                     });
                 } else if (
                     status === "failed" ||
@@ -116,11 +114,10 @@ const DelegateRegistration = () => {
                     setSubmitted(true);
                     setPaymentStatus(PaymentStatus.Failed);
                     setFormData({
-                        name: data.name || "",
-                        email: data.email || user.email || "",
-                        phone: data.phone || "",
-                        college: data.college || "",
-                        address: data.address || "",
+                        name: formData.name || data.name || "",
+                        email: formData.email || data.email || user.email || "",
+                        phone: formData.phone || data.phone || "",
+                        college: formData.college || data.college || "",
                     });
                 }
             }
@@ -135,10 +132,26 @@ const DelegateRegistration = () => {
         if (!authReady) return;
         if (!authUser) return;
 
-        setFormData((prev) => ({
-            ...prev,
-            email: authUser.email || prev.email,
-        }));
+        const hydrateProfile = async () => {
+            try {
+                const snap = await getDoc(doc(db, "auth", authUser.uid));
+                const data = snap.exists() ? snap.data() : {};
+                setFormData((prev) => ({
+                    ...prev,
+                    name: String(data?.name || prev.name || authUser.displayName || "").trim(),
+                    email: String(data?.email || authUser.email || prev.email || "").trim(),
+                    phone: String(data?.phone || prev.phone || "").trim(),
+                    college: String(data?.college || prev.college || "").trim(),
+                }));
+            } catch {
+                setFormData((prev) => ({
+                    ...prev,
+                    email: String(authUser.email || prev.email || "").trim(),
+                }));
+            }
+        };
+
+        hydrateProfile();
         checkStatus();
         checkGroupDelegateStatus();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -195,15 +208,15 @@ const DelegateRegistration = () => {
         setLoading(true);
 
         try {
-            if (formData.name.trim().length < 1) {
-                popup.error("Please enter a valid name.");
-                setLoading(false);
-                return;
-            }
+            const missingProfile =
+                !String(formData.name || "").trim() ||
+                !String(formData.phone || "").trim() ||
+                String(formData.phone || "").trim().length < 10 ||
+                !String(formData.college || "").trim();
 
-            if (formData.phone.trim().length < 10) {
-                popup.error("Please enter a valid phone number (at least 10 digits).");
-                setLoading(false);
+            if (missingProfile) {
+                popup.info("Please update your Profile (name, phone, college) before registering.");
+                navigate("/profile");
                 return;
             }
 
@@ -225,7 +238,6 @@ const DelegateRegistration = () => {
                     name: String(formData.name).trim(),
                     email: String(formData.email).trim(),
                     phone: String(formData.phone).trim(),
-                    address: String(formData.address).trim(),
                     college: String(formData.college).trim(),
                 }),
             });
@@ -250,6 +262,23 @@ const DelegateRegistration = () => {
             popup.error("Please agree to the Terms and Conditions & Refund Policy.");
             return;
         }
+
+        // Try to open in a new tab. If the browser blocks popups (common in in-app browsers),
+        // fall back to redirecting in the same tab so payment isn't blocked.
+        const paymentTab = window.open("about:blank", "_blank");
+        const closePaymentTab = () => {
+            if (paymentTab && !paymentTab.closed) paymentTab.close();
+        };
+        try {
+            if (paymentTab) paymentTab.opener = null;
+        } catch {
+            // ignore
+        }
+        const willUseNewTab = Boolean(paymentTab);
+        if (!willUseNewTab) {
+            popup.info("Popup blocked in your browser. Continuing to payment in this tab…");
+        }
+
         setLoading(true);
         const endpoint = `${BASE_API_URL}/book/2399`;
 
@@ -272,7 +301,6 @@ const DelegateRegistration = () => {
                     email: String(formData.email),
                     phone: String(formData.phone).trim(),
                     college: String(formData.college),
-                    address: String(formData.address),
                     callbackUrl: window.location.href,
                 }),
             });
@@ -282,18 +310,33 @@ const DelegateRegistration = () => {
 
             if (!response.ok) {
                 popup.error(`Payment failed: ${data.message || response.statusText}`);
+                closePaymentTab();
                 return;
             }
 
-            if (data.paymentUrl) {
-                window.location.href = data.paymentUrl;
-            } else if (data.url) {
-                window.location.href = data.url;
-            } else {
-                popup.error(`Payment failed: ${data.message || "No payment URL returned"}`);
+            const paymentUrl = data.paymentUrl || data.url;
+            if (paymentUrl) {
+                if (willUseNewTab) {
+                    try {
+                        if (paymentTab && !paymentTab.closed) {
+                            paymentTab.location.href = paymentUrl;
+                            return;
+                        }
+                    } catch {
+                        closePaymentTab();
+                    }
+                }
+
+                closePaymentTab();
+                window.location.href = paymentUrl;
+                return;
             }
+
+            closePaymentTab();
+            popup.error(`Payment failed: ${data.message || "No payment URL returned"}`);
         } catch (error) {
             console.error("Payment Error:", error);
+            closePaymentTab();
             popup.error("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
@@ -416,14 +459,6 @@ const DelegateRegistration = () => {
                                             <div className="min-h-[1.5em] border-b border-white pb-1">{formData.college}</div>
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-4 font-mono">
-                                        <div className="min-w-[80px] shrink-0 border border-white px-2 py-1 text-sm text-white">
-                                            Addr.
-                                        </div>
-                                        <div className="relative flex-1 break-words py-1 text-base text-white">
-                                            <div className="min-h-[1.5em] border-b border-white pb-1">{formData.address}</div>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div className="mt-10 border-t border-white pt-6">
@@ -508,10 +543,13 @@ const DelegateRegistration = () => {
                                 id="name"
                                 name="name"
                                 value={formData.name}
-                                onChange={handleChange}
-                                placeholder="Enter your full name"
+                                readOnly
+                                aria-readonly="true"
+                                onFocus={showProfileHintOnce}
+                                onClick={showProfileHintOnce}
+                                placeholder="Update via Profile"
                                 disabled={inGroupDelegate}
-                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/50 transition"
+                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white/60 placeholder-white/30 cursor-not-allowed focus:outline-none transition"
                                 required
                             />
                         </div>
@@ -529,6 +567,8 @@ const DelegateRegistration = () => {
                                 name="email"
                                 value={formData.email}
                                 readOnly
+                                onFocus={showProfileHintOnce}
+                                onClick={showProfileHintOnce}
                                 className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white/50 placeholder-white/30 cursor-not-allowed focus:outline-none transition"
                                 required
                             />
@@ -546,32 +586,15 @@ const DelegateRegistration = () => {
                                 id="phone"
                                 name="phone"
                                 value={formData.phone}
-                                onChange={handleChange}
-                                placeholder="Enter your phone number"
+                                readOnly
+                                aria-readonly="true"
+                                onFocus={showProfileHintOnce}
+                                onClick={showProfileHintOnce}
+                                placeholder="Update via Profile"
                                 disabled={inGroupDelegate}
-                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/50 transition"
+                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white/60 placeholder-white/30 cursor-not-allowed focus:outline-none transition"
                                 required
                             />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label
-                                htmlFor="address"
-                                className="block text-xs font-semibold uppercase tracking-[0.35em] text-white/60"
-                            >
-                                Address
-                            </label>
-                            <textarea
-                                id="address"
-                                name="address"
-                                value={formData.address}
-                                onChange={handleChange}
-                                placeholder="Enter your full address"
-                                rows="3"
-                                disabled={inGroupDelegate}
-                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/50 transition resize-none"
-                                required
-                            ></textarea>
                         </div>
 
                         <div className="space-y-2">
@@ -586,12 +609,19 @@ const DelegateRegistration = () => {
                                 id="college"
                                 name="college"
                                 value={formData.college}
-                                onChange={handleChange}
-                                placeholder="Enter your college name"
+                                readOnly
+                                aria-readonly="true"
+                                onFocus={showProfileHintOnce}
+                                onClick={showProfileHintOnce}
+                                placeholder="Update via Profile"
                                 disabled={inGroupDelegate}
-                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/50 transition"
+                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white/60 placeholder-white/30 cursor-not-allowed focus:outline-none transition"
                                 required
                             />
+                        </div>
+
+                        <div className="text-xs text-white/50">
+                            To change your details, update them in Profile.
                         </div>
 
                         <div className="pt-6">

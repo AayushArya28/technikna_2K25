@@ -5,7 +5,7 @@ import { AutoScroll } from "@splidejs/splide-extension-auto-scroll";
 import "@splidejs/react-splide/css"; // or "@splidejs/react-splide/css/skyblue" if you prefer that theme
 
 const ImageCarousel = () => {
-  const imageClassName = "object-cover w-full h-40 sm:h-48 md:h-56 lg:h-64";
+  const imageClassName = "object-cover w-full h-64 sm:h-72 md:h-80 lg:h-96";
   const [photosOnScreen, setPhotosOnScreen] = useState(1);
   const [gapSize, setGapSize] = useState("0.8rem");
 
@@ -35,14 +35,14 @@ const ImageCarousel = () => {
 
   const slides = [
     "https://i.ibb.co/b5VLFW8L/dgdgdg.jpg",
-"https://i.ibb.co/tpqSYHX6/fgdfhfhnfchnff.jpg",
-"https://i.ibb.co/M5hxpY6d/gvhyfgjfctgjfcgv.jpg",
-"https://i.ibb.co/LhJFP0Kh/qwertyui.jpg",
-"https://i.ibb.co/jkVLyRRM/sv-zsvzsvzv.jpg",
-"https://i.ibb.co/7NkDBPRg/Whats-App-Image-2025-12-12-at-3-37-55-PM.jpg",
-"https://i.ibb.co/27YRhFjY/Whats-App-Image-2025-12-12-at-3-37-56-PM.jpg",
-"https://i.ibb.co/My68Scyb/Whats-App-Image-2025-12-12-at-3-37-57-PM.jpg",
-"https://i.ibb.co/Xfvgnnvy/Whats-App-Image-2025-12-12-at-3-37-58-PMvdsf.jpg"
+    "https://i.ibb.co/tpqSYHX6/fgdfhfhnfchnff.jpg",
+    "https://i.ibb.co/M5hxpY6d/gvhyfgjfctgjfcgv.jpg",
+    "https://i.ibb.co/LhJFP0Kh/qwertyui.jpg",
+    "https://i.ibb.co/jkVLyRRM/sv-zsvzsvzv.jpg",
+    "https://i.ibb.co/7NkDBPRg/Whats-App-Image-2025-12-12-at-3-37-55-PM.jpg",
+    "https://i.ibb.co/27YRhFjY/Whats-App-Image-2025-12-12-at-3-37-56-PM.jpg",
+    "https://i.ibb.co/My68Scyb/Whats-App-Image-2025-12-12-at-3-37-57-PM.jpg",
+    "https://i.ibb.co/Xfvgnnvy/Whats-App-Image-2025-12-12-at-3-37-58-PMvdsf.jpg",
   ];
 
   return (
@@ -74,7 +74,6 @@ const ImageCarousel = () => {
               src={src}
               alt={`Technika memory ${index + 1}`}
               className={imageClassName}
-              style={{ padding: "0.4rem" }}
               loading="lazy"
             />
           </SplideSlide>

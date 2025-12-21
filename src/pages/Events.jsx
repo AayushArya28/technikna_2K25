@@ -1,74 +1,4 @@
-// Events page (temporarily Coming Soon).
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
-import { useEntitlements } from "../context/useEntitlements.jsx";
-import { usePopup } from "../context/usePopup.jsx";
 
-export function Events() {
-  const navigate = useNavigate();
-  const popup = usePopup();
-  const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
-
-  useEffect(() => {
-    if (entitlementsLoading) return;
-    if (canAccessEvents) return;
-
-    popup.info("Alumni Pass users can access only the Alumni section.");
-    navigate("/alumni", { replace: true });
-  }, [canAccessEvents, entitlementsLoading, navigate, popup]);
-
-  return (
-    <>
-      <BrowserWarningModal />
-      <main className="min-h-screen bg-black px-6 pt-24 flex flex-col items-center justify-center gap-8">
-        <img
-          src="/images/coming-soon.jpg"
-          alt="Events coming soon"
-          className="max-w-xs sm:max-w-sm md:max-w-md opacity-90"
-        />
-
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <a
-            href="/rulebooks/technika-event-brochure.pdf"
-            download
-            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-          >
-            Download Event Brochure
-          </a>
-          <a
-            href="/rulebooks/cultural-rulebook.pdf"
-            download
-            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-          >
-            Download Cultural Rulebook PDF
-          </a>
-          <a
-            href="/rulebooks/art-and-craft-rulebook.pdf"
-            download
-            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-          >
-            Download Art & Craft Rulebook PDF
-          </a>
-          <a
-            href="/rulebooks/frame-and-focus-rulebook.pdf"
-            download
-            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-          >
-            Download Frame & Focus Rulebook PDF
-          </a>
-        </div>
-      </main>
-    </>
-  );
-}
-
-/*
-================================================================================
-PREVIOUS EVENTS PAGE CODE (COMMENTED OUT)
-================================================================================
-
-// Events page.
 import React, { useEffect, useState } from "react";
 import { motion as Motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -161,6 +91,13 @@ export function Events() {
             Download Event Brochure
           </a>
           <a
+            href="/rulebooks/technical-rulebook.pdf"
+            download
+            className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+          >
+            Download Technical Rulebook PDF
+          </a>
+          <a
             href="/rulebooks/art-and-craft-rulebook.pdf"
             download
             className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
@@ -240,6 +177,3 @@ export function Events() {
     </>
   );
 }
-
-================================================================================
-*/

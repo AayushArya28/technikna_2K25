@@ -3,10 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import EventForm from "../components/EventForm.jsx";
-import RulebookModal from "../components/RulebookModal.jsx";
 import { getEventId, getEventKeyById } from "../lib/eventIds.js";
 import { useEntitlements } from "../context/useEntitlements.jsx";
 import { usePopup } from "../context/usePopup.jsx";
+
+const RULEBOOK_PDF_URL = "/rulebooks/cultural-rulebook.pdf";
 
 const cleanPdfExtract = (text) =>
   String(text || "")
@@ -64,8 +65,6 @@ const CULTURAL_RULEBOOK_TEXT_RAW = {
     "Rulebook\n\nHULCHUL (STREET PLAY) \nOBJECTIVE \nA nukkad natak performance addressing social issues through drama and interaction. \nRULES \n1. Team Size: 10û25 members. \n2. Duration: 15û30 minutes. \n3. Only live music permitted. \n4. No electrical appliances allowed. \nJUDGING CRITERIA \nò Social Relevance û 30% \nò Acting and Energy û 25% \nò Crowd Interaction û 20% \nò Script and Dialogue û 15% \nò Overall Impact û 10% \nNOTE: If the number of participants is fewer than three, only the first prize will be awarded.",
   debate:
     "Rulebook\n\nVAAD-VIVAAD (DEBATE) \nOBJECTIVE \nA bilingual debate encouraging reasoning, persuasion, and clarity of thought. \nRULES \n1. Individual participation. \n2. Topics provided 30 minutes before round. \n3. Time limit: 3 minutes per speech. \nJUDGING CRITERIA \nò Content and Logic û 30% \nò Delivery and Confidence û 25% \nò Rebuttal Strength û 25% \nò Language and Clarity û 10% \nò Audience Engagement û 10% \nNOTE: If the number of participants is fewer than three, only the first prize will be awarded.",
-  poetry:
-    "Rulebook\n\nPOETRY (COMBINED)\nOBJECTIVE\nA poetry recital blending Hindi and English expression through verse.\nRULES\n1. Time limit: 3û5 minutes.\n2. Performance may include English and/or Hindi elements (as per the chosen version).\n3. Plagiarism leads to disqualification.\nJUDGING CRITERIA\nò Originality û 30%\nò Expression and Emotion û 25%\nò Language Proficiency û 20%\nò Recitation Style û 15%\nò Audience Connection û 10%\nNOTE: If the number of participants is fewer than three, only the first prize will be awarded.",
   poetry_english:
     "RULEBOOK\n\nJASHN-E-JAZBAAT (POETRY) — ENGLISH\n\nOBJECTIVE\nAn English poetry recital where participants present original poems expressing emotions and life experiences.\n\nRULES\n• Time limit: 3–5 minutes.\n• Poems must be original and presented in English.\n• Plagiarism leads to disqualification.\n\nJUDGING CRITERIA\n• Originality — 30%\n• Expression and Emotion — 25%\n• Language Proficiency — 20%\n• Recitation Style — 15%\n• Audience Connection — 10%\n\nNOTE\nIf the number of participants is fewer than three, only the first prize will be awarded.",
   poetry_hindi:
@@ -88,32 +87,32 @@ const events = [
     img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=800&q=80",
     section: "DANCE",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
-    rulebookText: CULTURAL_RULEBOOK_TEXT.solo_saga,
   },
   {
     key: "synced_showdown",
     title: "Synced Showdown",
     desc: "A duo dance event focused on synchronization, chemistry, and creativity. Venue: BIT Auditorium.",
-    img: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/DDr112bf/synced-showdown.jpg",
     section: "DANCE",
     participation: "Duo (2)",
+    fee: "₹249 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 2,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.synced_showdown,
   },
   {
     key: "exuberance",
     title: "Exuberance (Group)",
     desc: "A group dance competition celebrating coordination, creativity, and stage presence. Venue: BIT Auditorium.",
-    img: "https://images.unsplash.com/photo-1515169067865-5387ec356754?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/M57tqdb9/exuberance.png",
     section: "DANCE",
     participation: "Group (3–14)",
+    fee: "₹699 per team",
     allowedModes: ["group"],
     groupMinTotal: 3,
     groupMaxTotal: 14,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.exuberance,
   },
   {
     key: "street_dance",
@@ -122,11 +121,10 @@ const events = [
     img: "https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?auto=format&fit=crop&w=800&q=80",
     section: "DANCE",
     participation: "Solo / Team (1–3)",
+    fee: "₹149 per team",
     allowedModes: ["solo", "group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
-    rulebookText:
-      "RULEBOOK\n\nOBJECTIVE\nShowcase freestyle street dance skills with energy, creativity, and stage presence.\n\nDURATION\nAs per schedule.\n\nRULES\n• Participation: Solo or a team of up to 3.\n• Participants must bring their music track in .mp3 format (pendrive).\n• Any dance style is allowed.\n• Vulgarity/obscenity is not allowed and may lead to disqualification.\n• Organizers may update the round format as per participation.\n\nJUDGING CRITERIA\n• Musicality and rhythm.\n• Creativity and choreography.\n• Energy and stage presence.\n• Synchronization (for teams).\n\nNOTE\nJudges’ decision will be final.",
   },
   {
     key: "raag_unreleased",
@@ -135,8 +133,8 @@ const events = [
     img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
     section: "MUSIC",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
-    rulebookText: CULTURAL_RULEBOOK_TEXT.raag_unreleased,
   },
   {
     key: "fusion_fiesta",
@@ -145,10 +143,10 @@ const events = [
     img: "https://images.unsplash.com/photo-1529260830199-42c24126f198?auto=format&fit=crop&w=800&q=80",
     section: "MUSIC",
     participation: "Group (2–6)",
+    fee: "₹299 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 6,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.fusion_fiesta,
   },
   {
     key: "musical_marvel",
@@ -157,10 +155,10 @@ const events = [
     img: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=800&q=80",
     section: "MUSIC",
     participation: "Solo / Team (1–4)",
+    fee: "₹199 per team",
     allowedModes: ["solo", "group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.musical_marvel,
   },
   {
     key: "ekanki",
@@ -169,8 +167,8 @@ const events = [
     img: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=800&q=80",
     section: "DRAMA",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
-    rulebookText: CULTURAL_RULEBOOK_TEXT.ekanki,
   },
   {
     key: "matargasthi",
@@ -179,10 +177,10 @@ const events = [
     img: "https://images.unsplash.com/photo-1547841243-eacb14453c6d?auto=format&fit=crop&w=800&q=80",
     section: "DRAMA",
     participation: "Team (8–10)",
+    fee: "₹599 per team",
     allowedModes: ["group"],
     groupMinTotal: 8,
     groupMaxTotal: 10,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.matargasthi,
   },
   {
     key: "hulchul",
@@ -191,10 +189,10 @@ const events = [
     img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80",
     section: "DRAMA",
     participation: "Team (10–25)",
+    fee: "₹699 per team",
     allowedModes: ["group"],
     groupMinTotal: 10,
     groupMaxTotal: 25,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.hulchul,
   },
   {
     key: "debate",
@@ -203,21 +201,38 @@ const events = [
     img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80",
     section: "LITERARY",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
-    rulebookText: CULTURAL_RULEBOOK_TEXT.debate,
   },
   {
-    key: "poetry",
-    title: "Jashn-e-Jazbaat (Poetry)",
+    key: "poetry_english",
+    title: "Jashn-e-Jazbaat (Poetry) — English",
     desc: "A poetry recital event where participants present original poems expressing emotions and life experiences. Venue: BIT Auditorium.",
+    img: "https://i.ibb.co/bRgtwvtj/jashn-e-jazbaat.png",
+    section: "LITERARY",
+    participation: "Solo",
+    fee: "₹149",
+    allowedModes: ["solo"],
+  },
+  {
+    key: "poetry_hindi",
+    title: "Jashn-e-Jazbaat (Poetry) — Hindi",
+    desc: "A poetry recital event where participants present original poems expressing emotions and life experiences. Venue: BIT Auditorium.",
+    img: "https://i.ibb.co/bRgtwvtj/jashn-e-jazbaat.png",
+    section: "LITERARY",
+    participation: "Solo",
+    fee: "₹149",
+    allowedModes: ["solo"],
+  },
+  {
+    key: "kavi_sammelan",
+    title: "Kavi Sammelan",
+    desc: "A Hindi poetry event where participants present original compositions with wit and emotion. Venue: BIT Auditorium.",
     img: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=800&q=80",
     section: "LITERARY",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
-    rulebookTexts: {
-      english: CULTURAL_RULEBOOK_TEXT.poetry_english,
-      hindi: CULTURAL_RULEBOOK_TEXT.poetry_hindi,
-    },
   },
   {
     key: "fashion_insta",
@@ -226,19 +241,16 @@ const events = [
     img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
     section: "FASHION",
     participation: "Solo / Team",
+    fee: "₹399",
     allowedModes: ["solo", "group"],
     groupMinTotal: 2,
     groupMaxTotal: 14,
-    rulebookText: CULTURAL_RULEBOOK_TEXT.fashion_insta,
   },
 ];
 
 export default function Cultural() {
   const [active, setActive] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
-  const [rulebookOpen, setRulebookOpen] = useState(false);
-  const [rulebookTitle, setRulebookTitle] = useState("");
-  const [rulebookText, setRulebookText] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sliderRef = useRef(null);
@@ -246,32 +258,11 @@ export default function Cultural() {
   const popup = usePopup();
   const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
 
-  const openRulebookText = (title, text) => {
-    if (typeof text === "string" && text.trim()) {
-      setRulebookTitle(String(title || "Event"));
-      setRulebookText(text);
-      setRulebookOpen(true);
+  const openRulebook = () => {
+    if (typeof RULEBOOK_PDF_URL === "string" && RULEBOOK_PDF_URL.trim()) {
+      window.open(RULEBOOK_PDF_URL, "_blank", "noopener,noreferrer");
       return;
     }
-
-    popup.info("Rulebook coming soon.");
-  };
-
-  const openRulebook = (event) => {
-    const text = event?.rulebookText;
-    if (typeof text === "string" && text.trim()) {
-      setRulebookTitle(String(event?.title || "Event"));
-      setRulebookText(text);
-      setRulebookOpen(true);
-      return;
-    }
-
-    const pdf = event?.rulebookPdf;
-    if (typeof pdf === "string" && pdf.trim()) {
-      window.open(pdf, "_blank", "noopener,noreferrer");
-      return;
-    }
-
     popup.info("Rulebook coming soon.");
   };
 
@@ -286,7 +277,7 @@ export default function Cultural() {
   useEffect(() => {
     const keyParam = searchParams.get("eventKey");
     const idParam = searchParams.get("eventId");
-    const resolvedKey = keyParam || getEventKeyById(idParam);
+    let resolvedKey = keyParam || getEventKeyById(idParam);
     if (!resolvedKey) return;
 
     const idx = events.findIndex((e) => e.key === resolvedKey);
@@ -369,6 +360,7 @@ export default function Cultural() {
         <AnimatePresence mode="wait">
           <Motion.div
             key={events[active].title}
+            className="h-full flex flex-col"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
@@ -381,6 +373,8 @@ export default function Cultural() {
             )}
 
             <h2 className="text-3xl text-white font-bold mb-3">{events[active].title}</h2>
+
+            <div className="flex-1 overflow-y-auto pr-2">
 
             {(() => {
               const meta = splitDescMeta(events?.[active]?.desc);
@@ -410,49 +404,23 @@ export default function Cultural() {
             })()}
 
             <div className="mb-6">
-              {events?.[active]?.key === "poetry" && events?.[active]?.rulebookTexts ? (
-                <div className="flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      openRulebookText(
-                        `${events?.[active]?.title} (English)`,
-                        events?.[active]?.rulebookTexts?.english,
-                      )
-                    }
-                    className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-                  >
-                    Rulebook (English)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      openRulebookText(
-                        `${events?.[active]?.title} (Hindi)`,
-                        events?.[active]?.rulebookTexts?.hindi,
-                      )
-                    }
-                    className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-                  >
-                    Rulebook (Hindi)
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => openRulebook(events?.[active])}
-                  className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
-                >
-                  Rulebook
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={openRulebook}
+                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+              >
+                Rulebook
+              </button>
             </div>
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
               <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>
+
+            </div>
 
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
               <button
@@ -541,13 +509,6 @@ export default function Cultural() {
         allowedModes={events?.[active]?.allowedModes}
         groupMinTotal={events?.[active]?.groupMinTotal}
         groupMaxTotal={events?.[active]?.groupMaxTotal}
-      />
-
-      <RulebookModal
-        open={rulebookOpen}
-        title={rulebookTitle}
-        content={rulebookText}
-        onClose={() => setRulebookOpen(false)}
       />
     </div>
   );

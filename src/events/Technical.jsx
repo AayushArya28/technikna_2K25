@@ -3,10 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion as Motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import EventForm from "../components/EventForm.jsx";
-import RulebookModal from "../components/RulebookModal.jsx";
 import { getEventId, getEventKeyById } from "../lib/eventIds.js";
 import { useEntitlements } from "../context/useEntitlements.jsx";
 import { usePopup } from "../context/usePopup.jsx";
+
+const RULEBOOK_PDF_URL = "/rulebooks/technical-rulebook.pdf";
 
 const splitDescMeta = (desc) => {
   const raw = String(desc || "").trim();
@@ -92,135 +93,132 @@ const events = [
     key: "ampere_assemble",
     title: "Ampere Assemble",
     desc: "Dive into the world of circuits and electronics. This competition tests participants’ knowledge and practical skills in assembling and troubleshooting complex electronic systems. Venue: Basic Electronics Lab.",
-    img: "https://images.unsplash.com/photo-1581090700227-1e37b190418e?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/WN6tVSyQ/ampere-assemble.png",
     participation: "Team (2–3 participants)",
+    fee: "₹199 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.ampere_assemble,
   },
   {
     key: "cad_modelling",
     title: "CAD Master (AutoCAD / SketchUp Design Challenge)",
     desc: "A timed design challenge where participants draft or model a given structural plan using CAD tools. Judging is based on accuracy, speed, and creativity. Venue: AutoCAD Lab.",
-    img: "https://images.unsplash.com/photo-1581091870627-3b6c68b6a2c6?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/Q3vRzMQL/cad-master.png",
     participation: "Solo",
+    fee: "₹199",
     allowedModes: ["solo"],
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.cad_modelling,
   },
   {
     key: "bridge_the_gap",
     title: "Aerofilia (Bridge the Gap)",
     desc: "Teams engineer a model bridge capable of withstanding loads, testing design ingenuity, structural strength, and stability. Venue: Civil Lab.",
-    img: "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/hFkFxDDG/aerofilia.png",
     participation: "Team (2–3 participants)",
+    fee: "₹199 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.bridge_the_gap,
   },
   {
     key: "robo_soccer",
     title: "Robo Soccer",
     desc: "A high-energy competition where student-built robots play football—dribbling, passing, and scoring through strategy and engineering brilliance. Venue: Front Gate / Dome Area.",
-    img: "https://images.unsplash.com/photo-1600861195091-690c92f1d2cc?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/N673xHRq/robo-soccer.png",
     participation: "Team (up to 5 participants)",
+    fee: "₹499 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.robo_soccer,
   },
   {
     key: "tall_tower",
     title: "Tall Tower",
     desc: "Teams build the tallest and most stable structure using limited resources, pushing architectural creativity and structural integrity. Venue: Civil Lab.",
-    img: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/gZHLF9bx/tall-tower.png",
     participation: "Team (2–3 participants)",
+    fee: "₹199 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.tall_tower,
   },
   {
     key: "robo_war",
     title: "Robo Gladiators (Robo War)",
     desc: "Custom-built robots battle in an intense arena. Participants design, build, and control robotic warriors to demolish opponents. Venue: Front Gate / Dome Area.",
-    img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/bj6990Qp/robo-gladiators.png",
     participation: "Team (up to 5 participants)",
+    fee: "₹499 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.robo_war,
   },
   {
     key: "multisim_mavericks",
     title: "Multisim Mavericks (Multisim)",
     desc: "A circuit simulation competition where participants design and test complex circuits virtually using Multisim. Venue: EM Lab.",
-    img: "https://images.unsplash.com/photo-1581091215367-59ab6b9b4c7a?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/xtXHHP7S/mutlisim-mavericks.png",
     participation: "Solo",
+    fee: "₹199",
     allowedModes: ["solo"],
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.multisim_mavericks,
   },
   {
     key: "utility_bot",
     title: "MachUtility Extreme (Utility Machine)",
     desc: "Participants design and build a multi-functional machine with real-world utility applications, focusing on autonomous task performance. Venue: Dome Area near EEE Department.",
-    img: "https://images.unsplash.com/photo-1581092334491-07c4b45dff47?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/2Y785q4V/mach-ultility.png",
     participation: "Team (2–4 participants)",
+    fee: "₹199 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.utility_bot,
   },
   {
     key: "startup_sphere",
     title: "Startup Sphere (Pitching Ideas)",
     desc: "An entrepreneurial showdown where participants pitch startup ideas to industry experts and compete for the best concept. Venue: Conference Hall.",
-    img: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/1fS1PMXV/startup-sphere.png",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.startup_sphere,
   },
   {
     key: "cp",
     title: "Algo Apex (Competitive Programming)",
     desc: "A competitive coding event focused on algorithms and problem-solving skills. Venue: CC-1 / CC-2 (depending on participation).",
-    img: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/BXfwHmn/algo-apex.png",
     participation: "Solo",
+    fee: "₹199",
     allowedModes: ["solo"],
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.cp,
   },
   {
     key: "hackathon",
     title: "Dev Conquest (Hackathon)",
     desc: "An intense hackathon challenging teams to build innovative solutions to real-world problems. Venue: CC-1 / CC-2 (depending on participation).",
-    img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/20SGzKMv/dev-contest.png",
     participation: "Team (2–4 participants)",
+    fee: "₹499 per team (On hold)",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
     registrationPaused: true,
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.hackathon,
   },
   {
     key: "robo_race",
     title: "Dirt Race (Robo-Race)",
     desc: "Robots race against time on a challenging track filled with twists, turns, and obstacles, testing speed and control. Venue: BIT Ground.",
-    img: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/1Y0mTzkr/dirt-race.png",
     participation: "Team (up to 5 participants)",
+    fee: "₹499 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
-    rulebookText: TECHNICAL_RULEBOOK_TEXT_RAW.robo_race,
   },
 ];
 
 export default function Technical() {
   const [active, setActive] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
-  const [rulebookOpen, setRulebookOpen] = useState(false);
-  const [rulebookTitle, setRulebookTitle] = useState("");
-  const [rulebookText, setRulebookText] = useState("");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sliderRef = useRef(null);
@@ -231,21 +229,11 @@ export default function Technical() {
   const activeEvent = events?.[active];
   const registrationPaused = !!activeEvent?.registrationPaused;
 
-  const openRulebook = (event) => {
-    const text = event?.rulebookText;
-    if (typeof text === "string" && text.trim()) {
-      setRulebookTitle(String(event?.title || "Event"));
-      setRulebookText(enhanceRulebookText(text, event?.key));
-      setRulebookOpen(true);
+  const openRulebook = () => {
+    if (typeof RULEBOOK_PDF_URL === "string" && RULEBOOK_PDF_URL.trim()) {
+      window.open(RULEBOOK_PDF_URL, "_blank", "noopener,noreferrer");
       return;
     }
-
-    const pdf = event?.rulebookPdf;
-    if (typeof pdf === "string" && pdf.trim()) {
-      window.open(pdf, "_blank", "noopener,noreferrer");
-      return;
-    }
-
     popup.info("Rulebook coming soon.");
   };
 
@@ -388,7 +376,7 @@ export default function Technical() {
             <div className="mb-6">
               <button
                 type="button"
-                onClick={() => openRulebook(events?.[active])}
+                onClick={openRulebook}
                 className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
               >
                 Rulebook
@@ -397,6 +385,7 @@ export default function Technical() {
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
               <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>
@@ -502,13 +491,6 @@ export default function Technical() {
         allowedModes={events?.[active]?.allowedModes}
         groupMinTotal={events?.[active]?.groupMinTotal}
         groupMaxTotal={events?.[active]?.groupMaxTotal}
-      />
-
-      <RulebookModal
-        open={rulebookOpen}
-        title={rulebookTitle}
-        content={rulebookText}
-        onClose={() => setRulebookOpen(false)}
       />
     </div>
   );

@@ -231,6 +231,36 @@ const Delegate = () => {
                         </div>
                     </div>
                 </div>
+
+                <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-black/60 p-6 md:p-10 backdrop-blur-xl">
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.18),_transparent_60%)]" />
+                    <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                        <div className="space-y-3">
+                            <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
+                                Accommodation
+                            </div>
+                            <h2 className="text-2xl font-semibold text-white md:text-3xl">
+                                Not a local? Want to stay for attending the fest? We’ve got you.
+                            </h2>
+                            <p className="max-w-xl text-sm text-white/70 md:text-base">
+                                Book accommodation in advance to avoid last-minute hassle.
+                            </p>
+                        </div>
+
+                        <div className="flex w-full flex-col gap-3 md:w-auto">
+                            <button
+                                type="button"
+                                onClick={() => navigate("/accommodation")}
+                                className="rounded-full border border-white/20 bg-white/10 px-8 py-4 text-sm font-semibold uppercase tracking-[0.35em] text-white transition hover:-translate-y-1 hover:bg-white/20"
+                            >
+                                View Accommodation
+                            </button>
+                            <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+                                stay comfortable during technika
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
             </div>
         </>

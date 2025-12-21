@@ -287,7 +287,7 @@ const Landing = ({ animate }) => {
     <Link to={user ? "/timeline" : "/login"}>
       {/* Mobile Button */}
       <div className="relative block md:hidden w-auto justify-center mb-3">
-        <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
+        <button className="mb-3 bg-[#ff001e] border-2 border-red-900 text-white text-[1.3rem] ks-font tracking-[1.2px] 
             font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
             transition duration-200 transform
             hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
@@ -298,7 +298,7 @@ const Landing = ({ animate }) => {
 
       {/* Desktop Button */}
       <div className="parallax relative hidden md:flex justify-center w-auto">
-        <button className="mb-3 bg-[#ff001e] text-white text-[1.3rem] ks-font tracking-[1.2px] 
+        <button className="mb-3 bg-[#ff001e] border-2 border-red-900 text-white text-[1.3rem] ks-font tracking-[1.2px] 
             font-semibold pt-2 pb-2 pl-4 pr-4 rounded-3xl cursor-pointer
             transition duration-200 transform
             hover:shadow-[0_0_30px_6px_rgba(255,0,30,0.5)]
