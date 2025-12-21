@@ -161,7 +161,7 @@ function Nav() {
 
   /* ================= DESKTOP ================= */
   return (
-    <nav className="hidden md:block fixed top-3 left-1/2 -translate-x-1/2 z-50">
+    <nav ref={navRef} className="hidden md:block fixed top-3 left-1/2 -translate-x-1/2 z-50">
   <div
     className="
       flex items-center justify-between gap-6
