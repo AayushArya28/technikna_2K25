@@ -27,13 +27,11 @@ export const EVENT_ID_MAP = Object.freeze({
     ekanki: 107,
     matargasthi: 108,
     hulchul: 109,
-    poetry: 110,
     kavi_sammelan: 111,
     debate: 112,
     fashion_insta: 113,
 
     // Cultural (new)
-    teeverse: 114,
     street_dance: 115,
     pencil_perfection: 116,
     wall_painting: 117,
@@ -42,8 +40,9 @@ export const EVENT_ID_MAP = Object.freeze({
     motion_e_magic: 118,
     capture_the_unseen: 119,
 
-    // Fun
-    escape_room: 201,
+    // Cultural (poetry split)
+    poetry_english: 120,
+    poetry_hindi: 121,
 
     // ESports
     bgmi: 301,
@@ -79,13 +78,13 @@ export const EVENT_TITLE_BY_KEY = Object.freeze({
     ekanki: "Ekanki",
     matargasthi: "Matargashti",
     hulchul: "Hulchul",
-    poetry: "Jashn-e-Jazbaat (Poetry)",
+    poetry_english: "Jashn-e-Jazbaat (Poetry) — English",
+    poetry_hindi: "Jashn-e-Jazbaat (Poetry) — Hindi",
     kavi_sammelan: "Kavi Sammelan",
     debate: "Vaad Vivaad (Debate)",
     fashion_insta: "Fashion Insta",
 
     // Cultural (new)
-    teeverse: "T-Shirt Painting (Teeverse)",
     street_dance: "Street Dance",
     pencil_perfection: "Pencil Sketching (Pencil Perfection)",
     wall_painting: "Wall Painting: Colors of Culture",
@@ -93,9 +92,6 @@ export const EVENT_TITLE_BY_KEY = Object.freeze({
     // Frame & Focus
     motion_e_magic: "Motion-e-Magic",
     capture_the_unseen: "Capture the Unseen",
-
-    // Fun
-    escape_room: "Escape Room",
 
     // ESports
     bgmi: "BGMI",
@@ -134,20 +130,20 @@ export function getEventCategoryById(eventId) {
     if (!Number.isFinite(n)) return null;
     if (n > 0 && n < 100) return "Technical";
     if (n >= 100 && n < 200) return "Cultural";
-    if (n >= 200 && n < 300) return "Fun";
     if (n >= 300 && n < 400) return "Esports";
     return null;
 }
 
 export function getEventRouteById(eventId) {
     const key = getEventKeyById(eventId);
-    if (key === "pencil_perfection" || key === "wall_painting") return "/art-craft";
+    if (key === "pencil_perfection" || key === "wall_painting") {
+        return "/art-craft";
+    }
     if (key === "motion_e_magic" || key === "capture_the_unseen") return "/frame-focus";
 
     const category = getEventCategoryById(eventId);
     if (category === "Technical") return "/technical";
     if (category === "Cultural") return "/cultural";
-    if (category === "Fun") return "/fun";
     if (category === "Esports") return "/esports";
     return "/events";
 }

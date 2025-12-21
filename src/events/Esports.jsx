@@ -14,8 +14,9 @@ const events = [
     key: "bgmi",
     title: "BGMI",
     desc: "Online event — Battle it out in BGMI with your squad. Bring strategy, coordination, and clutch plays to the lobby. Venue: As per schedule.",
-    img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/TDFZ0Ynh/bgmi.png",
     participation: "Team (2–4 participants)",
+    fee: "₹249 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
@@ -24,8 +25,9 @@ const events = [
     key: "valorant",
     title: "Valorant",
     desc: "Online event — Compete in Valorant with your team and dominate the bracket with crisp aim and smart utility. Venue: As per schedule.",
-    img: "https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/XxsNk7TB/valo.png",
     participation: "Team (2–5 participants)",
+    fee: "₹249 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
@@ -34,8 +36,9 @@ const events = [
     key: "fifa",
     title: "FIFA",
     desc: "Offline event — FIFA matches. On-site registration. Venue: As per schedule.",
-    img: "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/FkdFRmMS/fifa.png",
     participation: "On-Spot (Solo)",
+    fee: "On-spot",
     allowedModes: ["solo"],
     onSiteRegistration: true,
   },
@@ -43,8 +46,9 @@ const events = [
     key: "tekken",
     title: "Tekken",
     desc: "Offline event — Tekken matches. On-site registration. Venue: As per schedule.",
-    img: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/6cXDVn7L/tekken.png",
     participation: "On-Spot (Solo)",
+    fee: "On-spot",
     allowedModes: ["solo"],
     onSiteRegistration: true,
   },
@@ -186,6 +190,7 @@ export default function Esports() {
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
               <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>

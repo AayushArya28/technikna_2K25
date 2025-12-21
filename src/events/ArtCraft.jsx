@@ -40,16 +40,18 @@ const events = [
     key: "pencil_perfection",
     title: "Pencil Perfection (Pencil Sketching)",
     desc: "A sketching competition celebrating artistic skill, precision, shading, and creativity using graphite pencils. Venue: As per schedule.",
-    img: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/vxdYfc4c/pencil-perfection.png",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
   },
   {
     key: "wall_painting",
     title: "Wall Painting",
     desc: "Teams transform walls into large-scale artworks illustrating themes of heritage, culture, valor, and creativity. Venue: As per schedule.",
-    img: "https://images.unsplash.com/photo-1526318472351-c75fcf070305?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/Fk53rHpD/wall-painting.png",
     participation: "Team",
+    fee: "₹149 per team",
     allowedModes: ["group"],
     groupMinTotal: 3,
     groupMaxTotal: 5,
@@ -219,6 +221,7 @@ export default function ArtCraft() {
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
               <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>

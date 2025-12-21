@@ -95,6 +95,7 @@ const events = [
     desc: "Dive into the world of circuits and electronics. This competition tests participants’ knowledge and practical skills in assembling and troubleshooting complex electronic systems. Venue: Basic Electronics Lab.",
     img: "https://i.ibb.co/WN6tVSyQ/ampere-assemble.png",
     participation: "Team (2–3 participants)",
+    fee: "₹199 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
@@ -105,6 +106,7 @@ const events = [
     desc: "A timed design challenge where participants draft or model a given structural plan using CAD tools. Judging is based on accuracy, speed, and creativity. Venue: AutoCAD Lab.",
     img: "https://i.ibb.co/Q3vRzMQL/cad-master.png",
     participation: "Solo",
+    fee: "₹199",
     allowedModes: ["solo"],
   },
   {
@@ -113,6 +115,7 @@ const events = [
     desc: "Teams engineer a model bridge capable of withstanding loads, testing design ingenuity, structural strength, and stability. Venue: Civil Lab.",
     img: "https://i.ibb.co/hFkFxDDG/aerofilia.png",
     participation: "Team (2–3 participants)",
+    fee: "₹199 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
@@ -123,6 +126,7 @@ const events = [
     desc: "A high-energy competition where student-built robots play football—dribbling, passing, and scoring through strategy and engineering brilliance. Venue: Front Gate / Dome Area.",
     img: "https://i.ibb.co/N673xHRq/robo-soccer.png",
     participation: "Team (up to 5 participants)",
+    fee: "₹499 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
@@ -133,6 +137,7 @@ const events = [
     desc: "Teams build the tallest and most stable structure using limited resources, pushing architectural creativity and structural integrity. Venue: Civil Lab.",
     img: "https://i.ibb.co/gZHLF9bx/tall-tower.png",
     participation: "Team (2–3 participants)",
+    fee: "₹199 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
@@ -143,6 +148,7 @@ const events = [
     desc: "Custom-built robots battle in an intense arena. Participants design, build, and control robotic warriors to demolish opponents. Venue: Front Gate / Dome Area.",
     img: "https://i.ibb.co/bj6990Qp/robo-gladiators.png",
     participation: "Team (up to 5 participants)",
+    fee: "₹499 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
@@ -153,6 +159,7 @@ const events = [
     desc: "A circuit simulation competition where participants design and test complex circuits virtually using Multisim. Venue: EM Lab.",
     img: "https://i.ibb.co/xtXHHP7S/mutlisim-mavericks.png",
     participation: "Solo",
+    fee: "₹199",
     allowedModes: ["solo"],
   },
   {
@@ -161,6 +168,7 @@ const events = [
     desc: "Participants design and build a multi-functional machine with real-world utility applications, focusing on autonomous task performance. Venue: Dome Area near EEE Department.",
     img: "https://i.ibb.co/2Y785q4V/mach-ultility.png",
     participation: "Team (2–4 participants)",
+    fee: "₹199 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
@@ -171,6 +179,7 @@ const events = [
     desc: "An entrepreneurial showdown where participants pitch startup ideas to industry experts and compete for the best concept. Venue: Conference Hall.",
     img: "https://i.ibb.co/1fS1PMXV/startup-sphere.png",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
   },
   {
@@ -179,6 +188,7 @@ const events = [
     desc: "A competitive coding event focused on algorithms and problem-solving skills. Venue: CC-1 / CC-2 (depending on participation).",
     img: "https://i.ibb.co/BXfwHmn/algo-apex.png",
     participation: "Solo",
+    fee: "₹199",
     allowedModes: ["solo"],
   },
   {
@@ -187,6 +197,7 @@ const events = [
     desc: "An intense hackathon challenging teams to build innovative solutions to real-world problems. Venue: CC-1 / CC-2 (depending on participation).",
     img: "https://i.ibb.co/20SGzKMv/dev-contest.png",
     participation: "Team (2–4 participants)",
+    fee: "₹499 per team (On hold)",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
@@ -198,6 +209,7 @@ const events = [
     desc: "Robots race against time on a challenging track filled with twists, turns, and obstacles, testing speed and control. Venue: BIT Ground.",
     img: "https://i.ibb.co/1Y0mTzkr/dirt-race.png",
     participation: "Team (up to 5 participants)",
+    fee: "₹499 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
@@ -373,6 +385,7 @@ export default function Technical() {
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
               <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>

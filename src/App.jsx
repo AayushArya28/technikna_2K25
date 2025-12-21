@@ -4,10 +4,8 @@ import Nav from "./components/Nav";
 import Home from "./pages/Home";
 import { Events } from "./pages/Events";
 import Technical from "./events/Technical.jsx";
-import Fun from "./events/Fun.jsx";
 import Cultural from "./events/Cultural.jsx";
 import Esports from "./events/Esports.jsx";
-import Workshop from "./events/Workshop.jsx";
 import ArtCraft from "./events/ArtCraft.jsx";
 import FrameFocus from "./events/FrameFocus.jsx";
 import { ContactUs } from "./pages/ContactUs.jsx";
@@ -36,15 +34,12 @@ function App() {
     { path: "/", Component: Home },
     { path: "/events", Component: Events },
     { path: "/technical", Component: Technical },
-    { path: "/fun", Component: Fun },
     { path: "/cultural", Component: Cultural },
     { path: "/art-craft", Component: ArtCraft },
     { path: "/frame-focus", Component: FrameFocus },
     { path: "/esports", Component: Esports },
-    { path: "/workshops", Component: Workshop },
     { path: "/merchandise", Component: Merchandise },
     { path: "/core", Component: Core },
-    // { path: "/workshop", Component: Workshop },
     { path: "/login", Component: Login },
     { path: "/contact", Component: ContactUs },
     { path: "/timeline", Component: Timeline },

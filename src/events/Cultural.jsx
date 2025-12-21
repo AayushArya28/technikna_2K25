@@ -65,8 +65,6 @@ const CULTURAL_RULEBOOK_TEXT_RAW = {
     "Rulebook\n\nHULCHUL (STREET PLAY) \nOBJECTIVE \nA nukkad natak performance addressing social issues through drama and interaction. \nRULES \n1. Team Size: 10û25 members. \n2. Duration: 15û30 minutes. \n3. Only live music permitted. \n4. No electrical appliances allowed. \nJUDGING CRITERIA \nò Social Relevance û 30% \nò Acting and Energy û 25% \nò Crowd Interaction û 20% \nò Script and Dialogue û 15% \nò Overall Impact û 10% \nNOTE: If the number of participants is fewer than three, only the first prize will be awarded.",
   debate:
     "Rulebook\n\nVAAD-VIVAAD (DEBATE) \nOBJECTIVE \nA bilingual debate encouraging reasoning, persuasion, and clarity of thought. \nRULES \n1. Individual participation. \n2. Topics provided 30 minutes before round. \n3. Time limit: 3 minutes per speech. \nJUDGING CRITERIA \nò Content and Logic û 30% \nò Delivery and Confidence û 25% \nò Rebuttal Strength û 25% \nò Language and Clarity û 10% \nò Audience Engagement û 10% \nNOTE: If the number of participants is fewer than three, only the first prize will be awarded.",
-  poetry:
-    "Rulebook\n\nPOETRY (COMBINED)\nOBJECTIVE\nA poetry recital blending Hindi and English expression through verse.\nRULES\n1. Time limit: 3û5 minutes.\n2. Performance may include English and/or Hindi elements (as per the chosen version).\n3. Plagiarism leads to disqualification.\nJUDGING CRITERIA\nò Originality û 30%\nò Expression and Emotion û 25%\nò Language Proficiency û 20%\nò Recitation Style û 15%\nò Audience Connection û 10%\nNOTE: If the number of participants is fewer than three, only the first prize will be awarded.",
   poetry_english:
     "RULEBOOK\n\nJASHN-E-JAZBAAT (POETRY) — ENGLISH\n\nOBJECTIVE\nAn English poetry recital where participants present original poems expressing emotions and life experiences.\n\nRULES\n• Time limit: 3–5 minutes.\n• Poems must be original and presented in English.\n• Plagiarism leads to disqualification.\n\nJUDGING CRITERIA\n• Originality — 30%\n• Expression and Emotion — 25%\n• Language Proficiency — 20%\n• Recitation Style — 15%\n• Audience Connection — 10%\n\nNOTE\nIf the number of participants is fewer than three, only the first prize will be awarded.",
   poetry_hindi:
@@ -89,15 +87,17 @@ const events = [
     img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=800&q=80",
     section: "DANCE",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
   },
   {
     key: "synced_showdown",
     title: "Synced Showdown",
     desc: "A duo dance event focused on synchronization, chemistry, and creativity. Venue: BIT Auditorium.",
-    img: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/DDr112bf/synced-showdown.jpg",
     section: "DANCE",
     participation: "Duo (2)",
+    fee: "₹249 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 2,
@@ -106,9 +106,10 @@ const events = [
     key: "exuberance",
     title: "Exuberance (Group)",
     desc: "A group dance competition celebrating coordination, creativity, and stage presence. Venue: BIT Auditorium.",
-    img: "https://images.unsplash.com/photo-1515169067865-5387ec356754?auto=format&fit=crop&w=800&q=80",
+    img: "https://i.ibb.co/M57tqdb9/exuberance.png",
     section: "DANCE",
     participation: "Group (3–14)",
+    fee: "₹699 per team",
     allowedModes: ["group"],
     groupMinTotal: 3,
     groupMaxTotal: 14,
@@ -120,6 +121,7 @@ const events = [
     img: "https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?auto=format&fit=crop&w=800&q=80",
     section: "DANCE",
     participation: "Solo / Team (1–3)",
+    fee: "₹149 per team",
     allowedModes: ["solo", "group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
@@ -131,6 +133,7 @@ const events = [
     img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=800&q=80",
     section: "MUSIC",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
   },
   {
@@ -140,6 +143,7 @@ const events = [
     img: "https://images.unsplash.com/photo-1529260830199-42c24126f198?auto=format&fit=crop&w=800&q=80",
     section: "MUSIC",
     participation: "Group (2–6)",
+    fee: "₹299 per team",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 6,
@@ -151,6 +155,7 @@ const events = [
     img: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=800&q=80",
     section: "MUSIC",
     participation: "Solo / Team (1–4)",
+    fee: "₹199 per team",
     allowedModes: ["solo", "group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
@@ -162,6 +167,7 @@ const events = [
     img: "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=800&q=80",
     section: "DRAMA",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
   },
   {
@@ -171,6 +177,7 @@ const events = [
     img: "https://images.unsplash.com/photo-1547841243-eacb14453c6d?auto=format&fit=crop&w=800&q=80",
     section: "DRAMA",
     participation: "Team (8–10)",
+    fee: "₹599 per team",
     allowedModes: ["group"],
     groupMinTotal: 8,
     groupMaxTotal: 10,
@@ -182,6 +189,7 @@ const events = [
     img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80",
     section: "DRAMA",
     participation: "Team (10–25)",
+    fee: "₹699 per team",
     allowedModes: ["group"],
     groupMinTotal: 10,
     groupMaxTotal: 25,
@@ -193,15 +201,37 @@ const events = [
     img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80",
     section: "LITERARY",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
   },
   {
-    key: "poetry",
-    title: "Jashn-e-Jazbaat (Poetry)",
+    key: "poetry_english",
+    title: "Jashn-e-Jazbaat (Poetry) — English",
     desc: "A poetry recital event where participants present original poems expressing emotions and life experiences. Venue: BIT Auditorium.",
+    img: "https://i.ibb.co/bRgtwvtj/jashn-e-jazbaat.png",
+    section: "LITERARY",
+    participation: "Solo",
+    fee: "₹149",
+    allowedModes: ["solo"],
+  },
+  {
+    key: "poetry_hindi",
+    title: "Jashn-e-Jazbaat (Poetry) — Hindi",
+    desc: "A poetry recital event where participants present original poems expressing emotions and life experiences. Venue: BIT Auditorium.",
+    img: "https://i.ibb.co/bRgtwvtj/jashn-e-jazbaat.png",
+    section: "LITERARY",
+    participation: "Solo",
+    fee: "₹149",
+    allowedModes: ["solo"],
+  },
+  {
+    key: "kavi_sammelan",
+    title: "Kavi Sammelan",
+    desc: "A Hindi poetry event where participants present original compositions with wit and emotion. Venue: BIT Auditorium.",
     img: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=800&q=80",
     section: "LITERARY",
     participation: "Solo",
+    fee: "₹149",
     allowedModes: ["solo"],
   },
   {
@@ -211,6 +241,7 @@ const events = [
     img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80",
     section: "FASHION",
     participation: "Solo / Team",
+    fee: "₹399",
     allowedModes: ["solo", "group"],
     groupMinTotal: 2,
     groupMaxTotal: 14,
@@ -246,7 +277,7 @@ export default function Cultural() {
   useEffect(() => {
     const keyParam = searchParams.get("eventKey");
     const idParam = searchParams.get("eventId");
-    const resolvedKey = keyParam || getEventKeyById(idParam);
+    let resolvedKey = keyParam || getEventKeyById(idParam);
     if (!resolvedKey) return;
 
     const idx = events.findIndex((e) => e.key === resolvedKey);
@@ -384,6 +415,7 @@ export default function Cultural() {
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
               <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>

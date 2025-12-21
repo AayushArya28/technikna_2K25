@@ -42,6 +42,7 @@ const events = [
     desc: "A filmmaking event where teams script, shoot, and edit short films, showcasing cinematic storytelling and technical skills. Venue: As per schedule.",
     img: "https://images.unsplash.com/photo-1517602302552-471fe67acf66?auto=format&fit=crop&w=800&q=80",
     participation: "Team",
+    fee: "₹99",
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
@@ -52,6 +53,7 @@ const events = [
     desc: "An online photography event encouraging participants to capture subtle moments and hidden stories with complete creative freedom. Venue: Online.",
     img: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=800&q=80",
     participation: "Solo",
+    fee: "₹99",
     allowedModes: ["solo"],
   },
 ];
@@ -219,6 +221,7 @@ export default function FrameFocus() {
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
               <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>
