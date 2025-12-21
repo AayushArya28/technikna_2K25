@@ -66,13 +66,13 @@ const designDecorTeam = [
     url: "https://github.com/jahanvip",
   },
   {
-    image: "https://i.ibb.co/M5GV3PSw/IMG-20251207-WA0152-Raj-kamal.jpg",
-    title: "Raj Kamal",
+    image: "https://i.ibb.co/rK0gSGrK/khushboo.jpg",
+    title: "Khushboo",
     subtitle: "CO-HEAD",
-    handle: "@rajkamal",
+    handle: "@khushboo",
     borderColor: "#E74C3C",
     gradient: "linear-gradient(145deg, #E74C3C, #F1C40F)",
-    url: "https://github.com/rajkamal",
+    url: "https://github.com/khushboo",
   },
   {
     image:
@@ -129,7 +129,7 @@ const eventManagementTeam = [
     url: "https://github.com/suyashs",
   },
   {
-    image: "https://i.ibb.co/tj4ZdrB/IMG-4217-Abhishek-Singh-Rathore.jpg",
+    image: "https://i.ibb.co/v6X50JxM/rathore.jpg",
     title: "Abhishek Rathore",
     subtitle: "CO-HEAD",
     handle: "@abhishekr",
@@ -231,7 +231,7 @@ const pressMediaTeam = [
     url: "https://github.com/tanmays",
   },
   {
-    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
+    image: "https://i.ibb.co/RkKJX8Q3/anshu-priya.jpg",
     title: "Anshu Priya",
     subtitle: "CO-HEAD",
     handle: "@anshupriya",
@@ -345,7 +345,7 @@ const foodCateringTeam = [
   },
   {
     image:
-      "https://i.ibb.co/fV0bKsYS/Screenshot-20251207-100022-Devojyoti-sinha.jpg",
+      "https://i.ibb.co/Q7QfvP92/devojyoti.jpg",
     title: "Devojyoti Sinha",
     subtitle: "CO-HEAD",
     handle: "@devojyotis",
@@ -398,6 +398,15 @@ const sponsorshipTeam = [
     borderColor: "#3F51B5",
     gradient: "linear-gradient(145deg, #3F51B5, #00BCD4)",
     url: "https://github.com/purushottamk",
+  },
+  {
+    image: "https://i.ibb.co/1YsJsxYN/kaushik-kumar.jpg",
+    title: "Kaushik Kumar",
+    subtitle: "HEAD",
+    handle: "@kaushikk",
+    borderColor: "#3F51B5",
+    gradient: "linear-gradient(145deg, #3F51B5, #00BCD4)",
+    url: "https://github.com/kaushikk",
   },
   {
     image:
@@ -486,7 +495,7 @@ const hospitalityTeam = [
 export const Core = () => {
   return (
     <div className="bg-[url('/images/core2-bg.png')] bg-contain w-full min-h-screen text-white">
-      <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+      <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-md:pt-35">
         <div className="max-w-screen mx-auto flex flex-col items-center">
           {/* General Secretary Section */}
           <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">

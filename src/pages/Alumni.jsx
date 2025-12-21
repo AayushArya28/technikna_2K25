@@ -424,7 +424,7 @@ const Alumni = () => {
         bg-[url('/images/bg-alumni.png')]
         bg-fixed bg-cover bg-center bg-no-repeat
         py-24 px-4 sm:px-6 lg:px-8
-        text-gray-100
+        text-gray-100 max-md:py-33
       "
       >
         <div className="max-w-7xl mx-auto">

@@ -394,7 +394,7 @@ const DevsPage = () => {
 
   return (
     <div
-      className="min-h-screen text-white px-4 pt-24 pb-8 md:px-8 md:pt-24"
+      className="min-h-screen text-white px-4 pt-24 pb-8 md:px-8 md:pt-24 max-md:pt-35"
       style={{
         backgroundImage: "url('/images/bg-dev.png')",
         backgroundSize: 'cover',
