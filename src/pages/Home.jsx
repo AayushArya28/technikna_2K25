@@ -62,10 +62,10 @@ const Home = () => {
               Cultural
             </Link>
             <Link
-              to="/fun"
+              to="/esports"
               className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
             >
-              Fun
+              E-Sports
             </Link>
           </div>
         </div>
