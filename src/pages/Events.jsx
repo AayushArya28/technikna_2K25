@@ -10,31 +10,31 @@ const heroes = [
   {
     id: 1,
     name: "Technical",
-    img: "https://wallpapercave.com/wp/wp13514544.jpg",
+    img: "https://i.ibb.co/sBzJtz7/Technical-Events-1.png",
     route: "/technical",
   },
   {
     id: 2,
     name: "Cultural",
-    img: "https://tse2.mm.bing.net/th/id/OIP.DYk6BjV4Sjjm0vC0VkFhJAHaEJ?cb=ucfimg2&ucfimg=1&rs=1&pid=ImgDetMain&o=7&rm=3",
+    img: "https://i.ibb.co/ycVs5kVY/Cultural-Events-1.png",
     route: "/cultural",
   },
   {
     id: 3,
     name: "Art & Craft",
-    img: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=80",
+    img: "https://i.ibb.co/Dg1Kt2Dq/Art-Craft-1.png",
     route: "/art-craft",
   },
   {
     id: 4,
     name: "Frame & Focus",
-    img: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80",
+    img: "https://i.ibb.co/gZD2XGcq/Frame-focous-1.png",
     route: "/frame-focus",
   },
   {
     id: 5,
     name: "Esports",
-    img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+    img: "https://i.ibb.co/5g8T7CKZ/Esports-1.png",
     route: "/esports",
   },
 ];
