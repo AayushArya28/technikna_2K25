@@ -61,7 +61,7 @@ function Timeline() {
   }, []);
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-black via-[#16060b] to-black px-6 pb-32 pt-36 text-white">
+    <section className="relative min-h-screen w-full overflow-hidden bg-gradient-to-b from-black via-[#16060b] to-black px-0 pb-32 pt-36 text-white">
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-10 left-10 h-64 w-64 rounded-full bg-[#ff0030]/15 blur-[120px]" />
@@ -85,17 +85,12 @@ function Timeline() {
 
         {/* Timeline */}
         <div className="relative">
-          {/* ---------- DESKTOP LINE ---------- */}
-          {/* Base */}
           <div className="absolute left-1/2 hidden h-full w-0.5 -translate-x-1/2 border-l border-dashed border-white/20 md:block" />
-          {/* Fill */}
           <div
             ref={desktopFillRef}
             className="absolute left-1/2 top-0 hidden w-0.5 -translate-x-1/2 bg-red-600 origin-top md:block"
             style={{ height: "0%" }}
           />
-
-          {/*MOBILE LINE*/}
           <div className="absolute left-3 top-0 h-full w-0.5 border-l border-dashed border-white/30 md:hidden" />
           <div
             ref={mobileFillRef}
@@ -151,13 +146,9 @@ function TimelineItem({ title, subtitle, desc, isLeft }) {
         isLeft ? "md:justify-start md:pr-12" : "md:justify-end md:pl-12"
       } justify-start pl-10 md:pl-0`}
     >
-      {/* Desktop dot */}
       <div className="absolute left-1/2 top-8 hidden h-4 w-4 -translate-x-1/2 rounded-full bg-red-500 shadow-[0_0_20px_rgba(255,0,0,0.6)] md:block" />
-
-      {/* Mobile dot */}
       <div className="absolute left-3 top-7 h-3 w-3 -translate-x-1/2 rounded-full bg-red-500 shadow-[0_0_14px_rgba(255,0,0,0.6)] md:hidden" />
 
-      {/* Mobile connector */}
       <div className="absolute left-3 top-8 h-[1px] w-6 bg-white/30 md:hidden" />
 
       <EventBox title={title} subtitle={subtitle} desc={desc} />
@@ -167,7 +158,7 @@ function TimelineItem({ title, subtitle, desc, isLeft }) {
 
 function EventBox({ title, subtitle, desc }) {
   return (
-    <div className="group relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-4 backdrop-blur-xl transition-all duration-500 will-change-transform hover:-translate-y-1 hover:border-red-500/40 hover:bg-white/10 hover:shadow-[0_22px_80px_rgba(255,0,48,0.22)]">
+    <div className="group relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 will-change-transform hover:-translate-y-1 hover:border-red-500/40 hover:bg-white/10 hover:shadow-[0_22px_80px_rgba(255,0,48,0.22)]">
       <div className="pointer-events-none absolute inset-[-70%] opacity-30 blur-2xl animate-[spin_10s_linear_infinite] bg-[conic-gradient(from_90deg,rgba(255,23,68,0.0),rgba(255,23,68,0.35),rgba(91,44,255,0.35),rgba(255,23,68,0.0))]" />
 
       <div className="pointer-events-none absolute inset-0 bg-black/20" />
