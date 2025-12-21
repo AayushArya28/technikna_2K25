@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useEffect, useRef, useState } from "react";
@@ -8,108 +8,48 @@ import { auth, db } from "../firebase";
 import StaggeredMenu from "./StaggeredMenu";
 import { useAuth } from "../context/useAuth.jsx";
 
-const BASE_API_URL = "https://api.technika.co";
-
 gsap.registerPlugin(useGSAP);
 
 function Nav() {
   const navRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const userMenuCloseTimeout = useRef(null);
-  const location = useLocation();
+  const closeTimer = useRef(null);
   const { user } = useAuth();
+  const location = useLocation();
   const [profileName, setProfileName] = useState("");
 
+  useEffect(() => window.scrollTo(0, 0), [location.pathname]);
+
+  /* ---------- Load profile ---------- */
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
-
-  const handleNavClick = () => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  };
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadProfileName = async () => {
-      if (!user?.uid) {
-        setProfileName("");
-        return;
-      }
-
+    if (!user?.uid) return;
+    (async () => {
       try {
-        const docRef = doc(db, "auth", user.uid);
-        const docSnap = await getDoc(docRef);
-        if (cancelled) return;
-
-        if (docSnap.exists()) {
-          const name = docSnap.data()?.name?.trim();
-          if (name) {
-            setProfileName(name);
-            return;
-          }
-        }
+        const snap = await getDoc(doc(db, "auth", user.uid));
+        if (snap.exists()) setProfileName(snap.data()?.name || "");
       } catch {}
-
-      try {
-        const token = await user.getIdToken();
-        const headers = { Authorization: `Bearer ${token}` };
-
-        const [delegateRes, alumniRes] = await Promise.all([
-          fetch(`${BASE_API_URL}/delegate/status/user`, { headers }),
-          fetch(`${BASE_API_URL}/alumni/status`, { headers }),
-        ]);
-
-        const delegateData = delegateRes.ok ? await delegateRes.json() : null;
-        const alumniData = alumniRes.ok ? await alumniRes.json() : null;
-
-        const candidateName =
-          delegateData?.name?.trim() ||
-          alumniData?.name?.trim() ||
-          "";
-
-        if (!cancelled) setProfileName(candidateName);
-      } catch {
-        if (!cancelled) setProfileName("");
-      }
-    };
-
-    loadProfileName();
-    return () => { cancelled = true; };
+    })();
   }, [user?.uid]);
 
   const displayName =
     profileName ||
     user?.displayName ||
-    (user?.email ? user.email.split("@")[0] : "User");
+    user?.email?.split("@")[0] ||
+    "User";
 
   const firstName = displayName.split(/\s+/)[0];
-  const avatarLetter = firstName[0].toUpperCase();
+  const avatarLetter = firstName[0]?.toUpperCase();
 
   const handleSignOut = async () => {
     await signOut(auth);
     setUserMenuOpen(false);
   };
 
-  const menuItems = [
-    { label: "Home", link: "/", onClick: handleNavClick },
-    { label: "Delegates", link: "/delegate", onClick: handleNavClick },
-    { label: "Events", link: "/events", onClick: handleNavClick },
-    { label: "Merchandise", link: "/merchandise", onClick: handleNavClick },
-    { label: "Core Team", link: "/core", onClick: handleNavClick },
-    { label: "Alumni", link: "/alumni", onClick: handleNavClick },
-    { label: "Accommodation", link: "/accommodation", onClick: handleNavClick },
-    { label: "Developers", link: "/devs", onClick: handleNavClick },
-    { label: "Contact Us", link: "/contact", onClick: handleNavClick },
-  ];
-
   const desktopNavItems = [
-    { label: "Home", jp: "ホーム", link: "/" },
+    { label: "Home", link: "/" },
     {
       label: "Registrations",
-      jp: "登録",
       dropdown: [
         { label: "Events", link: "/events" },
         { label: "Merchandise", link: "/merchandise" },
@@ -118,223 +58,236 @@ function Nav() {
     },
     {
       label: "Members",
-      jp: "メンバー",
       dropdown: [
         { label: "Core Team", link: "/core" },
         { label: "Developers", link: "/devs" },
       ],
     },
-    { label: "Delegates", jp: "デリゲート", link: "/delegate" },
+    { label: "Delegates", link: "/delegate" },
     {
       label: "Alumni",
-      jp: "卒業生",
       dropdown: [{ label: "Alumni Registration", link: "/alumni" }],
     },
-    { label: "Contact", jp: "連絡先", link: "/contact" },
+    { label: "Contact", link: "/contact" },
   ];
 
+  /* ---------- Mobile detection ---------- */
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
+  /* ---------- GSAP hover ---------- */
   useGSAP(() => {
     if (isMobile) return;
     gsap.utils.toArray(".nav-link").forEach((link) => {
       link.addEventListener("mouseenter", () => {
-        gsap.to(link.querySelector(".en-label"), { y: -5, scale: 0.85 });
-        gsap.to(link.querySelector(".jp-label"), { y: -5, opacity: 1 });
+        gsap.to(link.querySelector(".en-label"), {
+          y: -4,
+          scale: 0.92,
+          duration: 0.2,
+        });
       });
       link.addEventListener("mouseleave", () => {
-        gsap.to(link.querySelector(".en-label"), { y: 0, scale: 1 });
-        gsap.to(link.querySelector(".jp-label"), { y: 0, opacity: 0 });
+        gsap.to(link.querySelector(".en-label"), {
+          y: 0,
+          scale: 1,
+          duration: 0.2,
+        });
       });
     });
   }, [isMobile]);
 
+  /* ================= MOBILE ================= */
   if (isMobile) {
     return (
       <StaggeredMenu
         position="right"
         isFixed
-        items={menuItems}
+        /* 🔴 LOGO ONLY ON PHONE */
+        logoUrl="/images/favicon.png"
+        items={desktopNavItems.map((i) => ({
+          label: i.label,
+          link: i.link || i.dropdown?.[0]?.link,
+        }))}
         headerRight={
-          !user ? (
-            <Link to="/login" className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white">
-              Register
-            </Link>
-          ) : (
-            <Link to="/profile" className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-white">
-              <span className="h-8 w-8 grid place-items-center rounded-full border border-white/20">{avatarLetter}</span>
-              Hi, {firstName}
-            </Link>
+          user && (
+            <div className="relative">
+              <button
+                onClick={() => setUserMenuOpen((v) => !v)}
+                className="h-9 w-9 rounded-full border border-white/20
+                           bg-white/10 grid place-items-center text-white"
+              >
+                {avatarLetter}
+              </button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 mt-2 w-40 rounded-xl
+                                bg-black/80 border border-white/10 backdrop-blur-xl">
+                  <Link
+                    to="/profile"
+                    className="block px-4 py-3 text-sm text-white hover:bg-white/10"
+                    onClick={() => setUserMenuOpen(false)}
+                  >
+                    My Profile
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full px-4 py-3 text-left
+                               text-sm text-white hover:bg-white/10"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
           )
         }
       />
     );
   }
 
+  /* ================= DESKTOP ================= */
   return (
-  <nav
-    ref={navRef}
-    className="fixed top-3 left-1/2 -translate-x-1/2 z-50"
-  >
-    <div
-    className="
-      flex items-center justify-between
-      gap-12
-      px-16 py-2
-      min-w-[1080px]          /* ✅ enough width */
-      rounded-full
-      bg-gradient-to-b from-[#1a1a1a]/80 to-[#0b0b0b]/80
-      border border-white/10
-      shadow-[0_18px_55px_rgba(0,0,0,0.9)]
-      backdrop-blur-lg
-      text-white/90           /* ✅ readable */
-      text-[0.95rem]          /* ✅ proper size */
-      font-medium
-      ks-font
-    "
-  >
-      {/* Left Nav Items */}
-      <div className="flex items-center gap-8 whitespace-nowrap">
-        {desktopNavItems.map((item) => (
-          <DropdownNavItem
-            key={item.label}
-            item={item}
-            onClick={handleNavClick}
-          />
-        ))}
-      </div>
+    <nav
+      ref={navRef}
+      className="fixed top-3 left-1/2 -translate-x-1/2 z-50"
+    >
+      <div
+        className="flex items-center justify-between gap-12 px-16 py-2
+                   min-w-[1080px] rounded-full
+                   bg-gradient-to-b from-[#1a1a1a]/80 to-[#0b0b0b]/80
+                   border border-white/10 backdrop-blur-lg
+                   text-white/90 text-[0.95rem]"
+      >
+        <div className="flex items-center gap-8 whitespace-nowrap">
+          {desktopNavItems.map((item) => (
+            <DropdownNavItem
+              key={item.label}
+              item={item}
+              pathname={location.pathname}
+            />
+          ))}
+        </div>
 
-      {/* Right Side */}
-      <div className="flex items-center gap-3">
-        {!user && (
-          <Link
-            to="/login"
-            className="
-              rounded-full
-              border border-white/20
-              bg-white/5
-              px-4 py-1.5
-              text-white/90
-              hover:bg-white/10
-              transition
-            "
-            onClick={handleNavClick}
-          >
-            Register
-          </Link>
-        )}
-
-        {user && (
-          <div
-            className="relative"
-            onMouseEnter={() => {
-              if (userMenuCloseTimeout.current)
-                clearTimeout(userMenuCloseTimeout.current);
-              setUserMenuOpen(true);
-            }}
-            onMouseLeave={() => {
-              userMenuCloseTimeout.current = setTimeout(
-                () => setUserMenuOpen(false),
-                120
-              );
-            }}
-          >
-            <button
-              className="
-                flex items-center gap-2
-                rounded-full
-                border border-white/20
-                bg-white/5
-                px-4 py-1.5
-                text-white/90
-                hover:bg-white/10
-                transition
-              "
+        <div className="flex items-center gap-3">
+          {!user && (
+            <Link
+              to="/login"
+              className="rounded-full border border-white/20
+                         bg-white/5 px-4 py-1.5
+                         hover:bg-white/10 transition"
             >
-              <span>Hi, {firstName}</span>
-              <span className="text-xs">▾</span>
-            </button>
+              Register
+            </Link>
+          )}
 
+          {user && (
             <div
-              className={`absolute right-0 mt-2 min-w-[160px]
-                rounded-xl
-                border border-white/10
-                bg-black/70
-                backdrop-blur-xl
-                shadow-xl
-                transition-all duration-150
-                ${
-                  userMenuOpen
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 pointer-events-none translate-y-2"
-                }`}
+              className="relative"
+              onMouseEnter={() => {
+                clearTimeout(closeTimer.current);
+                setUserMenuOpen(true);
+              }}
+              onMouseLeave={() => {
+                closeTimer.current = setTimeout(
+                  () => setUserMenuOpen(false),
+                  200
+                );
+              }}
             >
-              <Link
-                to="/profile"
-                className="block px-4 py-3 text-sm hover:bg-white/10"
-                onClick={() => {
-                  handleNavClick();
-                  setUserMenuOpen(false);
-                }}
-              >
-                My Profile
-              </Link>
               <button
-                className="block w-full px-4 py-3 text-left text-sm hover:bg-white/10"
-                onClick={handleSignOut}
+                className="flex items-center gap-2 rounded-full
+                           border border-white/20 bg-white/5
+                           px-4 py-1.5 hover:bg-white/10"
               >
-                Sign out
+                Hi, {firstName} <span className="text-xs">▾</span>
               </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  </nav>
-);
 
+              <div
+                className={`absolute right-0 mt-2 min-w-[160px]
+                            rounded-xl bg-black/70 border border-white/10
+                            backdrop-blur-xl transition
+                            ${
+                              userMenuOpen
+                                ? "opacity-100 translate-y-0"
+                                : "opacity-0 pointer-events-none translate-y-2"
+                            }`}
+              >
+                <Link
+                  to="/profile"
+                  className="block px-4 py-3 text-sm hover:bg-white/10"
+                >
+                  My Profile
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="block w-full px-4 py-3 text-left
+                             text-sm hover:bg-white/10"
+                >
+                  Sign out
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
 }
 
-function DropdownNavItem({ item, onClick }) {
+/* ---------- Dropdown Item ---------- */
+function DropdownNavItem({ item }) {
   const hasDropdown = !!item.dropdown;
   const [open, setOpen] = useState(false);
+  const closeTimer = useRef(null);
 
   return (
-    <div onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)} className="relative">
-      <Link
-        to={item.link || item.dropdown?.[0].link}
-        onClick={onClick}
-        className="nav-link
-        px-4 py-1.5          /* ⬅️ slimmer */
-        rounded-full
-        text-white/90
-        transition-all duration-300
-        hover:text-white
-        hover:bg-white/5
-        hover:shadow-[0_0_12px_rgba(120,240,255,0.35)]"
+    <div
+      className="relative"
+      onMouseEnter={() => {
+        clearTimeout(closeTimer.current);
+        setOpen(true);
+      }}
+      onMouseLeave={() => {
+        closeTimer.current = setTimeout(() => setOpen(false), 220);
+      }}
+    >
+      <NavLink
+        to={item.link || item.dropdown?.[0]?.link}
+        className="nav-link px-4 py-1.5 rounded-full
+                   transition-all duration-300
+                   bg-white/5
+                   hover:bg-white/10
+                   hover:shadow-[0_0_18px_rgba(255,0,64,0.55)]"
       >
-        <span className="en-label">{item.label}{hasDropdown && " ▾"}</span>
-        <span className="jp-label pointer-events-none absolute top-full mt-1 text-xs text-white/70 opacity-0">
-          {item.jp}
+        <span className="en-label">
+          {item.label}
+          {hasDropdown && " ▾"}
         </span>
-      </Link>
+      </NavLink>
 
-      {hasDropdown && open && (
-        <div className="absolute left-1/2 -translate-x-1/2 mt-2 rounded-xl bg-black/60 border border-white/10 backdrop-blur-xl">
+      {hasDropdown && (
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 mt-2
+                      rounded-xl bg-black/60 border border-white/10
+                      backdrop-blur-xl transition
+                      ${
+                        open
+                          ? "opacity-100 pointer-events-auto"
+                          : "opacity-0 pointer-events-none"
+                      }`}
+        >
           {item.dropdown.map((d) => (
-            <Link
+            <NavLink
               key={d.label}
               to={d.link}
-              onClick={onClick}
-              className="block px-4 py-3 text-white/90 hover:bg-white/10"
+              className="block px-4 py-3 hover:bg-white/10"
             >
               {d.label}
-            </Link>
+            </NavLink>
           ))}
         </div>
       )}
