@@ -161,18 +161,21 @@ function Nav() {
 
   /* ================= DESKTOP ================= */
   return (
-    <nav
-      ref={navRef}
-      className="fixed top-3 left-1/2 -translate-x-1/2 z-50"
-    >
-      <div
-        className="flex items-center justify-between gap-12 px-16 py-2
-                   min-w-[1080px] rounded-full
-                   bg-gradient-to-b from-[#1a1a1a]/80 to-[#0b0b0b]/80
-                   border border-white/10 backdrop-blur-lg
-                   text-white/90 text-[0.95rem]"
-      >
-        <div className="flex items-center gap-8 whitespace-nowrap">
+    <nav ref={navRef} className="hidden md:block fixed top-3 left-1/2 -translate-x-1/2 z-50">
+  <div
+    className="
+      flex items-center justify-between gap-6
+      px-6 md:px-10 lg:px-16 py-2
+      w-[95vw] max-w-[1200px]
+      rounded-full
+      bg-gradient-to-b from-[#1a1a1a]/80 to-[#0b0b0b]/80
+      border border-white/10 backdrop-blur-lg
+      text-white/90 text-[0.95rem]
+      max-[1000px]:text-[0.87rem] 
+      max-[940px]:text-[0.78rem]
+    "
+  >
+        <div className="flex items-center gap-8 whitespace-nowrap max-[940px]:gap-6 max-[870px]:gap-4">
           {desktopNavItems.map((item) => (
             <DropdownNavItem key={item.label} item={item} />
           ))}
@@ -263,7 +266,7 @@ function DropdownNavItem({ item }) {
     >
       <NavLink
         to={item.link || item.dropdown?.[0]?.link}
-        className="nav-link px-4 py-1.5 rounded-full
+        className="nav-link px-3 py-1.5 rounded-full
                    transition-all duration-300
                    bg-white/5
                    hover:bg-white/10
@@ -290,7 +293,7 @@ function DropdownNavItem({ item }) {
             <NavLink
               key={d.label}
               to={d.link}
-              className="block px-4 py-3 hover:bg-white/10"
+              className="block px-4 py-3 hover:bg-white/10 rounded-xl"
             >
               {d.label}
             </NavLink>

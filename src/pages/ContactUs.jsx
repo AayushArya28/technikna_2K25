@@ -217,7 +217,7 @@ export function ContactUs() {
         bg-[url('/images/bg-contact.png')]
         bg-cover bg-center bg-fixed bg-no-repeat
         pt-25 pb-16 px-4 sm:px-6 lg:px-8
-        text-gray-100
+        text-gray-100 max-md:mt-8
       "
     >
       <div className="relative max-w-7xl mx-auto">

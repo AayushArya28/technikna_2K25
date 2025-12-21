@@ -63,7 +63,7 @@ export function Events() {
   return (
     <>
       <BrowserWarningModal />
-      <div className="min-h-screen bg-black px-6 pt-24">
+      <div className="min-h-screen bg-black px-6 pt-24 max-md:mt-8">
         <div>
           <div className="mx-auto max-w-6xl w-full rounded-2xl overflow-hidden border border-red-500/20 bg-black/60 shadow-[0_0_40px_rgba(239,68,68,0.45)]">
             <div className="marquee py-2.5">

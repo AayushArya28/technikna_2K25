@@ -72,7 +72,7 @@ export default function Accommodation() {
 
   return (
     <>
-      <main className="min-h-screen bg-black text-white pt-28 pb-20 px-6 md:px-12 lg:px-20">
+      <main className="min-h-screen bg-black text-white pt-28 pb-20 px-6 md:px-12 lg:px-20 max-md:mt-8">
         <div className="mx-auto flex max-w-5xl flex-col gap-8">
           {/*Header */}
           <header className="space-y-3">

@@ -423,14 +423,13 @@ export const StaggeredMenu = ({
           // transluscent bg and bg blur for better visibility
           style={{
             backgroundColor: "rgba(0,0,0,0.35)",
-            paddingTop: "calc(3em + env(safe-area-inset-top))",
           }}
         >
           <div
             className="sm-logo flex items-center select-none pointer-events-auto"
             aria-label="Logo"
           >
-            <NavLink to="/">
+            <NavLink to="/" onClick={() => {if (openRef.current){toggleMenu();}}}>
               <img
                 src={logoUrl || "/src/assets/logos/reactbits-gh-white.svg"}
                 alt="Logo"
