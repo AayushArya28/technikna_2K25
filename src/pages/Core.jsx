@@ -50,13 +50,14 @@ const treasuryTeam = [
     borderColor: "#1ABC9C",
     gradient: "linear-gradient(145deg, #1ABC9C, #2C3E50)",
     url: "https://github.com/nipunsinha",
-  }
+  },
 ];
 
 // DESIGN & DECOR TEAM
 const designDecorTeam = [
   {
-    image: "https://i.ibb.co/mr0XjxwQ/320d8640-2979-4659-8167-19d6c55217f4-Jahanvi-Param.jpg",
+    image:
+      "https://i.ibb.co/mr0XjxwQ/320d8640-2979-4659-8167-19d6c55217f4-Jahanvi-Param.jpg",
     title: "Jahanvi Param",
     subtitle: "HEAD",
     handle: "@jahanvip",
@@ -74,14 +75,15 @@ const designDecorTeam = [
     url: "https://github.com/rajkamal",
   },
   {
-    image: "https://i.ibb.co/XfGPDZph/IMG-20251111-111827-801-Vanshika-Lakra.webp",
+    image:
+      "https://i.ibb.co/XfGPDZph/IMG-20251111-111827-801-Vanshika-Lakra.webp",
     title: "Vanshika Lakra",
     subtitle: "CO-HEAD",
     handle: "@vanshikal",
     borderColor: "#2ECC71",
     gradient: "linear-gradient(145deg, #2ECC71, #E67E22)",
     url: "https://github.com/vanshikal",
-  }
+  },
 ];
 
 // DESIGN & DRAFTING TEAM
@@ -112,7 +114,7 @@ const designDraftingTeam = [
     borderColor: "#795548",
     gradient: "linear-gradient(145deg, #795548, #607D8B)",
     url: "https://github.com/aditis",
-  }
+  },
 ];
 
 // EVENT MANAGEMENT TEAM
@@ -152,7 +154,7 @@ const eventManagementTeam = [
     borderColor: "#673AB7",
     gradient: "linear-gradient(145deg, #673AB7, #FF4081)",
     url: "https://github.com/aparnas",
-  }
+  },
 ];
 
 // VENUE MANAGEMENT TEAM
@@ -183,7 +185,7 @@ const venueManagementTeam = [
     borderColor: "#4CAF50",
     gradient: "linear-gradient(145deg, #4CAF50, #FF9800)",
     url: "https://github.com/anjalisingh",
-  }
+  },
 ];
 
 // PUBLICITY TEAM
@@ -214,7 +216,7 @@ const publicityTeam = [
     borderColor: "#795548",
     gradient: "linear-gradient(145deg, #795548, #607D8B)",
     url: "https://github.com/soumyas",
-  }
+  },
 ];
 
 // PRESS & MEDIA TEAM
@@ -245,7 +247,7 @@ const pressMediaTeam = [
     borderColor: "#9C27B0",
     gradient: "linear-gradient(145deg, #9C27B0, #2196F3)",
     url: "https://github.com/saranshj",
-  }
+  },
 ];
 
 // WEB DESIGN AND MANAGEMENT TEAM
@@ -276,13 +278,14 @@ const webDesignTeam = [
     borderColor: "#00BCD4",
     gradient: "linear-gradient(145deg, #00BCD4, #FFEB3B)",
     url: "https://www.instagram.com/aayusharya_i_am",
-  }
+  },
 ];
 
 // LOGISTICS TEAM
 const logisticsTeam = [
   {
-    image: "https://i.ibb.co/60jLLmdd/SAVE-20241225-192807-Sourav-Kumar-Sinha.jpg",
+    image:
+      "https://i.ibb.co/60jLLmdd/SAVE-20241225-192807-Sourav-Kumar-Sinha.jpg",
     title: "Sourav Kr. Sinha",
     subtitle: "HEAD",
     handle: "@souravs",
@@ -300,7 +303,8 @@ const logisticsTeam = [
     url: "https://github.com/anubhavk",
   },
   {
-    image: "https://i.ibb.co/dJ6vg2cL/IMG-20251204-WA0058-2-Abhijeet-Saharan.jpg",
+    image:
+      "https://i.ibb.co/dJ6vg2cL/IMG-20251204-WA0058-2-Abhijeet-Saharan.jpg",
     title: "Abhijeet Saharan",
     subtitle: "CO-HEAD",
     handle: "@abhijeets",
@@ -316,7 +320,7 @@ const logisticsTeam = [
     borderColor: "#1ABC9C",
     gradient: "linear-gradient(145deg, #1ABC9C, #2C3E50)",
     url: "https://github.com/pratyushk",
-  }
+  },
 ];
 
 // FOOD & CATERING TEAM
@@ -340,20 +344,22 @@ const foodCateringTeam = [
     url: "https://github.com/shauryav",
   },
   {
-    image: "https://i.ibb.co/fV0bKsYS/Screenshot-20251207-100022-Devojyoti-sinha.jpg",
+    image:
+      "https://i.ibb.co/fV0bKsYS/Screenshot-20251207-100022-Devojyoti-sinha.jpg",
     title: "Devojyoti Sinha",
     subtitle: "CO-HEAD",
     handle: "@devojyotis",
     borderColor: "#2ECC71",
     gradient: "linear-gradient(145deg, #2ECC71, #E67E22)",
     url: "https://github.com/devojyotis",
-  }
+  },
 ];
 
 // CULTURAL MANAGEMENT TEAM
 const culturalManagementTeam = [
   {
-    image: "https://i.ibb.co/RT238xjm/dbcb30e8-d5ae-458f-b921-3ecfa6e851c2-Nidhi-Sinha.jpg",
+    image:
+      "https://i.ibb.co/RT238xjm/dbcb30e8-d5ae-458f-b921-3ecfa6e851c2-Nidhi-Sinha.jpg",
     title: "Nidhi Sinha",
     subtitle: "HEAD",
     handle: "@nidhis",
@@ -362,7 +368,8 @@ const culturalManagementTeam = [
     url: "https://github.com/nidhis",
   },
   {
-    image: "https://i.ibb.co/5gTRMRMQ/Snapchat-845328509-Sanskar-kumar-Karn.jpg",
+    image:
+      "https://i.ibb.co/5gTRMRMQ/Snapchat-845328509-Sanskar-kumar-Karn.jpg",
     title: "Sanskarkarn",
     subtitle: "CO-HEAD",
     handle: "@sanskarkarn",
@@ -378,7 +385,7 @@ const culturalManagementTeam = [
     borderColor: "#795548",
     gradient: "linear-gradient(145deg, #795548, #607D8B)",
     url: "https://github.com/akshayk",
-  }
+  },
 ];
 
 // SPONSORSHIP TEAM
@@ -393,7 +400,8 @@ const sponsorshipTeam = [
     url: "https://github.com/purushottamk",
   },
   {
-    image: "https://i.ibb.co/GQ4SxgZF/356257db-9cd8-4ed6-acea-2653cf90edfb-Apoorv-Roy.jpg",
+    image:
+      "https://i.ibb.co/GQ4SxgZF/356257db-9cd8-4ed6-acea-2653cf90edfb-Apoorv-Roy.jpg",
     title: "Apoorv Roy",
     subtitle: "CO-HEAD",
     handle: "@apoorvr",
@@ -409,7 +417,7 @@ const sponsorshipTeam = [
     borderColor: "#009688",
     gradient: "linear-gradient(145deg, #009688, #8BC34A)",
     url: "https://github.com/asadkhan",
-  }
+  },
 ];
 
 // SOCIAL MEDIA TEAM
@@ -424,7 +432,8 @@ const socialMediaTeam = [
     url: "https://github.com/shikharrai",
   },
   {
-    image: "https://i.ibb.co/HLVSfTm0/D2-DBCB20-44-E5-44-E8-AE01-2909-EC5684-A9-Aayat-Fatima.jpg",
+    image:
+      "https://i.ibb.co/HLVSfTm0/D2-DBCB20-44-E5-44-E8-AE01-2909-EC5684-A9-Aayat-Fatima.jpg",
     title: "Aayat Fatima",
     subtitle: "CO-HEAD",
     handle: "@aayatf",
@@ -440,7 +449,7 @@ const socialMediaTeam = [
     borderColor: "#4CAF50",
     gradient: "linear-gradient(145deg, #4CAF50, #FF9800)",
     url: "https://github.com/harshikas",
-  }
+  },
 ];
 
 // HOSPITALITY TEAM
@@ -471,22 +480,21 @@ const hospitalityTeam = [
     borderColor: "#795548",
     gradient: "linear-gradient(145deg, #795548, #607D8B)",
     url: "https://github.com/anshua",
-  }
+  },
 ];
 
 export const Core = () => {
   return (
     <div className="bg-[url('/images/core2-bg.png')] bg-contain w-full min-h-screen text-white">
-  <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
-    <div className="max-w-screen mx-auto flex flex-col items-center">
-
+      <div className="pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-screen mx-auto flex flex-col items-center">
           {/* General Secretary Section */}
           <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
             <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font z-2">
               General Secretary
             </h2>
             <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
-              Leading Technika 2K25 as the primary student representative
+              Leading Technika 2K26 as the primary student representative
             </p>
             <ChromaGrid
               items={generalSecretaryTeam}

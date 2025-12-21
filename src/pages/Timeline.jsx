@@ -76,7 +76,7 @@ function Timeline() {
         {/* Header */}
         <div className="mb-20">
           <span className="inline-flex mb-4 w-fit items-center rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.38em] text-white/70">
-            Technika 2K25
+            Technika 2K26
           </span>
           <h1 className="text-4xl md:text-5xl font-semibold uppercase tracking-[0.22em]">
             Event Timeline
