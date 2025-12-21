@@ -308,14 +308,15 @@ export function Footer() {
                 style={{ border: 0 }}
                 loading="lazy"
                 allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
                 title="BIT Patna"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3598.174688276893!2d85.09965931501436!3d25.611938583711956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed58dce6731f59%3A0x4059f39a1ac82c86!2sBirla%20Institute%20Of%20Technology%2C%20Patna!5e0!3m2!1sen!2sin!4v1234567890"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3598.2809036646872!2d85.0834588739642!3d25.59558041545223!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed57e9cdad8b55%3A0xb6416f459e4204d2!2sBirla%20Institute%20of%20Technology%2C%20Patna!5e0!3m2!1sen!2sin!4v1766321968159!5m2!1sen!2sin"
               />
             </div>
 
             <div className="space-y-2 text-sm text-gray-400">
               <a
-                href="https://www.google.com/maps?q=BIT+Patna,+Bihar,+India"
+                href="https://www.google.com/maps/search/?api=1&query=Birla%20Institute%20of%20Technology%2C%20Patna"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center space-x-2 hover:text-red-400 transition-colors duration-300"

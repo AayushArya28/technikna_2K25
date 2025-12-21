@@ -79,12 +79,13 @@ const Delegate = () => {
     }, []);
     const highlights = [
         {
-            title: "Immersive Audience Access",
-            description: "Priority seating and front-row viewership across every Technika flagship showcase.",
+            title: "Pronight Access + Free Events",
+            description: "Get Pronight access and full entry to all events — completely free with the Delegate Pass.",
+            featured: true,
         },
         {
-            title: "Discounted Event Entries",
-            description: "Locked-in lower pricing across all competitive and cultural event registrations.",
+            title: "Immersive Audience Access",
+            description: "Priority seating and front-row viewership across every Technika flagship showcase.",
         },
         {
             title: "Seamless Transit",
@@ -156,7 +157,9 @@ const Delegate = () => {
                     {highlights.map((item) => (
                         <div
                             key={item.title}
-                            className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg transition will-change-transform hover:-translate-y-1 hover:border-white/30 hover:bg-white/10 hover:shadow-[0_18px_70px_rgba(255,0,48,0.12)]"
+                            className={`group relative overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg transition will-change-transform hover:-translate-y-1 hover:border-white/30 hover:bg-white/10 hover:shadow-[0_18px_70px_rgba(255,0,48,0.12)] ${
+                                item.featured ? "ring-2 ring-red-500/40 md:col-span-2" : ""
+                            }`}
                         >
                             <div className="pointer-events-none absolute inset-[-70%] opacity-25 blur-2xl animate-[spin_12s_linear_infinite] bg-[conic-gradient(from_90deg,rgba(255,23,68,0.0),rgba(255,23,68,0.30),rgba(91,44,255,0.30),rgba(255,23,68,0.0))]" />
                             <div className="pointer-events-none absolute inset-0 bg-black/10" />
@@ -166,12 +169,51 @@ const Delegate = () => {
                                     *
                                 </div>
                                 <div className="space-y-2">
-                                    <h3 className="text-lg font-semibold text-white">{item.title}</h3>
-                                    <p className="text-sm text-white/70">{item.description}</p>
+                                    <h3
+                                        className={`text-white ${
+                                            item.featured
+                                                ? "text-xl font-bold uppercase tracking-[0.22em]"
+                                                : "text-lg font-semibold"
+                                        }`}
+                                    >
+                                        {item.title}
+                                    </h3>
+                                    <p className={`text-sm ${item.featured ? "text-white font-semibold" : "text-white/70"}`}>
+                                        {item.description}
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     ))}
+                </div>
+                <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-black/60 p-6 md:p-10 backdrop-blur-xl">
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.18),_transparent_60%)]" />
+                    <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+                        <div className="space-y-3">
+                            <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
+                                Accommodation
+                            </div>
+                            <h2 className="text-2xl font-semibold text-white md:text-3xl">
+                                Not a local? Want to stay for attending the fest? We’ve got you.
+                            </h2>
+                            <p className="max-w-xl text-sm text-white/70 md:text-base">
+                                Book accommodation in advance to avoid last-minute hassle.
+                            </p>
+                        </div>
+
+                        <div className="flex w-full flex-col gap-3 md:w-auto">
+                            <button
+                                type="button"
+                                onClick={() => navigate("/accommodation")}
+                                className="rounded-full border border-white/20 bg-white/10 px-8 py-4 text-sm font-semibold uppercase tracking-[0.35em] text-white transition hover:-translate-y-1 hover:bg-white/20"
+                            >
+                                View Accommodation
+                            </button>
+                            <p className="text-xs uppercase tracking-[0.35em] text-white/60">
+                                stay comfortable during technika
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-black/60 p-6 md:p-10 backdrop-blur-xl">
@@ -228,36 +270,6 @@ const Delegate = () => {
                                     {inSelf ? "already registered individually" : checkingAccess ? "checking status" : "ideal for 5+ members"}
                                 </p>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-black/60 p-6 md:p-10 backdrop-blur-xl">
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.18),_transparent_60%)]" />
-                    <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                        <div className="space-y-3">
-                            <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
-                                Accommodation
-                            </div>
-                            <h2 className="text-2xl font-semibold text-white md:text-3xl">
-                                Not a local? Want to stay for attending the fest? We’ve got you.
-                            </h2>
-                            <p className="max-w-xl text-sm text-white/70 md:text-base">
-                                Book accommodation in advance to avoid last-minute hassle.
-                            </p>
-                        </div>
-
-                        <div className="flex w-full flex-col gap-3 md:w-auto">
-                            <button
-                                type="button"
-                                onClick={() => navigate("/accommodation")}
-                                className="rounded-full border border-white/20 bg-white/10 px-8 py-4 text-sm font-semibold uppercase tracking-[0.35em] text-white transition hover:-translate-y-1 hover:bg-white/20"
-                            >
-                                View Accommodation
-                            </button>
-                            <p className="text-xs uppercase tracking-[0.35em] text-white/60">
-                                stay comfortable during technika
-                            </p>
                         </div>
                     </div>
                 </div>
