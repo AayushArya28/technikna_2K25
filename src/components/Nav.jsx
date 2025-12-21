@@ -46,6 +46,7 @@ function Nav() {
     setUserMenuOpen(false);
   };
 
+  /* ---------- DESKTOP NAV ITEMS (UNCHANGED) ---------- */
   const desktopNavItems = [
     { label: "Home", link: "/" },
     {
@@ -69,6 +70,19 @@ function Nav() {
       dropdown: [{ label: "Alumni Registration", link: "/alumni" }],
     },
     { label: "Contact", link: "/contact" },
+  ];
+
+  /* ---------- MOBILE MENU (EXACT ORDER YOU ASKED) ---------- */
+  const mobileMenuItems = [
+    { label: "Home", link: "/" },
+    { label: "Delegates", link: "/delegate" },
+    { label: "Events", link: "/events" },
+    { label: "Merchandise", link: "/merchandise" },
+    { label: "Core Team", link: "/core" },
+    { label: "Alumni", link: "/alumni" },
+    { label: "Accommodation", link: "/accommodation" },
+    { label: "Developers", link: "/devs" },
+    { label: "Contact Us", link: "/contact" },
   ];
 
   /* ---------- Mobile detection ---------- */
@@ -106,12 +120,8 @@ function Nav() {
       <StaggeredMenu
         position="right"
         isFixed
-        /* 🔴 LOGO ONLY ON PHONE */
-        logoUrl="/images/favicon.png"
-        items={desktopNavItems.map((i) => ({
-          label: i.label,
-          link: i.link || i.dropdown?.[0]?.link,
-        }))}
+        logoUrl="/images/favicon.png"   /* ✅ logo only on phone */
+        items={mobileMenuItems}         /* ✅ correct mobile menu */
         headerRight={
           user && (
             <div className="relative">
@@ -164,11 +174,7 @@ function Nav() {
       >
         <div className="flex items-center gap-8 whitespace-nowrap">
           {desktopNavItems.map((item) => (
-            <DropdownNavItem
-              key={item.label}
-              item={item}
-              pathname={location.pathname}
-            />
+            <DropdownNavItem key={item.label} item={item} />
           ))}
         </div>
 
