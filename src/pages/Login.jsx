@@ -170,9 +170,8 @@ export default function Login() {
 
   if (isMobile) {
     return (
-<div className="md:hidden mt-[120px]  h-[70vh] max-w-sm mx-auto bg-[#141414] border border-red-500/40 rounded-2xl p-6 backdrop-blur-xl text-gray-100"
-style={{ width: "clamp(200px, 90vw, 700px)",
-         height: "clamp(670pxpx, 70vh, 1000px)"
+<div className="md:hidden mt-[120px] max-w-sm mx-auto bg-[#141414] border border-red-500/40 rounded-2xl p-6 backdrop-blur-xl text-gray-100 flex flex-col"
+style={{ width: "clamp(200px, 90vw, 700px)"
  }}>
 
   {/* SIGN IN VIEW */}
