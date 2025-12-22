@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Loading from "./pages/Loading";
 import Nav from "./components/Nav";
 import Home from "./pages/Home";
@@ -22,6 +22,7 @@ import Accommodation from "./pages/Accommodation";
 import Profile from "./pages/Profile";
 import Timeline from "./pages/Timeline";
 import { useEffect, useState } from "react";
+import { pageview } from "./analytics";
 import TransitionComponent from "./components/Transition.jsx";
 import { TransitionProvider } from "./context/transition.jsx";
 import { AuthProvider } from "./context/auth.jsx";
@@ -30,6 +31,7 @@ import { EntitlementsProvider } from "./context/EntitlementsProvider.jsx";
 import Lenis from "@studio-freight/lenis";
 
 function App() {
+  const location = useLocation();
   const routes = [
     { path: "/", Component: Home },
     { path: "/events", Component: Events },
@@ -81,8 +83,12 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    pageview(location.pathname);
+  }, [location]);
+
   return (
-    <BrowserRouter>
+    <>
       {!loadingDone && <Loading onFinish={() => setLoadingDone(true)} />}
       {loadingDone && (
         <AuthProvider>
@@ -122,7 +128,7 @@ function App() {
           </PopupProvider>
         </AuthProvider>
       )}
-    </BrowserRouter>
+    </>
   );
 }
 
