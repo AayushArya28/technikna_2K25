@@ -1,0 +1,12 @@
+/* TEAM */
+Developer: Technika Web Team
+Website: https://www.technika.co
+Location: India
+
+/* TECHNOLOGY */
+Frontend: React + Vite
+Backend: Node.js
+Hosting: Render
+
+/* THANKS */
+BIT Patna
