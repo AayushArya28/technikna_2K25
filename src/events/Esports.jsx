@@ -10,6 +10,17 @@ import { usePopup } from "../context/usePopup.jsx";
 const RULEBOOK_PDF_URL = "/rulebooks/technika-event-brochure.pdf";
 
 const events = [
+    {
+      key: "freefire",
+      title: "Free Fire",
+      desc: "Online event — Squad up for Free Fire! Show your skills and strategy in this action-packed battle royale. Venue: As per schedule.",
+      img: "https://i.ibb.co/rK2qwHXk/free-fire.png",
+      participation: "Team (up to 4 participants)",
+      fee: "₹199 per team",
+      allowedModes: ["group"],
+      groupMinTotal: 2,
+      groupMaxTotal: 4,
+    },
   {
     key: "bgmi",
     title: "BGMI",

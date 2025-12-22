@@ -49,6 +49,7 @@ export const EVENT_ID_MAP = Object.freeze({
     valorant: 302,
     fifa: 303,
     tekken: 304,
+    freefire: 305,
 });
 
 // Optional display titles (used by Profile when backend does not return event titles).
@@ -98,6 +99,7 @@ export const EVENT_TITLE_BY_KEY = Object.freeze({
     valorant: "Valorant",
     fifa: "FIFA",
     tekken: "Tekken",
+    freefire: "Free Fire",
 });
 
 export const EVENT_KEY_BY_ID = Object.freeze(
