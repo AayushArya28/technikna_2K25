@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Technika Official Updates</title>
+    <link>https://www.technika.co</link>
+    <description>Official updates and events from Technika</description>
+
+    <item>
+      <title>Technika 2K25 Announced</title>
+      <link>https://www.technika.co/events</link>
+      <description>Technika 2K25 events are now live.</description>
+    </item>
+  </channel>
+</rss>
