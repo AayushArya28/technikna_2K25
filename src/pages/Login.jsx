@@ -131,6 +131,7 @@ export default function Login() {
           college,
           email,
           phone: normalizedPhone,
+          password,
           createdAt: new Date(),
         });
 
