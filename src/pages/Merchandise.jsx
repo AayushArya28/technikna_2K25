@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useEntitlements } from "../context/useEntitlements.jsx";
 import gsap from "gsap";
 import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
 
@@ -63,6 +64,7 @@ export default function Merchandise() {
 
   const modalRef = useRef(null);
   const [notice, setNotice] = useState(null);
+  const { isBitStudent } = useEntitlements();
 
   const showNotice = (text, ms = 2200) => {
     setNotice(text);
@@ -203,6 +205,9 @@ export default function Merchandise() {
               <div className="flex items-center justify-between mb-2">
                 <button onClick={() => setCartOpen(false)} className="flex items-center gap-2 text-left text-neutral-400 hover:text-white">
                   <span className="text-neutral-400">▴</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-neutral-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 7m13-7l2 7M9 20a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
+                  </svg>
                   <div className="font-semibold">Cart</div>
                 </button>
                 <div className="text-sm text-neutral-400">{cart.reduce((s, it) => s + it.qty, 0)} items</div>
@@ -238,6 +243,22 @@ export default function Merchandise() {
                 {couponApplied && (
                   <div className="text-xs text-emerald-400">Coupon applied — price reduced to ₹1499</div>
                 )}
+                {cart.length > 0 && (
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      onClick={() => {
+                        if (!isBitStudent) {
+                          showNotice("You are not eligible to buy the merch from the site.");
+                          return;
+                        }
+                        showNotice("Checkout coming soon — will be available soon");
+                      }}
+                      className="flex-1 px-3 py-2 rounded-full bg-gradient-to-r from-[#ff1744] via-[#ff4f81] to-[#5b2cff] text-white font-semibold"
+                    >
+                      Buy now
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -245,6 +266,9 @@ export default function Merchandise() {
               <button onClick={() => setCartOpen(true)} className="w-full flex items-center justify-between gap-3 text-sm font-semibold text-neutral-400 hover:text-white px-3 py-2">
                 <div className="flex items-center gap-3">
                   <span className="text-neutral-400">▾</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-neutral-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 7m13-7l2 7M9 20a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z" />
+                  </svg>
                   <div>Cart</div>
                 </div>
                 <div className="text-sm text-neutral-400">{cart.reduce((s, it) => s + it.qty, 0)}</div>
@@ -304,7 +328,14 @@ export default function Merchandise() {
                         Add to cart
                       </button>
                       <button
-                          onClick={() => { closeModal(); showNotice("Coming soon — checkout coming shortly"); }}
+                        onClick={() => {
+                          closeModal();
+                          if (!isBitStudent) {
+                            showNotice("You are not eligible to buy the merch from the site.");
+                            return;
+                          }
+                          showNotice("Coming soon — checkout coming shortly");
+                        }}
                         className="flex-1 px-4 py-2 rounded-full bg-gradient-to-r from-[#ff1744] via-[#ff4f81] to-[#5b2cff] text-white font-semibold"
                       >
                         Buy now
