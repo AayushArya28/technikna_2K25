@@ -89,7 +89,7 @@ const designDecorTeam = [
 // DESIGN & DRAFTING TEAM
 const designDraftingTeam = [
   {
-    image: "https://i.ibb.co/xKqGcyXV/IMG-7648-Arpit-Raj.jpg",
+    image: "https://i.ibb.co/pBTk1xYM/IMG-7648-Arpit-Raj.jpg",
     title: "Aprit Raj",
     subtitle: "HEAD",
     handle: "@apritraj",
@@ -138,7 +138,7 @@ const eventManagementTeam = [
     url: "https://github.com/abhishekr",
   },
   {
-    image: "https://i.ibb.co/6c3nQMjB/IMG-2010-Kaushik-Singh.png",
+    image: "https://i.ibb.co/V019wWL3/IMG-2010-Kaushik-Singh.jpg",
     title: "Kaushik Singh",
     subtitle: "CO-HEAD",
     handle: "@kaushiks",
@@ -147,7 +147,7 @@ const eventManagementTeam = [
     url: "https://github.com/kaushiks",
   },
   {
-    image: "https://i.ibb.co/9mfwQ1kg/aparna.jpg",
+    image: "https://i.ibb.co/JFbwcnn1/IMG-20250805-WA0062-Aparna-singh.jpg",
     title: "Aparna Singh",
     subtitle: "CO-HEAD",
     handle: "@aparnas",
@@ -160,7 +160,7 @@ const eventManagementTeam = [
 // VENUE MANAGEMENT TEAM
 const venueManagementTeam = [
   {
-    image: "https://i.ibb.co/35SRJc9C/IMG-5418-Parag-Yadav.jpg",
+    image: "https://i.ibb.co/TqWVFBhy/IMG-5418-Parag-Yadav.jpg",
     title: "Parag",
     subtitle: "HEAD",
     handle: "@parag",
@@ -231,7 +231,7 @@ const pressMediaTeam = [
     url: "https://github.com/tanmays",
   },
   {
-    image: "https://i.ibb.co/RkKJX8Q3/anshu-priya.jpg",
+    image: "https://i.ibb.co/q3vCF2DF/anshu-priya.jpg",
     title: "Anshu Priya",
     subtitle: "CO-HEAD",
     handle: "@anshupriya",
@@ -359,7 +359,7 @@ const foodCateringTeam = [
 const culturalManagementTeam = [
   {
     image:
-      "https://i.ibb.co/RT238xjm/dbcb30e8-d5ae-458f-b921-3ecfa6e851c2-Nidhi-Sinha.jpg",
+      "https://i.ibb.co/WWtYK0Xy/dbcb30e8-d5ae-458f-b921-3ecfa6e851c2-Nidhi-Sinha.jpg",
     title: "Nidhi Sinha",
     subtitle: "HEAD",
     handle: "@nidhis",
@@ -378,7 +378,7 @@ const culturalManagementTeam = [
     url: "https://github.com/sanskarkarn",
   },
   {
-    image: "https://i.ibb.co/XkZ1QS0p/IMG-20251204-WA0190-Akshay-Kumar.jpg",
+    image: "https://i.ibb.co/67TbcJZY/IMG-20251204-WA0190-Akshay-Kumar.jpg",
     title: "Akshay Kumar",
     subtitle: "CO-HEAD",
     handle: "@akshayk",
@@ -419,7 +419,7 @@ const sponsorshipTeam = [
     url: "https://github.com/apoorvr",
   },
   {
-    image: "https://i.ibb.co/WW0xgp3N/IMG-20250713-WA0007-Md-Asad-Khan.jpg",
+    image: "https://i.ibb.co/HTxXXZ2L/IMG-20250713-WA0007-Md-Asad-Khan.jpg",
     title: "Asad Khan",
     subtitle: "CO-HEAD",
     handle: "@asadkhan",
@@ -442,7 +442,7 @@ const socialMediaTeam = [
   },
   {
     image:
-      "https://i.ibb.co/HLVSfTm0/D2-DBCB20-44-E5-44-E8-AE01-2909-EC5684-A9-Aayat-Fatima.jpg",
+      "https://i.ibb.co/jvGZ5sVw/D2-DBCB20-44-E5-44-E8-AE01-2909-EC5684-A9-Aayat-Fatima.jpg",
     title: "Aayat Fatima",
     subtitle: "CO-HEAD",
     handle: "@aayatf",

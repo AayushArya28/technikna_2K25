@@ -164,13 +164,13 @@ const events = [
   },
   {
     key: "utility_bot",
-    title: "MachUtility Extreme (Utility Machine)",
-    desc: "Participants design and build a multi-functional machine with real-world utility applications, focusing on autonomous task performance. Venue: Dome Area near EEE Department.",
+    title: "Utility Bot",
+    desc: "Design and present a robot capable of performing a useful real-world task such as lifting, sorting, transporting, cleaning, or assistance-based operations. Venue: To be announced.",
     img: "https://i.ibb.co/2Y785q4V/mach-ultility.png",
-    participation: "Team (2–4 participants)",
+    participation: "Team (4 participants)",
     fee: "₹199 per team",
     allowedModes: ["group"],
-    groupMinTotal: 2,
+    groupMinTotal: 4,
     groupMaxTotal: 4,
   },
   {
