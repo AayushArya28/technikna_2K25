@@ -16,6 +16,7 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
+  signOut,
 } from "firebase/auth";
 import { usePopup } from "../context/usePopup.jsx";
 import {
@@ -629,13 +630,30 @@ export default function Profile() {
               {currentUser && (
                 <div className="flex flex-wrap justify-end gap-3">
                   {!editing ? (
-                    <button
-                      type="button"
-                      onClick={() => setEditing(true)}
-                      className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition sm:w-auto"
-                    >
-                      Edit profile
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setEditing(true)}
+                        className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition sm:w-auto"
+                      >
+                        Edit profile
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await signOut(auth);
+                            popup.success("Signed out");
+                            navigate("/");
+                          } catch (e) {
+                            popup.error(e?.message || "Failed to sign out");
+                          }
+                        }}
+                        className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-red-600/10 px-4 py-2 text-white hover:bg-red-600/20 transition sm:w-auto"
+                      >
+                        Sign out
+                      </button>
+                    </>
                   ) : (
                     <>
                       <button
