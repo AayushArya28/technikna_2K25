@@ -124,6 +124,6 @@ Event keys and numeric IDs are defined in [src/lib/eventIds.js](src/lib/eventIds
 
 ## Deployment
 
-This project is compatible with Vercel.
 
-- [vercel.json](vercel.json) includes a rewrite so React Router routes resolve to `index.html`.
+
+

@@ -131,6 +131,7 @@ export default function Login() {
           college,
           email,
           phone: normalizedPhone,
+          password,
           createdAt: new Date(),
         });
 
@@ -163,8 +164,9 @@ export default function Login() {
       setSuccess(
         "Password reset link sent to your email. Check spam if not found"
       );
-    } catch {
-      setError("Failed to send reset link. Please check your email.");
+    } catch (err) {
+      console.error("sendPasswordResetEmail error:", err);
+      setError(err?.message || "Failed to send reset link. Please check your email.");
     }
   };
 
