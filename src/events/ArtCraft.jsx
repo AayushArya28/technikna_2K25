@@ -182,60 +182,65 @@ export default function ArtCraft() {
 
             <div className="flex-1 overflow-y-auto pr-2">
 
-            {(() => {
-              const meta = splitDescMeta(events?.[active]?.desc);
-              return (
-                <>
-                  <p className="text-white mb-4">{meta.text}</p>
-                  {(meta.venue || meta.date) && (
-                    <div className="mb-8 flex flex-col gap-1 text-sm text-white/70 sm:flex-row sm:items-baseline sm:justify-between">
-                      {meta.venue ? (
-                        <div>
-                          <span className="text-white/70">Venue:</span>{" "}
-                          <span className="text-white/85">{meta.venue}</span>
-                        </div>
-                      ) : (
-                        <div />
-                      )}
-                      {meta.date && (
-                        <div className="sm:text-right">
-                          <span className="text-white/70">Date:</span>{" "}
-                          <span className="text-white/85">{meta.date}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </>
-              );
-            })()}
+              {(() => {
+                const meta = splitDescMeta(events?.[active]?.desc);
+                return (
+                  <>
+                    <p className="text-white mb-4">{meta.text}</p>
+                    {(meta.venue || meta.date) && (
+                      <div className="mb-8 flex flex-col gap-1 text-sm text-white/70 sm:flex-row sm:items-baseline sm:justify-between">
+                        {meta.venue ? (
+                          <div>
+                            <span className="text-white/70">Venue:</span>{" "}
+                            <span className="text-white/85">{meta.venue}</span>
+                          </div>
+                        ) : (
+                          <div />
+                        )}
+                        {meta.date && (
+                          <div className="sm:text-right">
+                            <span className="text-white/70">Date:</span>{" "}
+                            <span className="text-white/85">{meta.date}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
 
-            <div className="mb-6">
-              <button
-                type="button"
-                onClick={openRulebook}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm cursor-pointer active:scale-95 active:opacity-90"
-              >
-                Rulebook
-              </button>
-            </div>
+              <div className="mb-6">
+                <button
+                  type="button"
+                  onClick={openRulebook}
+                  className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm cursor-pointer active:scale-95 active:opacity-90"
+                >
+                  Rulebook
+                </button>
+              </div>
 
-            <ul className="text-sm text-white/80 space-y-2 mb-8">
-              <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
-              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
-              <li>• Certificates & Cash Prizes</li>
-              <li>• On-Spot Evaluation</li>
-            </ul>
+              <ul className="text-sm text-white/80 space-y-2 mb-8">
+                <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+                {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
+                <li>• Certificates & Cash Prizes</li>
+                <li>• On-Spot Evaluation</li>
+              </ul>
 
             </div>
 
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-              <button
-                type="button"
-                onClick={() => setFormOpen(true)}
-                className="bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
-              >
-                Register Now
-              </button>
+              <div className="flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={() => setFormOpen(true)}
+                  className="bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
+                >
+                  Register Now
+                </button>
+                <p className="text-[10px] text-white/50 mt-1 text-center">
+                  *T&C Applied
+                </p>
+              </div>
 
               <div className="flex items-center justify-between gap-6 w-full sm:w-auto">
                 <div className="flex items-end gap-2 text-white/60">
@@ -282,11 +287,10 @@ export default function ArtCraft() {
                 ref={isActive ? cardRef : null}
                 onClick={() => setActive(index)}
                 className={`relative cursor-pointer transition-all duration-300 rounded-xl overflow-hidden flex-shrink-0
-                ${
-                  isActive
+                ${isActive
                     ? "scale-110 z-20 shadow-[0_0_35px_#ff0000]"
                     : "scale-90 opacity-50"
-                }
+                  }
                 w-[170px] h-[240px]`}
               >
                 <img

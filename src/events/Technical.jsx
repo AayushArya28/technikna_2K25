@@ -307,7 +307,7 @@ export default function Technical() {
         rounded-lg 
         transition-all duration-250 shadow-md
         text-sm sm:text-base cursor-pointer active:scale-95 active:opacity-90 hover:border-red-500/70 border border-transparent"
-        >
+      >
         ← Back
       </button>
       <h1 className="text-4xl font-bold mt-20 text-center text-white-500 mb-16">
@@ -391,23 +391,28 @@ export default function Technical() {
             </ul>
 
             <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-              <button
-                type="button"
-                onClick={() => {
-                  if (registrationPaused) {
-                    popup.info("Hackathon registration is temporarily paused.");
-                    return;
+              <div className="flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (registrationPaused) {
+                      popup.info("Hackathon registration is temporarily paused.");
+                      return;
+                    }
+                    setFormOpen(true);
+                  }}
+                  className={
+                    registrationPaused
+                      ? "bg-white/10 border border-white/15 transition px-6 py-3 rounded-lg text-white/70 font-bold cursor-not-allowed"
+                      : "bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
                   }
-                  setFormOpen(true);
-                }}
-                className={
-                  registrationPaused
-                    ? "bg-white/10 border border-white/15 transition px-6 py-3 rounded-lg text-white/70 font-bold cursor-not-allowed"
-                    : "bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
-                }
-              >
-                {registrationPaused ? "Registrations Paused" : "Register Now"}
-              </button>
+                >
+                  {registrationPaused ? "Registrations Paused" : "Register Now"}
+                </button>
+                <p className="text-[10px] text-white/50 mt-1 text-center">
+                  *T&C Applied
+                </p>
+              </div>
 
               <div className="flex items-center justify-between gap-6 w-full sm:w-auto">
                 <div className="flex items-end gap-2 text-white/60">
@@ -454,11 +459,10 @@ export default function Technical() {
                 ref={isActive ? cardRef : null}
                 onClick={() => setActive(index)}
                 className={`relative cursor-pointer transition-all duration-300 rounded-xl overflow-hidden flex-shrink-0
-                ${
-                  isActive
+                ${isActive
                     ? "scale-110 z-20 shadow-[0_0_35px_#ff0000]"
                     : "scale-90 opacity-50"
-                }
+                  }
                 w-[170px] h-[240px]`}
               >
                 <img
