@@ -6,7 +6,7 @@ import BrowserWarningModal from "../components/BrowserWarningModal.jsx";
 const PRODUCTS = [
   {
     id: "jacket",
-    title: "Technika Jacket",
+    title: "Official Bit mesra jacket",
     price: 1199,
     thumb: "https://i.ibb.co/nMN19szx/jacket-1.png",
     images: [
