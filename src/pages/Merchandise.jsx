@@ -160,6 +160,10 @@ export default function Merchandise() {
         <div className="relative z-10 max-w-6xl w-full">
           <h1 className="text-4xl font-bold mb-6">Merchandise</h1>
 
+          <div className="mb-6 rounded-lg border border-white/10 bg-black/50 p-3 text-sm text-white/80">
+            <strong className="text-white">Combo offer:</strong> Purchase both the Technika Jacket and Technika T-Shirt together and the combined price will be reduced to ₹1499. The discount is applied automatically in the cart when both items are added.
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {PRODUCTS.map((p) => (
               <div key={p.id} className="relative overflow-hidden rounded-[28px] border border-white/12 bg-black/55 p-4 flex flex-col md:flex-row gap-4 backdrop-blur-xl shadow-[0_40px_110px_rgba(255,0,48,0.12)]">
