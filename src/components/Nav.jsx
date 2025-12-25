@@ -281,7 +281,7 @@ function DropdownNavItem({ item }) {
       {hasDropdown && (
         <div
           className={`absolute left-1/2 -translate-x-1/2 mt-2
-                      rounded-xl bg-black/60 border border-white/10
+                      rounded-xl bg-black/85 border border-white/10
                       backdrop-blur-xl transition
                       ${
                         open
