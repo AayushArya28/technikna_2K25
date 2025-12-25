@@ -11,11 +11,21 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
-import { collection, doc, getDoc, getDocs, limit, query, updateDoc, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
+  signOut,
 } from "firebase/auth";
 import { usePopup } from "../context/usePopup.jsx";
 import {
@@ -46,8 +56,7 @@ function StatusBadge({ status }) {
       "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
     label = "Confirmed";
   } else if (normalized === "pending" || normalized === "pending_payment") {
-    colorClass =
-      "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
+    colorClass = "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30";
     label = "Pending";
   } else if (
     normalized === "failed" ||
@@ -56,8 +65,7 @@ function StatusBadge({ status }) {
     normalized === "cancelled" ||
     normalized === "canceled"
   ) {
-    colorClass =
-      "bg-red-500/20 text-red-400 border border-red-500/30";
+    colorClass = "bg-red-500/20 text-red-400 border border-red-500/30";
     label = "Payment Failed";
   }
 
@@ -102,8 +110,7 @@ export default function Profile() {
   const [eventsFetchError, setEventsFetchError] = useState("");
 
   const extractRegisteredEventsList = (raw) => {
-    const asEventMap = (m) =>
-      m && typeof m === "object" && !Array.isArray(m);
+    const asEventMap = (m) => m && typeof m === "object" && !Array.isArray(m);
 
     // API shape: { success: true, events: { [eventId]: "confirmed" | "pending" | "payment_failed" | ... } }
     if (asEventMap(raw?.events)) {
@@ -115,10 +122,14 @@ export default function Profile() {
             typeof v === "string"
               ? v
               : v && typeof v === "object"
-                ? v.status ?? v.paymentStatus ?? v.payment_status ?? v.state ?? null
-                : v === true
-                  ? "registered"
-                  : null;
+              ? v.status ??
+                v.paymentStatus ??
+                v.payment_status ??
+                v.state ??
+                null
+              : v === true
+              ? "registered"
+              : null;
 
           if (eventId == null) return null;
           return { eventId, status };
@@ -139,10 +150,14 @@ export default function Profile() {
               typeof v === "string"
                 ? v
                 : v && typeof v === "object"
-                  ? v.status ?? v.paymentStatus ?? v.payment_status ?? v.state ?? null
-                  : v === true
-                    ? "registered"
-                    : null;
+                ? v.status ??
+                  v.paymentStatus ??
+                  v.payment_status ??
+                  v.state ??
+                  null
+                : v === true
+                ? "registered"
+                : null;
             if (eventId == null) return null;
             return { eventId, status };
           })
@@ -150,24 +165,23 @@ export default function Profile() {
       }
     }
 
-    const list =
-      Array.isArray(raw)
-        ? raw
-        : Array.isArray(raw?.events)
-          ? raw.events
-          : Array.isArray(raw?.data)
-            ? raw.data
-            : Array.isArray(raw?.registeredEvents)
-              ? raw.registeredEvents
-              : Array.isArray(raw?.registered_events)
-                ? raw.registered_events
-                : Array.isArray(raw?.registrations)
-                  ? raw.registrations
-                  : Array.isArray(raw?.results)
-                    ? raw.results
-                    : Array.isArray(raw?.items)
-                      ? raw.items
-                      : [];
+    const list = Array.isArray(raw)
+      ? raw
+      : Array.isArray(raw?.events)
+      ? raw.events
+      : Array.isArray(raw?.data)
+      ? raw.data
+      : Array.isArray(raw?.registeredEvents)
+      ? raw.registeredEvents
+      : Array.isArray(raw?.registered_events)
+      ? raw.registered_events
+      : Array.isArray(raw?.registrations)
+      ? raw.registrations
+      : Array.isArray(raw?.results)
+      ? raw.results
+      : Array.isArray(raw?.items)
+      ? raw.items
+      : [];
     return Array.isArray(list) ? list : [];
   };
 
@@ -197,17 +211,18 @@ export default function Profile() {
           item.eventIdFk ??
           null;
         key = item.eventKey ?? item.key ?? null;
-        title = item.title ?? item.name ?? item.eventTitle ?? item.event ?? null;
+        title =
+          item.title ?? item.name ?? item.eventTitle ?? item.event ?? null;
       }
 
       const dedupeKey =
         eventId != null
           ? `id:${String(eventId)}`
           : key
-            ? `key:${String(key)}`
-            : title
-              ? `title:${String(title)}`
-              : null;
+          ? `key:${String(key)}`
+          : title
+          ? `title:${String(title)}`
+          : null;
 
       if (!dedupeKey) {
         out.push(item);
@@ -238,7 +253,12 @@ export default function Profile() {
         .map(([k, v]) => {
           const asNum = Number(String(k || "").trim());
           const eventId = Number.isFinite(asNum) ? asNum : null;
-          const status = v?.status ?? v?.paymentStatus ?? v?.payment_status ?? v?.state ?? null;
+          const status =
+            v?.status ??
+            v?.paymentStatus ??
+            v?.payment_status ??
+            v?.state ??
+            null;
           const eventKey = v?.eventKey ?? v?.event_key ?? v?.key ?? null;
           if (!eventId && !eventKey) return null;
           return { eventId, eventKey, status };
@@ -260,7 +280,11 @@ export default function Profile() {
     if (!eventRegistrationDocData && email) {
       try {
         const snap = await getDocs(
-          query(collection(db, "event_registration"), where("email", "==", String(email)), limit(1))
+          query(
+            collection(db, "event_registration"),
+            where("email", "==", String(email)),
+            limit(1)
+          )
         );
         const first = snap.docs?.[0];
         if (first) eventRegistrationDocData = first.data();
@@ -269,7 +293,9 @@ export default function Profile() {
       }
     }
 
-    const fromEventRegistration = normalizeEventRegistrationEventsMap(eventRegistrationDocData?.events);
+    const fromEventRegistration = normalizeEventRegistrationEventsMap(
+      eventRegistrationDocData?.events
+    );
 
     if (fromEventRegistration.length > 0) {
       return mergeRegisteredEventItems(fromAuthDoc, fromEventRegistration);
@@ -277,7 +303,9 @@ export default function Profile() {
 
     const tryGetSubcollection = async (subPath) => {
       try {
-        const snap = await getDocs(query(collection(db, "auth", uid, subPath), limit(200)));
+        const snap = await getDocs(
+          query(collection(db, "auth", uid, subPath), limit(200))
+        );
         return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       } catch {
         return [];
@@ -294,7 +322,13 @@ export default function Profile() {
         .map((d) => {
           if (!d || typeof d !== "object") return null;
           const eventId =
-            d.eventId ?? d.event_id ?? d.eventID ?? d.event ?? d.eventIdFk ?? d.eventIdRef ?? null;
+            d.eventId ??
+            d.event_id ??
+            d.eventID ??
+            d.event ??
+            d.eventIdFk ??
+            d.eventIdRef ??
+            null;
           const eventKey = d.eventKey ?? d.event_key ?? d.key ?? null;
           const status = d.status ?? d.paymentStatus ?? d.state ?? null;
 
@@ -312,7 +346,10 @@ export default function Profile() {
         })
         .filter(Boolean);
 
-    const fromFirestoreDocs = mergeRegisteredEventItems(normalizeDocs(subRegs), normalizeDocs(subEvents));
+    const fromFirestoreDocs = mergeRegisteredEventItems(
+      normalizeDocs(subRegs),
+      normalizeDocs(subEvents)
+    );
 
     return mergeRegisteredEventItems(fromAuthDoc, fromFirestoreDocs);
   };
@@ -327,7 +364,10 @@ export default function Profile() {
         if (typeof item === "number") {
           const eventId = item;
           const key = getEventKeyById(eventId);
-          const title = getEventTitleById(eventId) || (key ? getEventTitleByKey(key) : null) || `Event ${eventId}`;
+          const title =
+            getEventTitleById(eventId) ||
+            (key ? getEventTitleByKey(key) : null) ||
+            `Event ${eventId}`;
           return { title, eventId, status: null, key };
         }
         if (typeof item === "string") {
@@ -336,7 +376,10 @@ export default function Profile() {
           if (Number.isFinite(asNum) && trimmed !== "") {
             const eventId = asNum;
             const key = getEventKeyById(eventId);
-            const title = getEventTitleById(eventId) || (key ? getEventTitleByKey(key) : null) || `Event ${eventId}`;
+            const title =
+              getEventTitleById(eventId) ||
+              (key ? getEventTitleByKey(key) : null) ||
+              `Event ${eventId}`;
             return { title, eventId, status: null, key };
           }
           return { title: item, eventId: null, status: null, key: null };
@@ -345,7 +388,13 @@ export default function Profile() {
           return null;
         }
 
-        const eventId = item.eventId ?? item.id ?? item.event_id ?? item.eventID ?? item.eventIdFk ?? null;
+        const eventId =
+          item.eventId ??
+          item.id ??
+          item.event_id ??
+          item.eventID ??
+          item.eventIdFk ??
+          null;
         const key = item.eventKey ?? item.key ?? getEventKeyById(eventId);
         const title =
           item.eventTitle ||
@@ -420,12 +469,12 @@ export default function Profile() {
       clamped <= 1
         ? "Weak"
         : clamped === 2
-          ? "Fair"
-          : clamped === 3
-            ? "Good"
-            : clamped === 4
-              ? "Strong"
-              : "Very strong";
+        ? "Fair"
+        : clamped === 3
+        ? "Good"
+        : clamped === 4
+        ? "Strong"
+        : "Very strong";
     return { score: clamped, pct, label };
   };
 
@@ -459,7 +508,9 @@ export default function Profile() {
         } else {
           // Mark as fetched but unavailable, so UI doesn't show "Fetching" forever.
           eventData = [];
-          setEventsFetchError(`Could not load registered events (${eventRes.status}).`);
+          setEventsFetchError(
+            `Could not load registered events (${eventRes.status}).`
+          );
         }
         const delegateData = delegateRes.ok ? await delegateRes.json() : null;
         const alumniData = alumniRes.ok ? await alumniRes.json() : null;
@@ -471,7 +522,11 @@ export default function Profile() {
 
         let firestoreEvents = [];
         try {
-          firestoreEvents = await getFirestoreRegisteredEvents(user.uid, user.email, firestoreUserData);
+          firestoreEvents = await getFirestoreRegisteredEvents(
+            user.uid,
+            user.email,
+            firestoreUserData
+          );
         } catch {
           firestoreEvents = [];
         }
@@ -481,8 +536,8 @@ export default function Profile() {
           apiList.length > 0
             ? mergeRegisteredEventItems(apiList, firestoreEvents)
             : firestoreEvents.length > 0
-              ? firestoreEvents
-              : eventData;
+            ? firestoreEvents
+            : eventData;
 
         if (firestoreEvents.length > 0 && !eventRes.ok) {
           setEventsFetchError("");
@@ -532,7 +587,9 @@ export default function Profile() {
       return;
     }
 
-    const normalizedPhone = String(draft.phone || "").replace(/\D/g, "").trim();
+    const normalizedPhone = String(draft.phone || "")
+      .replace(/\D/g, "")
+      .trim();
     if (!String(draft.name || "").trim()) {
       popup.error("Name is required.");
       return;
@@ -541,24 +598,35 @@ export default function Profile() {
       popup.error("College is required.");
       return;
     }
-    if (!normalizedPhone || normalizedPhone.length < 10 || normalizedPhone.length > 15) {
+    if (
+      !normalizedPhone ||
+      normalizedPhone.length < 10 ||
+      normalizedPhone.length > 15
+    ) {
       popup.error("Please enter a valid phone number.");
       return;
     }
 
     setSavingProfile(true);
     try {
+      const updatedName = String(draft.name || "").trim();
+      const updatedCollege = String(draft.college || "").trim();
+
       await updateDoc(doc(db, "auth", user.uid), {
-        name: String(draft.name || "").trim(),
-        college: String(draft.college || "").trim(),
+        name: updatedName,
+        college: updatedCollege,
         phone: normalizedPhone,
       });
-      setProfile((prev) => ({
-        ...prev,
-        name: String(draft.name || "").trim(),
-        college: String(draft.college || "").trim(),
+
+      // Update profile state with new values
+      const newProfile = {
+        name: updatedName,
+        college: updatedCollege,
         phone: normalizedPhone,
-      }));
+        email: profile.email,
+      };
+      setProfile(newProfile);
+      setDraft(newProfile);
       setEditing(false);
       popup.success("Profile updated.");
     } catch (e) {
@@ -629,13 +697,30 @@ export default function Profile() {
               {currentUser && (
                 <div className="flex flex-wrap justify-end gap-3">
                   {!editing ? (
-                    <button
-                      type="button"
-                      onClick={() => setEditing(true)}
-                      className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition sm:w-auto"
-                    >
-                      Edit profile
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setEditing(true)}
+                        className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition sm:w-auto"
+                      >
+                        Edit profile
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await signOut(auth);
+                            popup.success("Signed out");
+                            navigate("/");
+                          } catch (e) {
+                            popup.error(e?.message || "Failed to sign out");
+                          }
+                        }}
+                        className="inline-flex w-full items-center justify-center rounded-full border border-white/20 bg-red-600/10 px-4 py-2 text-white hover:bg-red-600/20 transition sm:w-auto"
+                      >
+                        Sign out
+                      </button>
+                    </>
                   ) : (
                     <>
                       <button
@@ -704,7 +789,12 @@ export default function Profile() {
                           ) : (
                             <input
                               value={draft.name}
-                              onChange={(e) => setDraft((p) => ({ ...p, name: e.target.value }))}
+                              onChange={(e) =>
+                                setDraft((p) => ({
+                                  ...p,
+                                  name: e.target.value,
+                                }))
+                              }
                               className="mt-1 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-[#ff0045]/60"
                               placeholder="Your name"
                             />
@@ -741,7 +831,12 @@ export default function Profile() {
                           ) : (
                             <input
                               value={draft.college}
-                              onChange={(e) => setDraft((p) => ({ ...p, college: e.target.value }))}
+                              onChange={(e) =>
+                                setDraft((p) => ({
+                                  ...p,
+                                  college: e.target.value,
+                                }))
+                              }
                               className="mt-1 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-[#ff0045]/60"
                               placeholder="Your college"
                             />
@@ -764,7 +859,12 @@ export default function Profile() {
                           ) : (
                             <input
                               value={draft.phone}
-                              onChange={(e) => setDraft((p) => ({ ...p, phone: e.target.value }))}
+                              onChange={(e) =>
+                                setDraft((p) => ({
+                                  ...p,
+                                  phone: e.target.value,
+                                }))
+                              }
                               className="mt-1 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-[#ff0045]/60"
                               placeholder="Phone"
                               inputMode="numeric"
@@ -812,14 +912,20 @@ export default function Profile() {
                         <div className="space-y-2">
                           {normalizedRegisteredEvents.map((evt, idx) => (
                             <button
-                              key={`${evt.key || evt.eventId || evt.title}_${idx}`}
+                              key={`${
+                                evt.key || evt.eventId || evt.title
+                              }_${idx}`}
                               type="button"
                               onClick={() => openRegisteredEvent(evt)}
                               className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-left hover:border-[#ff0045]/50 hover:bg-black/40 transition"
                             >
                               <div className="flex flex-wrap items-center justify-between gap-3">
-                                <div className="text-sm font-medium text-white">{String(evt.title || "Event")}</div>
-                                <StatusBadge status={evt.status || "registered"} />
+                                <div className="text-sm font-medium text-white">
+                                  {String(evt.title || "Event")}
+                                </div>
+                                <StatusBadge
+                                  status={evt.status || "registered"}
+                                />
                               </div>
                               <div className="mt-1 text-xs text-white/45">
                                 Tap to open this event
@@ -828,7 +934,9 @@ export default function Profile() {
                           ))}
                         </div>
                       ) : statuses.events === null ? (
-                        <div className="text-sm text-white/50">Fetching your registered events…</div>
+                        <div className="text-sm text-white/50">
+                          Fetching your registered events…
+                        </div>
                       ) : (
                         <div className="text-sm text-white/50">
                           {eventsFetchError || "No registered events yet."}
@@ -845,7 +953,9 @@ export default function Profile() {
                     <div className="rounded-2xl border border-white/10 bg-black/40 p-5 space-y-4">
                       <div className="grid gap-4 md:grid-cols-2">
                         <div>
-                          <div className="text-xs uppercase tracking-wider text-white/40 mb-1">Current Password</div>
+                          <div className="text-xs uppercase tracking-wider text-white/40 mb-1">
+                            Current Password
+                          </div>
                           <input
                             type="password"
                             value={pwCurrent}
@@ -856,7 +966,9 @@ export default function Profile() {
                         </div>
 
                         <div>
-                          <div className="text-xs uppercase tracking-wider text-white/40 mb-1">New Password</div>
+                          <div className="text-xs uppercase tracking-wider text-white/40 mb-1">
+                            New Password
+                          </div>
                           <input
                             type="password"
                             value={pwNext}
@@ -864,30 +976,34 @@ export default function Profile() {
                             className="w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-white outline-none focus:ring-2 focus:ring-[#ff0045]/60"
                             placeholder="New password"
                           />
-                          {pwNext ? (
-                            (() => {
-                              const s = getPasswordStrength(pwNext);
-                              return (
-                                <div className="mt-2">
-                                  <div className="flex items-center justify-between text-xs text-white/60">
-                                    <span>Password strength</span>
-                                    <span className="text-white/80">{s.label}</span>
+                          {pwNext
+                            ? (() => {
+                                const s = getPasswordStrength(pwNext);
+                                return (
+                                  <div className="mt-2">
+                                    <div className="flex items-center justify-between text-xs text-white/60">
+                                      <span>Password strength</span>
+                                      <span className="text-white/80">
+                                        {s.label}
+                                      </span>
+                                    </div>
+                                    <div className="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                                      <div
+                                        className="h-full bg-[#ff0045]/70"
+                                        style={{ width: `${s.pct}%` }}
+                                      />
+                                    </div>
                                   </div>
-                                  <div className="mt-2 h-2 w-full rounded-full bg-white/10 overflow-hidden">
-                                    <div
-                                      className="h-full bg-[#ff0045]/70"
-                                      style={{ width: `${s.pct}%` }}
-                                    />
-                                  </div>
-                                </div>
-                              );
-                            })()
-                          ) : null}
+                                );
+                              })()
+                            : null}
                         </div>
                       </div>
 
                       <div>
-                        <div className="text-xs uppercase tracking-wider text-white/40 mb-1">Confirm New Password</div>
+                        <div className="text-xs uppercase tracking-wider text-white/40 mb-1">
+                          Confirm New Password
+                        </div>
                         <input
                           type="password"
                           value={pwNextConfirm}

@@ -267,7 +267,7 @@ const Delegate = () => {
                                     Group Pass
                                 </button>
                                 <p className="text-xs uppercase tracking-[0.35em] text-white/60">
-                                    {inSelf ? "already registered individually" : checkingAccess ? "checking status" : "ideal for 5+ members"}
+                                    {inSelf ? "already registered individually" : checkingAccess ? "checking status" : "1 complimentary pass with every 5 members"}
                                 </p>
                             </div>
                         </div>

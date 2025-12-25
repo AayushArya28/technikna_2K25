@@ -137,7 +137,7 @@ export function ContactUs() {
   const contactInfo = [
     {
       icon: <User className="w-6 h-6" />,
-      title: "Publicity Head",
+      title: "Social Media Head",
       info: "Shikhar Rai (+91 79857 67003)",
       color: "bg-sky-500",
     },
