@@ -4,6 +4,8 @@ import { auth } from "../firebase";
 import { usePopup } from "../context/usePopup.jsx";
 import { useEntitlements } from "../context/useEntitlements.jsx";
 import { Loader2 } from "lucide-react";
+import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
 
 function FlipCard({ flipped, front, back, minHeightClassName }) {
     return (
@@ -177,6 +179,45 @@ const DelegateGroupRegistration = () => {
         return true;
     };
 
+    const verifyAndOpenRoom = async (candidateRoomId) => {
+        if (!candidateRoomId) return false;
+        try {
+            const headers = await getAuthHeaders({ json: false });
+            const resp = await fetch(`${BASE_API_URL}/delegate/status/room/${candidateRoomId}`, { headers });
+
+            if (resp.ok) {
+                const dataRoom = await resp.json();
+                const roomObj = dataRoom.room || dataRoom;
+
+                const myEmail = (authUser.email || "").toLowerCase();
+                const myUid = authUser.uid;
+
+                const isOwner = roomObj.owner?.email?.toLowerCase() === myEmail || roomObj.owner?.uid === myUid;
+                const isMember = Array.isArray(roomObj.users) && roomObj.users.some(
+                    u => (u.email?.toLowerCase() === myEmail) || (u.uid === myUid)
+                );
+
+                if (isOwner || isMember) {
+                    setStatus({
+                        isOwner: !!isOwner,
+                        isMember: !!isMember,
+                        roomId: candidateRoomId,
+                    });
+                    setRoom(roomObj);
+                    writeCachedRoom({
+                        uid: authUser.uid,
+                        roomId: candidateRoomId,
+                        role: isOwner ? "owner" : "member"
+                    });
+                    return true;
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+        return false;
+    };
+
     const refreshStatus = async () => {
         setApiError("");
         const headers = await getAuthHeaders({ json: false });
@@ -224,8 +265,65 @@ const DelegateGroupRegistration = () => {
         const data = await resp.json();
         const roomId = data.roomId || data?.room?.roomId || "";
 
-        // If server says user is not in a room, reset quickly
+        // If server says user is not in a room, reset quickly unless we have a pending room OR we find ourselves in the cached room OR in Firestore profile
         if (!roomId) {
+            const pendingRoomId = getPendingRoomIdIfFresh();
+            const cached = readCachedRoom();
+            let targetRoomId = pendingRoomId || cached?.roomId;
+
+            if (targetRoomId) {
+                const recovered = await verifyAndOpenRoom(targetRoomId);
+                if (recovered) return;
+            }
+
+            // FALLBACK: Check Firestore Profile (as requested by user hint)
+            // If the backend API is failing to return the status (read path broken), 
+            // but the user is registered (write path worked), the roomId might be in their profile doc.
+            if (authUser?.uid) {
+                try {
+                    // 1. Check Auth Profile
+                    const docSnap = await getDoc(doc(db, "auth", authUser.uid));
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        const firestoreRoomId = userData.roomId || userData.delegateGroupId || userData.groupId || userData.group_id;
+
+                        if (firestoreRoomId && firestoreRoomId !== targetRoomId) {
+                            const recovered = await verifyAndOpenRoom(firestoreRoomId);
+                            if (recovered) return;
+                        }
+                    }
+
+                    // 2. Check 'delegates' collection (as explicitly requested/shown by user)
+                    // The user said "whether it is single or grouped", so we look for a doc with their email.
+                    // This doc should contain the roomId if they are in a group.
+                    if (authUser.email) {
+                        const delegatesRef = collection(db, "delegates");
+                        const q = query(delegatesRef, where("email", "==", authUser.email));
+                        const querySnapshot = await getDocs(q);
+
+                        if (!querySnapshot.empty) {
+                            // detailed check of the first matching doc
+                            const delegateDoc = querySnapshot.docs[0].data();
+                            // Check for direct room ID fields
+                            const foundId = delegateDoc.roomId || delegateDoc.groupId || delegateDoc.delegateGroupId || delegateDoc.room_id || delegateDoc.code;
+
+                            if (foundId && foundId !== targetRoomId) {
+                                const recovered = await verifyAndOpenRoom(foundId);
+                                if (recovered) return;
+                            }
+
+                            // Edge Case: If the doc itself IS the room (e.g. if they are owner)
+                            // The doc ID might be the roomId? Unlikely if we queried by email, unless email is a field in the room doc.
+                            // But usually registration docs have a pointer to the room.
+                        }
+                    }
+
+                } catch (fsErr) {
+                    console.error("Firestore check failed", fsErr);
+                }
+            }
+
+            // Real absence confirmed
             clearRoomState();
             return;
         }
@@ -435,6 +533,14 @@ const DelegateGroupRegistration = () => {
             navigate("/login");
             return;
         }
+        if (!canCreateOrJoin) {
+            popup.error("You are already in a group. Please leave first.");
+            return;
+        }
+        if (selfRegistered) {
+            popup.error("You are already registered as an individual delegate.");
+            return;
+        }
         setApiError("");
         const payload = {
             name: String(ownerForm.name).trim(),
@@ -459,6 +565,14 @@ const DelegateGroupRegistration = () => {
             const data = await resp.json().catch(() => ({}));
             if (!resp.ok) {
                 const message = data.message || "Failed to create room";
+
+                if (resp.status === 409 || resp.status === 400 || message.toLowerCase().includes("already a member") || message.toLowerCase().includes("already in a group")) {
+                    // Force refresh to trigger self-healing
+                    setApiError("You are already in a group. restoring session...");
+                    await refreshStatus();
+                    return;
+                }
+
                 setApiError(message);
                 popup.error(message);
                 return;
@@ -509,6 +623,14 @@ const DelegateGroupRegistration = () => {
             navigate("/login");
             return;
         }
+        if (!canCreateOrJoin) {
+            popup.error("You are already in a group. Please leave first.");
+            return;
+        }
+        if (selfRegistered) {
+            popup.error("You are already registered as an individual delegate.");
+            return;
+        }
         setApiError("");
         const payload = {
             name: String(memberForm.name).trim(),
@@ -543,6 +665,18 @@ const DelegateGroupRegistration = () => {
             const data = await resp.json().catch(() => ({}));
             if (!resp.ok) {
                 const message = data.message || "Failed to join room";
+
+                if (resp.status === 409 || resp.status === 400 || message.toLowerCase().includes("already a member") || message.toLowerCase().includes("already in a group")) {
+                    // Force refresh with the typed Room ID to trigger self-healing
+                    setApiError("You are already in a group. restoring session...");
+                    const recovered = await verifyAndOpenRoom(payload.roomId); // Try the ID they typed!
+                    if (recovered) return;
+
+                    // Fallback to generic refresh if typed ID failed (maybe they typed a different one?)
+                    await refreshStatus();
+                    return;
+                }
+
                 setApiError(message);
                 popup.error(message);
                 return;
@@ -970,112 +1104,112 @@ const DelegateGroupRegistration = () => {
                         <div className={(status.roomId ? "grid gap-6 md:grid-cols-2" : "grid gap-6")}>
                             {/* OWNER CARD */}
                             {selectedMode === "owner" && (
-                            <div className={ownerCardDisabled ? "blur-sm opacity-50 pointer-events-none" : ""}>
-                                <FlipCard
-                                    flipped={flipOwnerCard}
-                                    minHeightClassName="min-h-[480px]"
-                                    front={
-                                        <div className="relative h-full overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg">
-                                            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.18),_transparent_60%)]" />
-                                            <div className="relative space-y-4">
-                                                <div className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">
-                                                    Create Room (Owner)
+                                <div className={ownerCardDisabled ? "blur-sm opacity-50 pointer-events-none" : ""}>
+                                    <FlipCard
+                                        flipped={flipOwnerCard}
+                                        minHeightClassName="min-h-[480px]"
+                                        front={
+                                            <div className="relative h-full overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg">
+                                                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.18),_transparent_60%)]" />
+                                                <div className="relative space-y-4">
+                                                    <div className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">
+                                                        Create Room (Owner)
+                                                    </div>
+
+                                                    {status.isOwner && status.roomId ? (
+                                                        <>
+                                                            <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
+                                                                <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Room ID</div>
+                                                                <div className="mt-2 font-mono text-white text-lg break-all">{status.roomId}</div>
+                                                            </div>
+
+                                                            <div className="flex flex-col gap-3 sm:flex-row">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={copyRoomId}
+                                                                    className="w-full rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-black transition hover:bg-white/90"
+                                                                >
+                                                                    {copied ? "Copied" : "Copy Room ID"}
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={shareRoomId}
+                                                                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20"
+                                                                >
+                                                                    Share
+                                                                </button>
+                                                            </div>
+
+                                                            <div className="flex flex-col gap-3 sm:flex-row">
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={loading}
+                                                                    onClick={handlePay}
+                                                                    className={`w-full rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-black transition hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                                >
+                                                                    Pay
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={loading}
+                                                                    onClick={handleDeleteRoom}
+                                                                    className={`w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                                >
+                                                                    Delete Room
+                                                                </button>
+                                                            </div>
+
+                                                            <div className="text-xs text-white/50">
+                                                                Member panel shows the live room list.
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="grid gap-3">
+                                                                <input
+                                                                    type="text"
+                                                                    name="name"
+                                                                    value={ownerForm.name}
+                                                                    onChange={onOwnerChange}
+                                                                    placeholder="Your name"
+                                                                    className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                                />
+                                                                <input
+                                                                    type="tel"
+                                                                    name="phone"
+                                                                    value={ownerForm.phone}
+                                                                    onChange={onOwnerChange}
+                                                                    placeholder="Phone"
+                                                                    className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    name="college"
+                                                                    value={ownerForm.college}
+                                                                    onChange={onOwnerChange}
+                                                                    placeholder="College / Institute"
+                                                                    className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                                />
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                disabled={groupBlockedBySelf || loading || !authUser}
+                                                                onClick={handleCreateRoom}
+                                                                className={`w-full rounded-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                            >
+                                                                {loading ? "Working..." : "Create Room"}
+                                                            </button>
+                                                            <div className="text-xs text-white/50">
+                                                                Filling this form will blur and clear the member form.
+                                                            </div>
+                                                        </>
+                                                    )}
                                                 </div>
-
-                                                {status.isOwner && status.roomId ? (
-                                                    <>
-                                                        <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
-                                                            <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Room ID</div>
-                                                            <div className="mt-2 font-mono text-white text-lg break-all">{status.roomId}</div>
-                                                        </div>
-
-                                                        <div className="flex flex-col gap-3 sm:flex-row">
-                                                            <button
-                                                                type="button"
-                                                                onClick={copyRoomId}
-                                                                className="w-full rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-black transition hover:bg-white/90"
-                                                            >
-                                                                {copied ? "Copied" : "Copy Room ID"}
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={shareRoomId}
-                                                                className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20"
-                                                            >
-                                                                Share
-                                                            </button>
-                                                        </div>
-
-                                                        <div className="flex flex-col gap-3 sm:flex-row">
-                                                            <button
-                                                                type="button"
-                                                                disabled={loading}
-                                                                onClick={handlePay}
-                                                                className={`w-full rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-black transition hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""}`}
-                                                            >
-                                                                Pay
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                disabled={loading}
-                                                                onClick={handleDeleteRoom}
-                                                                className={`w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20 ${loading ? "pointer-events-none opacity-60" : ""}`}
-                                                            >
-                                                                Delete Room
-                                                            </button>
-                                                        </div>
-
-                                                        <div className="text-xs text-white/50">
-                                                            Member panel shows the live room list.
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <div className="grid gap-3">
-                                                            <input
-                                                                type="text"
-                                                                name="name"
-                                                                value={ownerForm.name}
-                                                                onChange={onOwnerChange}
-                                                                placeholder="Your name"
-                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
-                                                            />
-                                                            <input
-                                                                type="tel"
-                                                                name="phone"
-                                                                value={ownerForm.phone}
-                                                                onChange={onOwnerChange}
-                                                                placeholder="Phone"
-                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
-                                                            />
-                                                            <input
-                                                                type="text"
-                                                                name="college"
-                                                                value={ownerForm.college}
-                                                                onChange={onOwnerChange}
-                                                                placeholder="College / Institute"
-                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
-                                                            />
-                                                        </div>
-                                                        <button
-                                                            type="button"
-                                                            disabled={groupBlockedBySelf || loading || !authUser}
-                                                            onClick={handleCreateRoom}
-                                                            className={`w-full rounded-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""}`}
-                                                        >
-                                                            {loading ? "Working..." : "Create Room"}
-                                                        </button>
-                                                        <div className="text-xs text-white/50">
-                                                            Filling this form will blur and clear the member form.
-                                                        </div>
-                                                    </>
-                                                )}
                                             </div>
-                                        </div>
-                                    }
-                                    back={MemberListPanel}
-                                />
-                            </div>
+                                        }
+                                        back={MemberListPanel}
+                                    />
+                                </div>
                             )}
 
                             {selectedMode === "owner" && Boolean(status.roomId) && (
@@ -1086,94 +1220,107 @@ const DelegateGroupRegistration = () => {
 
                             {/* MEMBER CARD */}
                             {selectedMode === "member" && (
-                            <div className={memberCardDisabled ? "blur-sm opacity-50 pointer-events-none" : ""}>
-                                <FlipCard
-                                    flipped={flipMemberCard}
-                                    minHeightClassName="min-h-[480px]"
-                                    front={
-                                        <div className="relative h-full overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg">
-                                            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(70,0,255,0.18),_transparent_60%)]" />
-                                            <div className="relative space-y-4">
-                                                <div className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">
-                                                    Join Room (Member)
+                                <div className={memberCardDisabled ? "blur-sm opacity-50 pointer-events-none" : ""}>
+                                    <FlipCard
+                                        flipped={flipMemberCard}
+                                        minHeightClassName="min-h-[480px]"
+                                        front={
+                                            <div className="relative h-full overflow-hidden rounded-3xl border border-white/12 bg-white/5 p-6 backdrop-blur-lg">
+                                                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(70,0,255,0.18),_transparent_60%)]" />
+                                                <div className="relative space-y-4">
+                                                    <div className="text-sm font-semibold uppercase tracking-[0.35em] text-white/70">
+                                                        Join Room (Member)
+                                                    </div>
+
+                                                    {status.isMember && status.roomId ? (
+                                                        <>
+                                                            <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
+                                                                <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Room ID</div>
+                                                                <div className="mt-2 font-mono text-white text-lg break-all">{status.roomId}</div>
+                                                            </div>
+
+                                                            <div className="flex flex-col gap-3 sm:flex-row">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={copyRoomId}
+                                                                    className="w-full rounded-full bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-black transition hover:bg-white/90"
+                                                                >
+                                                                    {copied ? "Copied" : "Copy Room ID"}
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={shareRoomId}
+                                                                    className="w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20"
+                                                                >
+                                                                    Share
+                                                                </button>
+                                                            </div>
+
+                                                            <button
+                                                                type="button"
+                                                                disabled={loading}
+                                                                onClick={handleLeaveRoom}
+                                                                className={`w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                            >
+                                                                Leave Room
+                                                            </button>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <div className="grid gap-3">
+                                                                <input
+                                                                    type="text"
+                                                                    name="name"
+                                                                    value={memberForm.name}
+                                                                    onChange={onMemberChange}
+                                                                    placeholder="Your name"
+                                                                    className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                                />
+                                                                <input
+                                                                    type="tel"
+                                                                    name="phone"
+                                                                    value={memberForm.phone}
+                                                                    onChange={onMemberChange}
+                                                                    placeholder="Phone"
+                                                                    className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    name="college"
+                                                                    value={memberForm.college}
+                                                                    onChange={onMemberChange}
+                                                                    placeholder="College / Institute"
+                                                                    className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    name="roomId"
+                                                                    value={memberForm.roomId}
+                                                                    onChange={onMemberChange}
+                                                                    onPaste={handleRoomIdPaste}
+                                                                    placeholder="Room ID"
+                                                                    className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
+                                                                />
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                disabled={groupBlockedBySelf || loading || !authUser}
+                                                                onClick={handleJoinRoom}
+                                                                className={`w-full rounded-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""}`}
+                                                            >
+                                                                {loading ? "Working..." : "Join Room"}
+                                                            </button>
+                                                            <div className="text-xs text-white/50">
+                                                                Filling this form will blur and clear the owner form.
+                                                            </div>
+                                                        </>
+                                                    )}
                                                 </div>
-
-                                                {status.isMember && status.roomId ? (
-                                                    <>
-                                                        <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
-                                                            <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">Room ID</div>
-                                                            <div className="mt-2 font-mono text-white text-lg break-all">{status.roomId}</div>
-                                                        </div>
-
-                                                        <button
-                                                            type="button"
-                                                            disabled={loading}
-                                                            onClick={handleLeaveRoom}
-                                                            className={`w-full rounded-full border border-white/20 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white transition hover:bg-white/20 ${loading ? "pointer-events-none opacity-60" : ""}`}
-                                                        >
-                                                            Leave Room
-                                                        </button>
-
-                                                        <div className="text-xs text-white/50">
-                                                            Owner panel shows the live room list.
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <div className="grid gap-3">
-                                                            <input
-                                                                type="text"
-                                                                name="name"
-                                                                value={memberForm.name}
-                                                                onChange={onMemberChange}
-                                                                placeholder="Your name"
-                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
-                                                            />
-                                                            <input
-                                                                type="tel"
-                                                                name="phone"
-                                                                value={memberForm.phone}
-                                                                onChange={onMemberChange}
-                                                                placeholder="Phone"
-                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
-                                                            />
-                                                            <input
-                                                                type="text"
-                                                                name="college"
-                                                                value={memberForm.college}
-                                                                onChange={onMemberChange}
-                                                                placeholder="College / Institute"
-                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
-                                                            />
-                                                            <input
-                                                                type="text"
-                                                                name="roomId"
-                                                                value={memberForm.roomId}
-                                                                onChange={onMemberChange}
-                                                                onPaste={handleRoomIdPaste}
-                                                                placeholder="Room ID"
-                                                                className="w-full rounded-2xl border border-white/15 bg-black/60 px-4 py-3 text-white placeholder-white/30 focus:border-[#ff1744] focus:outline-none focus:ring-2 focus:ring-[#ff1744]/40"
-                                                            />
-                                                        </div>
-                                                        <button
-                                                            type="button"
-                                                            disabled={groupBlockedBySelf || loading || !authUser}
-                                                            onClick={handleJoinRoom}
-                                                            className={`w-full rounded-full bg-white py-3 text-sm font-semibold uppercase tracking-[0.3em] text-black transition hover:bg-white/90 ${loading ? "pointer-events-none opacity-60" : ""}`}
-                                                        >
-                                                            {loading ? "Working..." : "Join Room"}
-                                                        </button>
-                                                        <div className="text-xs text-white/50">
-                                                            Filling this form will blur and clear the owner form.
-                                                        </div>
-                                                    </>
-                                                )}
                                             </div>
-                                        </div>
-                                    }
-                                    back={MemberListPanel}
-                                />
-                            </div>
+                                        }
+                                        back={MemberListPanel}
+                                    />
+                                </div>
                             )}
 
                             {selectedMode === "member" && Boolean(status.roomId) && (
