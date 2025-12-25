@@ -90,7 +90,7 @@ const designDecorTeam = [
 const designDraftingTeam = [
   {
     image: "https://i.ibb.co/pBTk1xYM/IMG-7648-Arpit-Raj.jpg",
-    title: "Aprit Raj",
+    title: "Arpit Raj",
     subtitle: "HEAD",
     handle: "@arpitrajj",
     borderColor: "#E91E63",
@@ -169,22 +169,22 @@ const venueManagementTeam = [
     url: "https://github.com/tanmays",
   },
   {
-    image: "https://i.ibb.co/RkKJX8Q3/anshu-priya.jpg",
-    title: "Anshu Priya",
+    image: "https://i.ibb.co/JRC4TMT8/kanisk-jain.jpg",
+    title: "Kanishka Jain",
     subtitle: "CO-HEAD",
-    handle: "@_.official.honey",
+    handle: "@kanishk__ajain",
     borderColor: "#8BC34A",
     gradient: "linear-gradient(145deg, #8BC34A, #FF5722)",
-    url: "https://www.instagram.com/_.official.honey?igsh=MW96ajE5amp3dGo2Ng==",
+    url: "https://www.instagram.com/kanishk__ajain?igsh=ZnBydnYzZm9vM3dl",
   },
   {
     image: "https://i.ibb.co/ynJKwPSc/anjali.jpg",
     title: "Anjali Singh",
     subtitle: "CO-HEAD",
-    handle: "@anjalisingh",
+    handle: "@anjali_singh_1205",
     borderColor: "#4CAF50",
     gradient: "linear-gradient(145deg, #4CAF50, #FF9800)",
-    url: "https://github.com/anjalisingh",
+    url: "https://www.instagram.com/anjali_singh_1205/",
   },
 ];
 

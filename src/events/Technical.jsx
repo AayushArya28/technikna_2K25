@@ -296,7 +296,7 @@ export default function Technical() {
       <button
         onClick={() => navigate("/events")}
         className="fixed 
-        top-24 left-4        
+        top-30 left-4        
         sm:top-6 sm:left-6  
         lg:top-20 lg:left-20
         z-50 
@@ -305,11 +305,11 @@ export default function Technical() {
         text-white 
         px-3 py-2 sm:px-4 sm:py-2 
         rounded-lg 
-        transition shadow-md
-        text-sm sm:text-base"
+        transition-all duration-250 shadow-md
+        text-sm sm:text-base cursor-pointer active:scale-95 active:opacity-90 hover:border-red-500/70 border border-transparent"
         >
         ← Back
-        </button>
+      </button>
       <h1 className="text-4xl font-bold mt-20 text-center text-white-500 mb-16">
         TECHNICAL EVENTS
       </h1>
@@ -377,7 +377,7 @@ export default function Technical() {
               <button
                 type="button"
                 onClick={openRulebook}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm"
+                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm cursor-pointer active:scale-95 active:opacity-90"
               >
                 Rulebook
               </button>
@@ -403,7 +403,7 @@ export default function Technical() {
                 className={
                   registrationPaused
                     ? "bg-white/10 border border-white/15 transition px-6 py-3 rounded-lg text-white/70 font-bold cursor-not-allowed"
-                    : "bg-red-600 hover:bg-red-700 transition px-6 py-3 rounded-lg text-white font-bold"
+                    : "bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
                 }
               >
                 {registrationPaused ? "Registrations Paused" : "Register Now"}
@@ -421,14 +421,14 @@ export default function Technical() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={prev}
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 backdrop-blur transition hover:bg-white hover:text-black"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/10 backdrop-blur transition hover:bg-white hover:text-black cursor-pointer hover:shadow-[0_0_18px_rgba(255,255,255,0.55)] active:scale-95 active:opacity-90"
                     aria-label="Previous event"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
                   <button
                     onClick={next}
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-red-500/70 bg-red-600/90 backdrop-blur transition hover:bg-red-500"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-red-500/70 bg-red-600/90 backdrop-blur transition hover:bg-red-500 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] cursor-pointer active:scale-95 active:opacity-90"
                     aria-label="Next event"
                   >
                     <ChevronRight className="h-5 w-5" />

@@ -145,11 +145,11 @@ export default function Accommodation() {
                   onClick={() => {
                     if (!isConfirmed) setOpenForm(true);
                   }}
-                  className={`mt-6 inline-flex w-fit items-center gap-2 rounded-full px-5 py-2.5 font-medium transition
+                  className={`mt-6 inline-flex w-fit items-center gap-2 rounded-full px-5 py-2.5 font-medium transition duration-200
                     ${
                       isConfirmed
                         ? "bg-red-600/20 text-red-300 cursor-not-allowed"
-                        : "bg-white text-black hover:-translate-y-[1px] hover:bg-white/90"
+                        : "bg-white text-black hover:scale-105 cursor-pointer active:scale-95 active:opacity-90 hover:shadow-[0_0px_10px_5px_rgba(255,255,255,0.25)]"
                     }`}
                 >
                   {isConfirmed
