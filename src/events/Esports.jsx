@@ -10,17 +10,17 @@ import { usePopup } from "../context/usePopup.jsx";
 const RULEBOOK_PDF_URL = "/rulebooks/technika-event-brochure.pdf";
 
 const events = [
-    {
-      key: "freefire",
-      title: "Free Fire",
-      desc: "Online event — Squad up for Free Fire! Show your skills and strategy in this action-packed battle royale. Venue: As per schedule.",
-      img: "https://i.ibb.co/rK2qwHXk/free-fire.png",
-      participation: "Team (up to 4 participants)",
-      fee: "₹199 per team",
-      allowedModes: ["group"],
-      groupMinTotal: 2,
-      groupMaxTotal: 4,
-    },
+  {
+    key: "freefire",
+    title: "Free Fire",
+    desc: "Online event — Squad up for Free Fire! Show your skills and strategy in this action-packed battle royale. Venue: As per schedule.",
+    img: "https://i.ibb.co/rK2qwHXk/free-fire.png",
+    participation: "Team (up to 4 participants)",
+    fee: "₹199 per team",
+    allowedModes: ["group"],
+    groupMinTotal: 2,
+    groupMaxTotal: 4,
+  },
   {
     key: "bgmi",
     title: "BGMI",
@@ -187,24 +187,24 @@ export default function Esports() {
 
             <div className="flex-1 overflow-y-auto pr-2">
 
-            <p className="text-white mb-10">{events[active].desc}</p>
+              <p className="text-white mb-10">{events[active].desc}</p>
 
-            <div className="mb-6">
-              <button
-                type="button"
-                onClick={() => openRulebook(events?.[active])}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm cursor-pointer active:scale-95 active:opacity-90"
-              >
-                Rulebook
-              </button>
-            </div>
+              <div className="mb-6">
+                <button
+                  type="button"
+                  onClick={() => openRulebook(events?.[active])}
+                  className="rounded-full border border-white/20 bg-white/10 px-4 py-2 text-white hover:bg-white/20 transition text-sm cursor-pointer active:scale-95 active:opacity-90"
+                >
+                  Rulebook
+                </button>
+              </div>
 
-            <ul className="text-sm text-white/80 space-y-2 mb-8">
-              <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
-              {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
-              <li>• Certificates & Cash Prizes</li>
-              <li>• On-Spot Evaluation</li>
-            </ul>
+              <ul className="text-sm text-white/80 space-y-2 mb-8">
+                <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+                {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
+                <li>• Certificates & Cash Prizes</li>
+                <li>• On-Spot Evaluation</li>
+              </ul>
 
             </div>
 
@@ -214,13 +214,18 @@ export default function Esports() {
                   On-site registration
                 </div>
               ) : (
-                <button
-                  type="button"
-                  onClick={() => setFormOpen(true)}
-                  className="bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
-                >
-                  Register Now
-                </button>
+                <div className="flex flex-col items-center">
+                  <button
+                    type="button"
+                    onClick={() => setFormOpen(true)}
+                    className="bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
+                  >
+                    Register Now
+                  </button>
+                  <p className="text-[10px] text-white/50 mt-1 text-center">
+                    *T&C Applied
+                  </p>
+                </div>
               )}
 
               <div className="flex items-center justify-between gap-6 w-full sm:w-auto">
@@ -268,11 +273,10 @@ export default function Esports() {
                 ref={isActive ? cardRef : null}
                 onClick={() => setActive(index)}
                 className={`relative cursor-pointer transition-all duration-300 rounded-xl overflow-hidden flex-shrink-0
-                ${
-                  isActive
+                ${isActive
                     ? "scale-110 z-20 shadow-[0_0_35px_#ff0000]"
                     : "scale-90 opacity-50"
-                }
+                  }
                 w-[170px] h-[240px]`}
               >
                 <img

@@ -4,6 +4,7 @@ import { auth, db } from "../firebase";
 import { BASE_API_URL, fetchJson, getAuthHeaders } from "../lib/api.js";
 import { usePopup } from "../context/usePopup.jsx";
 import { useEntitlements } from "../context/useEntitlements.jsx";
+import { FREE_SOLO_EVENT_IDS } from "../lib/eligibility.js";
 
 function sanitizePhone(phone) {
   return String(phone || "").replace(/\D/g, "").trim();
@@ -20,8 +21,13 @@ export default function EventForm({
   groupMaxTotal = null,
 }) {
   const popup = usePopup();
-  const { loading: entitlementsLoading, isEventFreeEligible, isBitStudent, hasDelegatePass } =
-    useEntitlements();
+  const {
+    loading: entitlementsLoading,
+    isEventFreeEligible,
+    isBitStudent,
+    hasDelegatePass,
+    hasAlumniPass,
+  } = useEntitlements();
   const modalRef = useRef(null);
   const submitLockRef = useRef(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -298,7 +304,13 @@ export default function EventForm({
       }
     }
 
-    const freeEligible = Boolean(isEventFreeEligible);
+    const isFreeEventId = FREE_SOLO_EVENT_IDS.includes(Number(eventId));
+    // Determine if this specific registration is free.
+    // 1. BIT Students: Always free (isEventFreeEligible is true only for them now).
+    // 2. Delegate/Alumni: Free ONLY if it matches the FREE_SOLO_EVENT_IDS list.
+    const freeEligible =
+      isEventFreeEligible || // BIT Student
+      (Boolean(hasDelegatePass || hasAlumniPass) && isFreeEventId);
     // Popup blockers usually allow window.open only in the direct click handler.
     // So we open a blank tab first (synchronously), then navigate it after the API responds.
     let paymentTab = null;
@@ -392,9 +404,9 @@ export default function EventForm({
 
       popup.success(
         data?.message ||
-          (freeEligible
-            ? "Event registration confirmed (free)."
-            : "Event registration submitted.")
+        (freeEligible
+          ? "Event registration confirmed (free)."
+          : "Event registration submitted.")
       );
       onClose?.();
     } catch (e) {
@@ -447,11 +459,10 @@ export default function EventForm({
                   <button
                     type="button"
                     onClick={() => setType("solo")}
-                    className={`rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.22em] border transition sm:px-4 sm:text-xs ${
-                      type === "solo"
-                        ? "border-[#ff0045]/50 bg-[#ff0045]/20 text-white"
-                        : "border-white/20 bg-white/10 text-white/80 hover:bg-white/20"
-                    }`}
+                    className={`rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.22em] border transition sm:px-4 sm:text-xs ${type === "solo"
+                      ? "border-[#ff0045]/50 bg-[#ff0045]/20 text-white"
+                      : "border-white/20 bg-white/10 text-white/80 hover:bg-white/20"
+                      }`}
                   >
                     Solo
                   </button>
@@ -460,11 +471,10 @@ export default function EventForm({
                   <button
                     type="button"
                     onClick={() => setType("group")}
-                    className={`rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.22em] border transition sm:px-4 sm:text-xs ${
-                      type === "group"
-                        ? "border-[#ff0045]/50 bg-[#ff0045]/20 text-white"
-                        : "border-white/20 bg-white/10 text-white/80 hover:bg-white/20"
-                    }`}
+                    className={`rounded-full px-3 py-2 text-[11px] uppercase tracking-[0.22em] border transition sm:px-4 sm:text-xs ${type === "group"
+                      ? "border-[#ff0045]/50 bg-[#ff0045]/20 text-white"
+                      : "border-white/20 bg-white/10 text-white/80 hover:bg-white/20"
+                      }`}
                   >
                     Group
                   </button>
