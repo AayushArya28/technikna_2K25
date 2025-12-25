@@ -31,23 +31,38 @@ const PRODUCTS = [
 export default function Merchandise() {
   const [modalProduct, setModalProduct] = useState(null);
   const [modalIndex, setModalIndex] = useState(0);
+  const [modalSize, setModalSize] = useState("M");
   const [cart, setCart] = useState([]);
   const [couponApplied, setCouponApplied] = useState(false);
   const [cartOpen, setCartOpen] = useState(true);
+  const [selectedSizes, setSelectedSizes] = useState({});
 
-  const addToCart = (product) => {
+  const SIZES = ["S", "M", "L", "XL"];
+
+  const addToCart = (product, size = "M") => {
     setCart((c) => {
-      const found = c.find((i) => i.id === product.id);
-      if (found) {
-        showNotice("You can only add one of each item");
-        return c;
-      }
       const thumb = product.thumb || product.images[0];
-      return [...c, { ...product, qty: 1, thumb }];
+      const found = c.find((i) => i.id === product.id && i.size === size);
+      if (found) {
+        const newQty = found.qty + 1;
+        const updated = c.map((i) => (i.id === product.id && i.size === size ? { ...i, qty: newQty } : i));
+        showNotice(`${newQty} × ${product.title} (${size}) in cart`);
+        return updated;
+      }
+      showNotice(`1 × ${product.title} (${size}) added to cart`);
+      return [...c, { ...product, qty: 1, thumb, size }];
     });
   };
 
-  const removeFromCart = (id) => setCart((c) => c.filter((i) => i.id !== id));
+  const removeFromCart = (id, size) => setCart((c) => c.filter((i) => !(i.id === id && i.size === size)));
+
+  const updateQty = (id, size, delta) => {
+    setCart((c) => {
+      return c
+        .map((i) => (i.id === id && i.size === size ? { ...i, qty: Math.max(0, i.qty + delta) } : i))
+        .filter((i) => i.qty > 0);
+    });
+  };
 
   const total = cart.reduce((s, it) => s + it.price * it.qty, 0);
   const discounted = couponApplied ? 1499 : total;
@@ -60,6 +75,7 @@ export default function Merchandise() {
 
   useEffect(() => {
     if (modalProduct) setModalIndex(0);
+    if (modalProduct) setModalSize(selectedSizes[modalProduct.id] || "M");
   }, [modalProduct]);
 
   const modalRef = useRef(null);
@@ -95,6 +111,12 @@ export default function Merchandise() {
       );
     }
   }, [modalProduct]);
+
+  useEffect(() => {
+    if (modalProduct) {
+      setModalSize(selectedSizes[modalProduct.id] || "M");
+    }
+  }, [modalProduct, selectedSizes]);
 
   // Prevent background scrolling while modal is open; allow scrolling inside modal.
   // Use fixed positioning to preserve scroll position and restore on close.
@@ -160,11 +182,15 @@ export default function Merchandise() {
         <div className="relative z-10 max-w-6xl w-full">
           <h1 className="text-4xl font-bold mb-6">Merchandise</h1>
 
+          <div className="mb-6 rounded-lg border border-white/10 bg-black/50 p-3 text-sm text-white/80">
+            <strong className="text-white">Combo offer:</strong> Purchase both the Technika Jacket and Technika T-Shirt together and the combined price will be reduced to ₹1499. The discount is applied automatically in the cart when both items are added.
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {PRODUCTS.map((p) => (
               <div key={p.id} className="relative overflow-hidden rounded-[28px] border border-white/12 bg-black/55 p-4 flex flex-col md:flex-row gap-4 backdrop-blur-xl shadow-[0_40px_110px_rgba(255,0,48,0.12)]">
-                <div className="flex-shrink-0 w-full md:w-48">
-                  <img src={p.images[0]} alt={p.title} className="rounded-md w-full h-40 object-cover" />
+                <div className="flex-shrink-0 w-full md:w-44">
+                  <img src={p.images[0]} alt={p.title} className="rounded-md w-full h-36 object-cover" />
                 </div>
 
                 <div className="flex-1 flex flex-col justify-between">
@@ -173,24 +199,42 @@ export default function Merchandise() {
                     <p className="text-white/70 mt-2">High quality official event merch.</p>
                   </div>
 
-                  <div className="mt-4 flex items-center justify-between">
+                  <div className="mt-4 flex items-start justify-between gap-4">
                     <div>
-                      <div className="text-xl font-bold">₹{p.price}</div>
-                      <div className="text-sm text-white/60">{p.images.length} photos</div>
+                      <div className="text-lg font-semibold">₹{p.price}</div>
+                      <div className="text-xs text-white/50 mt-1">{p.images.length} photos</div>
+
+                      <div className="mt-3">
+                        <label className="text-xs text-white/50 mr-2">Size</label>
+                        <select
+                          value={selectedSizes[p.id] || "M"}
+                          onChange={(e) => setSelectedSizes((s) => ({ ...s, [p.id]: e.target.value }))}
+                          className="inline-block bg-black/25 border border-white/8 rounded px-2 py-1 text-white text-sm"
+                        >
+                          {SIZES.map((sz) => (
+                            <option key={sz} value={sz}>{sz}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex items-center gap-2">
                       <button
                         onClick={() => setModalProduct(p)}
-                        className="px-4 py-2 bg-transparent border border-white/10 rounded-full hover:bg-white/5"
+                        aria-label={`View ${p.title}`}
+                        className="w-10 h-10 flex items-center justify-center rounded-full border border-white/8 bg-transparent text-white/70 hover:bg-white/5"
                       >
-                        View
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7z"/>
+                          <circle cx="12" cy="12" r="3" strokeWidth="1.5"/>
+                        </svg>
                       </button>
+
                       <button
-                        onClick={() => addToCart(p)}
-                        className="px-4 py-2 bg-gradient-to-r from-[#ff1744] via-[#ff4f81] to-[#5b2cff] text-white rounded-full shadow-md"
+                        onClick={() => addToCart(p, selectedSizes[p.id] || "M")}
+                        className="px-3 py-2 text-sm rounded-full bg-gradient-to-r from-[#ff6b7a] via-[#ff4f81] to-[#7a4bff] text-white shadow-sm"
                       >
-                        Add to cart
+                        Add
                       </button>
                     </div>
                   </div>
@@ -216,19 +260,24 @@ export default function Merchandise() {
               <div className="flex flex-col gap-2 max-h-40 overflow-auto">
                 {cart.length === 0 && <div className="text-neutral-400">Cart is empty</div>}
                 {cart.map((it) => (
-                  <div key={it.id} className="flex items-center justify-between gap-2">
+                  <div key={`${it.id}-${it.size}`} className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       {it.thumb && (
                         <img src={it.thumb} alt={it.title} className="w-12 h-12 object-cover rounded" />
                       )}
                       <div>
-                        <div className="font-medium">{it.title}</div>
+                        <div className="font-medium">{it.title} <span className="text-sm text-white/60">· {it.size}</span></div>
                         <div className="text-sm text-neutral-400">Qty: {it.qty}</div>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex flex-col items-end gap-1">
                       <div>₹{it.price * it.qty}</div>
-                      <button onClick={() => removeFromCart(it.id)} className="text-xs text-red-400">Remove</button>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => updateQty(it.id, it.size, -1)} className="text-sm px-2 py-1 bg-white/5 rounded">-</button>
+                        <div className="text-sm">{it.qty}</div>
+                        <button onClick={() => updateQty(it.id, it.size, 1)} className="text-sm px-2 py-1 bg-white/5 rounded">+</button>
+                        <button onClick={() => removeFromCart(it.id, it.size)} className="text-xs text-red-400">Remove</button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -321,14 +370,28 @@ export default function Merchandise() {
 
                   <div className="mt-auto">
                     <div className="flex gap-2">
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm text-white/60">Size</label>
+                        <select
+                          value={modalSize}
+                          onChange={(e) => setModalSize(e.target.value)}
+                          className="bg-black/30 border border-white/10 rounded px-2 py-1 text-white text-sm"
+                        >
+                          {SIZES.map((sz) => (
+                            <option key={sz} value={sz}>{sz}</option>
+                          ))}
+                        </select>
+                      </div>
+
                       <button
-                        onClick={() => { addToCart(modalProduct); closeModal(); }}
+                        onClick={() => { setSelectedSizes((s)=>({ ...s, [modalProduct.id]: modalSize })); addToCart(modalProduct, modalSize); closeModal(); }}
                         className="flex-1 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/90"
                       >
                         Add to cart
                       </button>
                       <button
                         onClick={() => {
+                          setSelectedSizes((s)=>({ ...s, [modalProduct.id]: modalSize }));
                           closeModal();
                           if (!isBitStudent) {
                             showNotice("You are not eligible to buy the merch from the site.");
