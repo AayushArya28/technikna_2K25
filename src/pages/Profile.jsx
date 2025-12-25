@@ -18,6 +18,7 @@ import {
   getDocs,
   limit,
   query,
+  setDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -518,6 +519,21 @@ export default function Profile() {
         let firestoreUserData = {};
         if (docSnap?.exists?.()) {
           firestoreUserData = docSnap.data();
+        } else {
+          // Create new user snapshot if it doesn't exist
+          try {
+            const newUserData = {
+              email: user.email,
+              name: user.displayName || "User",
+              college: "Not Provided",
+              phone: "",
+              createdAt: new Date(),
+            };
+            await setDoc(doc(db, "auth", user.uid), newUserData);
+            firestoreUserData = newUserData;
+          } catch (error) {
+            console.error("Error creating user snapshot:", error);
+          }
         }
 
         let firestoreEvents = [];
