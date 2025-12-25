@@ -7,7 +7,7 @@ const PRODUCTS = [
   {
     id: "jacket",
     title: "Technika Jacket",
-    price: 1200,
+    price: 1199,
     thumb: "https://i.ibb.co/nMN19szx/jacket-1.png",
     images: [
       "https://i.ibb.co/nMN19szx/jacket-1.png",
@@ -17,7 +17,7 @@ const PRODUCTS = [
   {
     id: "tshirt",
     title: "Technika T-Shirt",
-    price: 800,
+    price: 799,
     thumb: "https://i.ibb.co/fVkkBTg2/tshirt-thumbnal.png",
     images: [
       "https://i.ibb.co/qMVvN1Nv/tshirt-1.png",
