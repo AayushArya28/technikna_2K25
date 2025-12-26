@@ -239,6 +239,7 @@ export default function Merchandise() {
   }, [modalProduct]);
 
   const modalRef = useRef(null);
+  const ordersModalRef = useRef(null);
   const [notice, setNotice] = useState(null);
   // const { isBitStudent } = useEntitlements();
 
@@ -277,7 +278,7 @@ export default function Merchandise() {
   // Prevent background scrolling while modal is open; allow scrolling inside modal.
   // Use fixed positioning to preserve scroll position and restore on close.
   useEffect(() => {
-    if (!modalProduct) return;
+    if (!modalProduct && !ordersModalOpen) return;
     const body = document.body;
     const docEl = document.documentElement;
     const scrollY = window.scrollY || window.pageYOffset;
@@ -306,14 +307,18 @@ export default function Merchandise() {
       body.style.width = prev.width || "";
       window.scrollTo(0, prev.scrollTop || 0);
     };
-  }, [modalProduct]);
+  }, [modalProduct, ordersModalOpen]);
 
   // Allow touch scrolling only inside modal on mobile: prevent touchmove outside modal
   useEffect(() => {
-    if (!modalProduct) return;
+    if (!modalProduct && !ordersModalOpen) return;
+
+    // Determine which modal is active
+    const activeRef = ordersModalOpen ? ordersModalRef : modalRef;
+
     const onTouchMove = (e) => {
-      if (!modalRef.current) return;
-      if (!modalRef.current.contains(e.target)) {
+      if (!activeRef.current) return;
+      if (!activeRef.current.contains(e.target)) {
         e.preventDefault();
       }
     };
@@ -323,7 +328,7 @@ export default function Merchandise() {
     return () => {
       document.removeEventListener("touchmove", onTouchMove);
     };
-  }, [modalProduct]);
+  }, [modalProduct, ordersModalOpen]);
 
   return (
     <>
@@ -407,6 +412,17 @@ export default function Merchandise() {
                                 {SIZES.map((sz) => (<option key={sz} value={sz}>{sz}</option>))}
                               </select>
                             </div>
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs text-white/50 mr-2">Qty</label>
+                              <input
+                                type="number"
+                                min="1"
+                                max="5"
+                                value={quantities[p.id] || 1}
+                                onChange={(e) => setQuantities(q => ({ ...q, [p.id]: Math.max(1, parseInt(e.target.value) || 1) }))}
+                                className="bg-black/25 border border-white/8 rounded px-2 py-1 text-white text-xs w-10 text-center"
+                              />
+                            </div>
                           </>
                         ) : (
                           <div className="flex items-center gap-2">
@@ -455,8 +471,9 @@ export default function Merchandise() {
                           if (p.isCombo) {
                             const jacketSize = selectedSizes[`${p.id}_jacket`] || "M";
                             const tshirtSize = selectedSizes[`${p.id}_tshirt`] || "M";
+                            const qty = quantities[p.id] || 1;
                             handleCheckout([
-                              { productId: p.id, size: `Jacket: ${jacketSize}, T-Shirt: ${tshirtSize}`, quantity: 1 }
+                              { productId: p.id, size: `Jacket: ${jacketSize}, T-Shirt: ${tshirtSize}`, quantity: qty }
                             ]);
                           } else {
                             const qty = quantities[p.id] || 1;
@@ -575,7 +592,7 @@ export default function Merchandise() {
       {
         ordersModalOpen && (
           <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-            <div className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
+            <div ref={ordersModalRef} className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <h3 className="text-xl font-bold text-white">My Orders</h3>
                 <button onClick={() => setOrdersModalOpen(false)} className="text-white/50 hover:text-white cursor-pointer">✕</button>
