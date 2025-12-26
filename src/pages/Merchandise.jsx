@@ -34,8 +34,8 @@ const PRODUCTS = [
     title: "Technika Combo (Jacket + T-Shirt)",
     price: 1499,
     originalPrice: 1998,
-    thumb: "https://i.ibb.co/nMN19szx/jacket-1.png",
-    images: ["https://i.ibb.co/nMN19szx/jacket-1.png", "https://i.ibb.co/fVkkBTg2/tshirt-thumbnal.png"],
+    thumb: "https://i.ibb.co/LD36XCgK/Merchandise-1.png",
+    images: ["https://i.ibb.co/LD36XCgK/Merchandise-1.png", "https://i.ibb.co/nMN19szx/jacket-1.png", "https://i.ibb.co/fVkkBTg2/tshirt-thumbnal.png"],
   },
 ];
 
