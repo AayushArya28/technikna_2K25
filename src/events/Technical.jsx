@@ -302,7 +302,7 @@ export default function Technical() {
         z-50 
         flex items-center gap-2 
         hover:bg-black 
-        text-white 
+        text-white bg-black/30 backdrop-blur-xl
         px-3 py-2 sm:px-4 sm:py-2 
         rounded-lg 
         transition-all duration-250 shadow-md
