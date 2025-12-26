@@ -397,6 +397,17 @@ export default function Merchandise() {
                                 {SIZES.map((sz) => (<option key={sz} value={sz}>{sz}</option>))}
                               </select>
                             </div>
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs text-white/50 mr-2">Qty</label>
+                              <input
+                                type="number"
+                                min="1"
+                                max="5"
+                                value={quantities[p.id] || 1}
+                                onChange={(e) => setQuantities(q => ({ ...q, [p.id]: Math.max(1, parseInt(e.target.value) || 1) }))}
+                                className="bg-black/25 border border-white/8 rounded px-2 py-1 text-white text-xs w-10 text-center"
+                              />
+                            </div>
                           </>
                         ) : (
                           <div className="flex items-center gap-2">
@@ -445,8 +456,9 @@ export default function Merchandise() {
                           if (p.isCombo) {
                             const jacketSize = selectedSizes[`${p.id}_jacket`] || "M";
                             const tshirtSize = selectedSizes[`${p.id}_tshirt`] || "M";
+                            const qty = quantities[p.id] || 1;
                             handleCheckout([
-                              { productId: p.id, size: `Jacket: ${jacketSize}, T-Shirt: ${tshirtSize}`, quantity: 1 }
+                              { productId: p.id, size: `Jacket: ${jacketSize}, T-Shirt: ${tshirtSize}`, quantity: qty }
                             ]);
                           } else {
                             const qty = quantities[p.id] || 1;
