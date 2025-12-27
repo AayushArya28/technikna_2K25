@@ -97,6 +97,11 @@ export function ContactUs() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim() || !formData.message.trim()) {
+      popup.error("Please fill in all fields.");
+      return;
+    }
+
     try {
       await addDoc(collection(db, "contacts"), {
         ...formData,
@@ -309,6 +314,7 @@ export function ContactUs() {
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
+                    required
                     className="w-full px-4 py-2 rounded-lg bg-black/60 border border-white/20 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
                     placeholder="Your name"
                   />
@@ -324,6 +330,7 @@ export function ContactUs() {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
+                    required
                     className="w-full px-4 py-2 rounded-lg bg-black/60 border border-white/20 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
                     placeholder="your.email@example.com"
                   />
@@ -339,6 +346,7 @@ export function ContactUs() {
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
+                    required
                     className="w-full px-4 py-2 rounded-lg bg-black/60 border border-white/20 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
                     placeholder="+91 123 456 7890"
                   />
@@ -352,6 +360,7 @@ export function ContactUs() {
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
+                    required
                     rows="4"
                     className="w-full px-4 py-2 rounded-lg bg-black/60 border border-white/20 text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all resize-none"
                     placeholder="Tell us what's on your mind..."
