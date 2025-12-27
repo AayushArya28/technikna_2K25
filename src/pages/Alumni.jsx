@@ -267,7 +267,7 @@ const Alumni = () => {
       const ok = formRef.current.reportValidity();
       if (!ok) {
         // reportValidity shows messages on inputs — bail out
-          closePaymentTab();
+        closePaymentTab();
         return;
       }
     }
@@ -656,6 +656,7 @@ const Alumni = () => {
                             <option value="L">L</option>
                             <option value="XL">XL</option>
                             <option value="XXL">XXL</option>
+                            <option value="XXXL">XXXL</option>
                           </select>
                         </div>
                       </div>
