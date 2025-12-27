@@ -457,7 +457,7 @@ const Alumni = () => {
               <ul className="space-y-3 mb-6">
                 {[
                   "Alumni Gift Pack curated specially for Technika ’26",
-                  "Full Access to PR Night & DJ Night",
+                  "Full Access to Pro Night & DJ Night",
                   "Entry to all flagship events & showcases",
                   "Free Car Parking throughout the fest",
                 ].map((item, i) => (
