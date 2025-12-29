@@ -39,6 +39,13 @@ const PRODUCTS = [
   },
 ];
 
+const TYPE_MAP = {
+  jacket: { id: "2474", title: "Official Bit Mesra Jacket" },
+  tee:    { id: "2475", title: "Technika T-Shirt" },
+  combo:  { id: "2476", title: "Technika Combo (Jacket + T-Shirt)" },
+};
+
+
 export default function Merchandise() {
   const [modalProduct, setModalProduct] = useState(null);
   const [modalIndex, setModalIndex] = useState(0);
@@ -65,6 +72,8 @@ export default function Merchandise() {
           if (o.item?.type === 'jacket') title = "Official Bit Mesra Jacket";
           else if (o.item?.type === 'tee') title = "Technika T-Shirt";
           else if (o.item?.type === 'combo') title = "Technika Combo";
+          const t = TYPE_MAP[o.item?.type] ?? {};
+          const price = PRODUCTS.find(p => p.id === t.id)?.price ?? 0;
 
           return {
             id: o.id,
@@ -72,7 +81,8 @@ export default function Merchandise() {
             status: o.paymentStatus,
             payment_url: o.paymentUrl,
             size: o.item?.size,
-            amount: 0 // Backend doesn't send amount in list, handled by UI defaults or logic
+            amount: price * (o.item?.quantity ?? 1), // Backend doesn't send amount in list, handled by UI defaults or logic
+            quantity: o.item?.quantity ?? 1
           };
         });
         setOrders(mappedOrders);
@@ -337,7 +347,7 @@ export default function Merchandise() {
               <div className="flex flex-col items-end">
                 <button
                   onClick={() => setOrdersModalOpen(true)}
-                  className="px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm hover:bg-white/20 transition-colors"
+                  className="px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm hover:bg-white/20 transition-colors cursor-pointer"
                 >
                   My Orders
                 </button>
@@ -472,7 +482,7 @@ export default function Merchandise() {
                             ]);
                           }
                         }}
-                        className="flex-1 px-3 py-2 text-sm rounded-full bg-gradient-to-r from-[#ff6b7a] via-[#ff4f81] to-[#7a4bff] text-white shadow-sm font-semibold"
+                        className="flex-1 px-3 py-2 text-sm rounded-full bg-gradient-to-r from-[#ff6b7a] via-[#ff4f81] to-[#7a4bff] text-white shadow-sm font-semibold cursor-pointer"
                       >
                         Buy Now
                       </button>
@@ -566,7 +576,7 @@ export default function Merchandise() {
                         ]);
                         closeModal();
                       }}
-                      className="flex-1 px-4 py-2 rounded-full bg-gradient-to-r from-[#ff1744] via-[#ff4f81] to-[#5b2cff] text-white font-semibold"
+                      className="flex-1 px-4 py-2 rounded-full bg-gradient-to-r from-[#ff1744] via-[#ff4f81] to-[#5b2cff] text-white font-semibold cursor-pointer"
                     >
                       Buy Now
                     </button>
@@ -585,7 +595,7 @@ export default function Merchandise() {
             <div ref={ordersModalRef} className="bg-[#111] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
               <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <h3 className="text-xl font-bold text-white">My Orders</h3>
-                <button onClick={() => setOrdersModalOpen(false)} className="text-white/50 hover:text-white">✕</button>
+                <button onClick={() => setOrdersModalOpen(false)} className="text-white/50 hover:text-white cursor-pointer">✕</button>
               </div>
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {loadingOrders ? (
@@ -606,7 +616,7 @@ export default function Merchandise() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="font-bold text-lg">₹{order.amount || order.totalAmount || 0}</div>
+                          <div className="font-bold text-lg text-white">₹{order.amount || order.totalAmount || 0}</div>
                           <button
                             onClick={() => checkOrderStatus(order.id)}
                             className="text-xs text-[#ff4f81] hover:underline mt-1"
@@ -617,6 +627,7 @@ export default function Merchandise() {
                       </div>
                       <div className="text-white/80 border-t border-white/5 pt-2 text-sm">{order.title}</div>
                       {order.size && <div className="text-sm text-white/50">Size: {order.size}</div>}
+                      <div className="text-sm text-white/50">Quantity: {order.quantity}</div>
 
                       {order.payment_url && order.status !== 'PAID' && (
                         <div className="mt-3 pt-2 border-t border-white/10">
