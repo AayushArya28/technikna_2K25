@@ -182,7 +182,7 @@ const venueManagementTeam = [
     title: "Anjali Singh",
     subtitle: "CO-HEAD",
     handle: "@anjali_singh_1205",
-    borderColor: "#4CAF50",
+    borderColor: "#4CAF51",
     gradient: "linear-gradient(145deg, #4CAF50, #FF9800)",
     url: "https://www.instagram.com/anjali_singh_1205/",
   },
