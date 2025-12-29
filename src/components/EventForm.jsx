@@ -19,6 +19,7 @@ export default function EventForm({
   allowedModes = ["solo", "group"],
   groupMinTotal = 2,
   groupMaxTotal = null,
+  registrationPaused = false,
 }) {
   const popup = usePopup();
   const {
@@ -34,8 +35,6 @@ export default function EventForm({
   const [submitting, setSubmitting] = useState(false);
   const [checking, setChecking] = useState(false);
   const [status, setStatus] = useState(null);
-
-  const registrationPaused = String(eventId || "") === "1";
 
   const [profile, setProfile] = useState({
     name: "",
