@@ -100,7 +100,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
-    registrationPaused: false,
   },
   {
     key: "ampere_assemble",
