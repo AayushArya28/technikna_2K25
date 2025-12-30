@@ -90,6 +90,19 @@ const TECHNICAL_RULEBOOK_TEXT_RAW = {
 
 const events = [
   {
+    key: "hackathon",
+    title: "Dev Conquest (Hackathon)",
+    desc: "An intense hackathon challenging teams to build innovative solutions to real-world problems. Venue: CC-1 / CC-2 (depending on participation).",
+    img: "https://i.ibb.co/20SGzKMv/dev-contest.png",
+    participation: "Team (2–4 participants)",
+    fee: "₹499 per team",
+    prizePool: "₹30,000",
+    allowedModes: ["group"],
+    groupMinTotal: 2,
+    groupMaxTotal: 4,
+    registrationPaused: false,
+  },
+  {
     key: "ampere_assemble",
     title: "Ampere Assemble",
     desc: "Dive into the world of circuits and electronics. This competition tests participants’ knowledge and practical skills in assembling and troubleshooting complex electronic systems. Venue: Basic Electronics Lab.",
@@ -190,18 +203,6 @@ const events = [
     participation: "Solo",
     fee: "₹199",
     allowedModes: ["solo"],
-  },
-  {
-    key: "hackathon",
-    title: "Dev Conquest (Hackathon)",
-    desc: "An intense hackathon challenging teams to build innovative solutions to real-world problems. Venue: CC-1 / CC-2 (depending on participation).",
-    img: "https://i.ibb.co/20SGzKMv/dev-contest.png",
-    participation: "Team (2–4 participants)",
-    fee: "₹499 per team (On hold)",
-    allowedModes: ["group"],
-    groupMinTotal: 2,
-    groupMaxTotal: 4,
-    registrationPaused: true,
   },
   {
     key: "robo_race",
@@ -386,6 +387,7 @@ export default function Technical() {
             <ul className="text-sm text-white/80 space-y-2 mb-8">
               <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
               {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
+              {!!events?.[active]?.prizePool && <li>• Prize Pool: {events[active].prizePool}</li>}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>
@@ -495,6 +497,7 @@ export default function Technical() {
         allowedModes={events?.[active]?.allowedModes}
         groupMinTotal={events?.[active]?.groupMinTotal}
         groupMaxTotal={events?.[active]?.groupMaxTotal}
+        registrationPaused={!!events?.[active]?.registrationPaused}
       />
     </div>
   );
