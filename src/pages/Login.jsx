@@ -9,7 +9,8 @@ import {
   sendPasswordResetEmail,
   signOut,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
+
 
 export default function Login() {
   const [isMobile, setIsMobile] = useState(false);
@@ -94,8 +95,26 @@ export default function Login() {
       return;
     }
 
+  const key = signIn ? "loginCooldown" : "signupCooldown";
+  const lastTime = localStorage.getItem(key);
+
+  if (lastTime) {
+    const elapsed = Date.now() - Number(lastTime);
+
+    if (elapsed < 30_000) {
+      const remaining = Math.ceil((30_000 - elapsed) / 1000);
+      setLoading(false);
+      setError(`Please wait ${remaining}s before trying again.`);
+      return;
+    }
+
+    localStorage.removeItem(key);
+  }
+
     try {
       if (signIn) {
+        localStorage.setItem("loginCooldown", Date.now());
+
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
@@ -118,6 +137,8 @@ export default function Login() {
         setSuccess("Login successful!");
         setTimeout(() => navigate("/"), 1000);
       } else {
+        localStorage.setItem("signupCooldown", Date.now());
+
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
@@ -141,6 +162,7 @@ export default function Login() {
         );
       }
     } catch (err) {
+      if (signIn) localStorage.setItem("loginCooldown", Date.now()); else localStorage.setItem("signupCooldown", Date.now());
       if (err.code === "auth/invalid-credential") {
         setError("Wrong password, try again.");
       } else {
@@ -153,19 +175,54 @@ export default function Login() {
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
+
+  setError("");
+  setSuccess("");
+
     if (!email || !email.includes("@")) {
       setError("Please enter your email above to reset password.");
       return;
     }
+
+  const lastTime = localStorage.getItem("lastResetRequest");
+
+  if (lastTime) {
+    const elapsed = Date.now() - Number(lastTime);
+
+    if (elapsed < 30_000) {
+      const remaining = Math.ceil((30_000 - elapsed) / 1000);
+      setError(`Please wait ${remaining}s before trying again.`);
+      return;
+    }
+    localStorage.removeItem("lastResetRequest");
+  }
+
     try {
+
+      setSuccess(
+        "Generating reset link... Please wait a moment."
+      );
+      
+      localStorage.setItem("lastResetRequest", Date.now());
+      const q = query(
+      collection(db, "auth"),
+      where("email", "==", email.trim())
+    );
+
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      setSuccess("");
+      setError("No account found with this email. Create an account first.");
+      return;
+    }
       await sendPasswordResetEmail(auth, email);
       setSuccess(
-        "Password reset link sent to your email. Check spam if not found"
+        "Password reset link sent to your email. Check spam folder if not found"
       );
     } catch (err) {
       console.error("sendPasswordResetEmail error:", err);
+      setSuccess("");
       setError(err?.message || "Failed to send reset link. Please check your email.");
     }
   };
