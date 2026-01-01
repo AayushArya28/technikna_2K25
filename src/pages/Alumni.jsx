@@ -267,7 +267,7 @@ const Alumni = () => {
       const ok = formRef.current.reportValidity();
       if (!ok) {
         // reportValidity shows messages on inputs — bail out
-          closePaymentTab();
+        closePaymentTab();
         return;
       }
     }
@@ -457,7 +457,7 @@ const Alumni = () => {
               <ul className="space-y-3 mb-6">
                 {[
                   "Alumni Gift Pack curated specially for Technika ’26",
-                  "Full Access to PR Night & DJ Night",
+                  "Full Access to Pronites & DJ Night",
                   "Entry to all flagship events & showcases",
                   "Free Car Parking throughout the fest",
                 ].map((item, i) => (
@@ -656,6 +656,7 @@ const Alumni = () => {
                             <option value="L">L</option>
                             <option value="XL">XL</option>
                             <option value="XXL">XXL</option>
+                            <option value="XXXL">XXXL</option>
                           </select>
                         </div>
                       </div>

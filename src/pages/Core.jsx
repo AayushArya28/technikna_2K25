@@ -370,7 +370,7 @@ const culturalManagementTeam = [
   {
     image:
       "https://i.ibb.co/5gTRMRMQ/Snapchat-845328509-Sanskar-kumar-Karn.jpg",
-    title: "Sanskarkarn",
+    title: "Sanskar Karn",
     subtitle: "CO-HEAD",
     handle: "@sanskarkarn",
     borderColor: "#FF9800",

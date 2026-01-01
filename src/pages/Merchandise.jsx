@@ -369,7 +369,12 @@ export default function Merchandise() {
             {PRODUCTS.map((p) => (
               <div key={p.id} className="relative overflow-hidden rounded-[28px] border border-white/12 bg-black/55 p-4 flex flex-col md:flex-row gap-4 backdrop-blur-xl shadow-[0_40px_110px_rgba(255,0,48,0.12)]">
                 <div className="flex-shrink-0 w-full md:w-44">
-                  <img src={p.images[0]} alt={p.title} className="rounded-md w-full h-36 object-cover" />
+                  <img
+                    src={p.images[0]}
+                    alt={p.title}
+                    onClick={() => !p.isCombo && setModalProduct(p)}
+                    className={`rounded-md w-full h-36 object-cover ${!p.isCombo ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
+                  />
                 </div>
 
                 <div className="flex-1 flex flex-col justify-between">
