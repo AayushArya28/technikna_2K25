@@ -482,13 +482,13 @@ const hospitalityTeam = [
     url: "https://www.instagram.com/amanx_.exe?igsh=aXI0OTE3NGc0NG1s",
   },
   {
-    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
-    title: "Anshu Anand",
+    image: "https://i.ibb.co/nqMhMYSc/Whats-App-Image-2026-01-10-at-7-26-24-PM.jpg",
+    title: "Avi Singh",
     subtitle: "CO-HEAD",
-    handle: "@",
+    handle: "@avi.singh6451",
     borderColor: "#795548",
     gradient: "linear-gradient(145deg, #795548, #607D8B)",
-    url: "",
+    url: "https://www.instagram.com/avi.singh6451?igsh=dXNkd2d5bzZ6cnRu",
   },
 ];
 
