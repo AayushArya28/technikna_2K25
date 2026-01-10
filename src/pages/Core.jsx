@@ -464,7 +464,7 @@ const socialMediaTeam = [
 // HOSPITALITY TEAM
 const hospitalityTeam = [
   {
-    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
+    image: "https://i.ibb.co/cS2NFVQB/anurag.jpg",
     title: "Anurag Anand",
     subtitle: "HEAD",
     handle: "@",
