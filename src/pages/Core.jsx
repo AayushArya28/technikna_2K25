@@ -222,7 +222,7 @@ const publicityTeam = [
 // PRESS & MEDIA TEAM
 const pressMediaTeam = [
   {
-    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
+    image: "https://i.ibb.co/zWHmvPSM/tamnay.jpg",
     title: "Tanmay Sinha",
     subtitle: "HEAD",
     handle: "@swyamsinha",
@@ -410,7 +410,7 @@ const sponsorshipTeam = [
   },
   {
     image:
-      "https://i.ibb.co/GQ4SxgZF/356257db-9cd8-4ed6-acea-2653cf90edfb-Apoorv-Roy.jpg",
+      "https://i.ibb.co/kspmpfQ9/apoorv.jpg",
     title: "Apoorv Roy",
     subtitle: "CO-HEAD",
     handle: "@stfu_apoorv",
@@ -482,14 +482,23 @@ const hospitalityTeam = [
     url: "https://www.instagram.com/amanx_.exe?igsh=aXI0OTE3NGc0NG1s",
   },
   {
-    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
-    title: "Anshu Anand",
+    image: "https://i.ibb.co/nqMhMYSc/Whats-App-Image-2026-01-10-at-7-26-24-PM.jpg",
+    title: "Avi Singh",
     subtitle: "CO-HEAD",
-    handle: "@",
+    handle: "@avi.singh6451",
     borderColor: "#795548",
     gradient: "linear-gradient(145deg, #795548, #607D8B)",
-    url: "",
+    url: "https://www.instagram.com/avi.singh6451?igsh=dXNkd2d5bzZ6cnRu",
   },
+  {
+    image: "https://i.ibb.co/PzTGc2JP/madvi.jpg",
+    title: "Madvi",
+    subtitle: "CO-HEAD",
+    handle: "@madvi_12_",
+    borderColor: "#795548",
+    gradient: "linear-gradient(145deg, #795548, #607D8B)",
+    url: "https://www.instagram.com/madvi_12_/?utm_source=qr&igsh=MXVkMnM2c3ZzNGtmYg%3D%3D#u",
+  }
 ];
 
 export const Core = () => {
@@ -514,23 +523,6 @@ export const Core = () => {
             />
           </section>
 
-          {/* Treasury Team Section */}
-          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
-            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font z-2">
-              Treasury Team
-            </h2>
-            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
-              Managing finances and resources
-            </p>
-            <ChromaGrid
-              items={treasuryTeam}
-              radius={300}
-              damping={0.45}
-              fadeOut={0.6}
-              ease="power3.out"
-            />
-          </section>
-
           {/* Web Design Team Section */}
           <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
             <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font">
@@ -541,6 +533,23 @@ export const Core = () => {
             </p>
             <ChromaGrid
               items={webDesignTeam}
+              radius={300}
+              damping={0.45}
+              fadeOut={0.6}
+              ease="power3.out"
+            />
+          </section>
+
+          {/* Treasury Team Section */}
+          <section className="mb-20 p-5 border-[rgba(255,0,30,0.6)] border-[2px] rounded-4xl backdrop-blur-md shadow-[0_0_20px_4px_rgba(255,0,30,0.3)] hover:shadow-[0_0_40px_10px_rgba(255,0,30,0.3)] duration-200">
+            <h2 className="text-4xl font-bold tracking-[2px] text-center mb-4 bg-gradient-to-r from-white to-red-400 bg-clip-text text-transparent jp-font z-2">
+              Treasury Team
+            </h2>
+            <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+              Managing finances and resources
+            </p>
+            <ChromaGrid
+              items={treasuryTeam}
               radius={300}
               damping={0.45}
               fadeOut={0.6}

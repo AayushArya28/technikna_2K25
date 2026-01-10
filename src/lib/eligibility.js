@@ -1,5 +1,12 @@
+import emailWhitelist from "../email.json";
+
 export function isBitStudentEmail(email) {
-  return /^[a-z]+15[0-9]{3}\.[12][0-9]@bitmesra\.ac\.in$/.test(String(email || "").toLowerCase());
+  const normalized = String(email || "").toLowerCase();
+  // Check standard BIT pattern OR whitelist
+  if (/^[a-z]+15[0-9]{3}\.[12][0-9]@bitmesra\.ac\.in$/.test(normalized)) {
+    return true;
+  }
+  return emailWhitelist.includes(normalized);
 }
 
 export function isPaidLikeStatus(status) {
