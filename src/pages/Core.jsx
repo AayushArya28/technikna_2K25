@@ -432,7 +432,7 @@ const sponsorshipTeam = [
 // SOCIAL MEDIA TEAM
 const socialMediaTeam = [
   {
-    image: "https://i.ibb.co/m5vS35VW/sikhar.jpg",
+    image: "https://i.ibb.co/PZpnG2pm/sikhar-sir-1.jpg",
     title: "Shikhar Rai",
     subtitle: "HEAD",
     handle: "@shikhar08_",
@@ -464,7 +464,7 @@ const socialMediaTeam = [
 // HOSPITALITY TEAM
 const hospitalityTeam = [
   {
-    image: "https://i.ibb.co/cKfYsNYq/18261118.png",
+    image: "https://i.ibb.co/cS2NFVQB/anurag.jpg",
     title: "Anurag Anand",
     subtitle: "HEAD",
     handle: "@",
