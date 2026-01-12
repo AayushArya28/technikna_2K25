@@ -396,10 +396,6 @@ export default function Technical() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (activeEvent?.key === "hackathon") {
-                      window.open("https://unstop.com/o/2JmiA5n?lb=hCSRQel0&utm_medium=Share&utm_source=technpat59842&utm_campaign=Online_coding_challenge", "_blank", "noopener,noreferrer");
-                      return;
-                    }
                     if (registrationPaused) {
                       popup.info("Registration is temporarily paused.");
                       return;
@@ -407,12 +403,12 @@ export default function Technical() {
                     setFormOpen(true);
                   }}
                   className={
-                    registrationPaused && activeEvent?.key !== "hackathon"
+                    registrationPaused
                       ? "bg-white/10 border border-white/15 transition px-6 py-3 rounded-lg text-white/70 font-bold cursor-not-allowed"
                       : "bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
                   }
                 >
-                  {registrationPaused && activeEvent?.key !== "hackathon" ? "Registrations Paused" : "Register Now"}
+                  {registrationPaused ? "Registrations Paused" : "Register Now"}
                 </button>
                 <p className="text-[10px] text-white/50 mt-1 text-center">
                   *T&C Applied
