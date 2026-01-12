@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Japan Ramen";
+  src: url("./fonts/japan-ramen.otf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "KumbhSans";
+  src: url("./fonts/kumbhsans.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal;
+}
+
+.jp-font {
+  font-family: "Japan Ramen", sans-serif;
+}
+
+.ks-font {
+  font-family: "KumbhSans", sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #ff001e transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ff001e;
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+::selection{
+  background-color: rgba(255, 0, 30,0.37);
+  color: #cfcfcf;
+}
+
+/* Ensure the global background is dark so transparent nav shows correctly */
+html, body {
+  background-color: #141414;
+  min-height: 100%;
+  scroll-behavior: auto;
+}
+
+
+/* white logo of technika in mobile view*/
+.sm-logo-img {
+  filter: invert(1) brightness(100%);
+}
+
+/* stop shrinking of samurai from base style*/
+.no-max-width {
+  max-width: none !important;
+}
+
+/* Rotate social icons on hover (used in Devs page) */
+.icon-rotate-hover svg {
+  transition: transform 0.4s ease-out;
+}
+
+.icon-rotate-hover:hover svg {
+  transform: rotate(360deg);
+}
+
+/* to center the "Previous Technika" text */
+.css-zvi4ix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* same images size for chromagrid */
+.cropped{
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Rolling band / marquee utility (used on Events landing page) */
+.marquee {
+  overflow: hidden;
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee-scroll 18s linear infinite;
+}
+
+.marquee__content {
+  white-space: nowrap;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track {
+    /* Keep motion, but make it very slow instead of stopping. */
+    animation: marquee-scroll 60s linear infinite;
+  }
+}
+
+/* color calender for dark ui */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.85;
+}
