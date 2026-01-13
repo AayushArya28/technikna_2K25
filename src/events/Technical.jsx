@@ -72,7 +72,7 @@ const enhanceRulebookText = (text, eventKey) => {
 
 const TECHNICAL_RULEBOOK_TEXT_RAW = {
   hackathon:
-    "Rulebook\n\n1.DEV CONQUEST (HACKATHON) \n➢ TEAM SIZE: 2-4 MEMBERS \n➢ OBJECTIV\nE \n• Participants will build a fully functional prototype or application based on problem \nstatements provided at the start of the event \nRules: \n• Problem Statements: Teams will choose from a set of real-world problem statements \n(e.g., sustainability, smart technology). \n• Programming Language & Tools: Participants can use any programming language or \nsoftware tools. \n• Documentation: A README file detailing the project and instructions for setup must be \nsubmitted. \n• Presentation: A live demo is mandatory. \nJudging Criteria: \n• Innovation (30%): Originality and creativity in solving the problem. \n• Functionality (30%): How well the application works. \n• Usability (20%): User experience and interface design. \n• Technical Complexity (10%): Code sophistication and challenges overcome. \n• Presentation (10%): Clarity in presenting the solution",
+    "Rulebook\n\n1.DEV CONQUEST (HACKATHON) \n➢ TEAM SIZE: 2-4 MEMBERS \n➢ Date & Time: 14th Jan, 11:00 AM \n➢ OBJECTIV\nE \n• Participants will build a fully functional prototype or application based on problem \nstatements provided at the start of the event \nRules: \n• Problem Statements: Teams will choose from a set of real-world problem statements \n(e.g., sustainability, smart technology). \n• Programming Language & Tools: Participants can use any programming language or \nsoftware tools. \n• Documentation: A README file detailing the project and instructions for setup must be \nsubmitted. \n• Presentation: A live demo is mandatory. \nJudging Criteria: \n• Innovation (30%): Originality and creativity in solving the problem. \n• Functionality (30%): How well the application works. \n• Usability (20%): User experience and interface design. \n• Technical Complexity (10%): Code sophistication and challenges overcome. \n• Presentation (10%): Clarity in presenting the solution",
   cp: "Rulebook\n\n2.ALGO APEX \n➢ DURATION: 2 HOURS \n➢ OBJECTIVE: \n• Participants will solve algorithmic problems testing their knowledge of data \nstructures, algorithms, and problem-solving. \nRULES: \n• Participants must submit their solutions electronically through the event’s \nsubmission system. \n• Solutions will be evaluated based on correctness and efficiency. \nJudging Criteria: \n• Problem Solving (50%): Number of problems solved correctly. \n• Efficiency (30%): Time complexity of solutions. \n• Correctness (20%): Accuracy of solutions.",
   ampere_assemble:
     "Rulebook\n\n3.AMPERE ASSEMBLE \n➢ TEAM SIZE: 2-3 MEMBERS \n➢ OBJECTIVE \n• Participants must design a functional circuit based on provided specifications, using no \nsoftware tools. \nRules: \n• Circuits must be designed manually, with all calculations done by hand. \n• No use of software tools like Multisim is allowed. \nJudging Criteria: \n• Design Accuracy (40%): How well the design meets the specifications. \n• Creativity (30%): Innovation in the design. \n• Calculations (20%): Correctness of the manual calculations. \n• Presentation (10%): Clarity in explaining the design process.",
@@ -102,7 +102,7 @@ const events = [
   {
     key: "hackathon",
     title: "Dev Conquest (Hackathon)",
-    desc: "An intense hackathon challenging teams to build innovative solutions to real-world problems. Venue: CC-1 / CC-2 (depending on participation).",
+    desc: "An intense hackathon challenging teams to build innovative solutions to real-world problems. Venue: CC-1 / CC-2 (depending on participation). \n Date: 14th Jan, 11:00 AM",
     img: "https://i.ibb.co/20SGzKMv/dev-contest.png",
     participation: "Team (2–4 participants)",
     fee: "₹499 per team",
@@ -474,11 +474,10 @@ export default function Technical() {
                 ref={isActive ? cardRef : null}
                 onClick={() => setActive(index)}
                 className={`relative cursor-pointer transition-all duration-300 rounded-xl overflow-hidden flex-shrink-0
-                ${
-                  isActive
+                ${isActive
                     ? "scale-110 z-20 shadow-[0_0_35px_#ff0000]"
                     : "scale-90 opacity-50"
-                }
+                  }
                 w-[170px] h-[240px]`}
               >
                 <img
