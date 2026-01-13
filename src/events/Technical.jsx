@@ -24,13 +24,21 @@ const splitDescMeta = (desc) => {
     const dateSplit = afterVenue.split(/\s*Date:\s*/i);
     venue = dateSplit[0].trim().replace(/[\s.]+$/g, "");
     if (dateSplit.length > 1) {
-      date = dateSplit.slice(1).join("Date:").trim().replace(/[\s.]+$/g, "");
+      date = dateSplit
+        .slice(1)
+        .join("Date:")
+        .trim()
+        .replace(/[\s.]+$/g, "");
     }
   } else {
     const dateSplit = text.split(/\s*Date:\s*/i);
     if (dateSplit.length > 1) {
       text = dateSplit[0].trim().replace(/[\s.]+$/g, "");
-      date = dateSplit.slice(1).join("Date:").trim().replace(/[\s.]+$/g, "");
+      date = dateSplit
+        .slice(1)
+        .join("Date:")
+        .trim()
+        .replace(/[\s.]+$/g, "");
     }
   }
 
@@ -44,11 +52,13 @@ const enhanceRulebookText = (text, eventKey) => {
     .replace(/OBJECTIV\s*\n\s*E/gi, "OBJECTIVE")
     .trim();
 
-  const hasDuration = /(^|\n)\s*duration\b/i.test(t) || /\bduration\s*:/i.test(t);
+  const hasDuration =
+    /(^|\n)\s*duration\b/i.test(t) || /\bduration\s*:/i.test(t);
   const hasNote = /(^|\n)\s*note\b/i.test(t) || /\bnote\s*:/i.test(t);
 
   if (!hasDuration) {
-    const duration = String(eventKey || "") === "hackathon" ? "24 hours." : "As per schedule.";
+    const duration =
+      String(eventKey || "") === "hackathon" ? "24 hours." : "As per schedule.";
     t = `${t}\n\nDURATION\n${duration}`;
   }
 
@@ -62,7 +72,7 @@ const enhanceRulebookText = (text, eventKey) => {
 
 const TECHNICAL_RULEBOOK_TEXT_RAW = {
   hackathon:
-    "Rulebook\n\n1.DEV CONQUEST (HACKATHON) \n➢ TEAM SIZE: 2-4 MEMBERS \n➢ OBJECTIV\nE \n• Participants will build a fully functional prototype or application based on problem \nstatements provided at the start of the event \nRules: \n• Problem Statements: Teams will choose from a set of real-world problem statements \n(e.g., sustainability, smart technology). \n• Programming Language & Tools: Participants can use any programming language or \nsoftware tools. \n• Documentation: A README file detailing the project and instructions for setup must be \nsubmitted. \n• Presentation: A live demo is mandatory. \nJudging Criteria: \n• Innovation (30%): Originality and creativity in solving the problem. \n• Functionality (30%): How well the application works. \n• Usability (20%): User experience and interface design. \n• Technical Complexity (10%): Code sophistication and challenges overcome. \n• Presentation (10%): Clarity in presenting the solution",
+    "Rulebook\n\n1.DEV CONQUEST (HACKATHON) \n➢ TEAM SIZE: 2-4 MEMBERS \n➢ Date & Time: 14th Jan, 11:00 AM \n➢ OBJECTIV\nE \n• Participants will build a fully functional prototype or application based on problem \nstatements provided at the start of the event \nRules: \n• Problem Statements: Teams will choose from a set of real-world problem statements \n(e.g., sustainability, smart technology). \n• Programming Language & Tools: Participants can use any programming language or \nsoftware tools. \n• Documentation: A README file detailing the project and instructions for setup must be \nsubmitted. \n• Presentation: A live demo is mandatory. \nJudging Criteria: \n• Innovation (30%): Originality and creativity in solving the problem. \n• Functionality (30%): How well the application works. \n• Usability (20%): User experience and interface design. \n• Technical Complexity (10%): Code sophistication and challenges overcome. \n• Presentation (10%): Clarity in presenting the solution",
   cp: "Rulebook\n\n2.ALGO APEX \n➢ DURATION: 2 HOURS \n➢ OBJECTIVE: \n• Participants will solve algorithmic problems testing their knowledge of data \nstructures, algorithms, and problem-solving. \nRULES: \n• Participants must submit their solutions electronically through the event’s \nsubmission system. \n• Solutions will be evaluated based on correctness and efficiency. \nJudging Criteria: \n• Problem Solving (50%): Number of problems solved correctly. \n• Efficiency (30%): Time complexity of solutions. \n• Correctness (20%): Accuracy of solutions.",
   ampere_assemble:
     "Rulebook\n\n3.AMPERE ASSEMBLE \n➢ TEAM SIZE: 2-3 MEMBERS \n➢ OBJECTIVE \n• Participants must design a functional circuit based on provided specifications, using no \nsoftware tools. \nRules: \n• Circuits must be designed manually, with all calculations done by hand. \n• No use of software tools like Multisim is allowed. \nJudging Criteria: \n• Design Accuracy (40%): How well the design meets the specifications. \n• Creativity (30%): Innovation in the design. \n• Calculations (20%): Correctness of the manual calculations. \n• Presentation (10%): Clarity in explaining the design process.",
@@ -83,7 +93,7 @@ const TECHNICAL_RULEBOOK_TEXT_RAW = {
   cad_modelling:
     "Rulebook\n\n11.CAD MASTER (AUTOCAD / SKETCHUP DESIGN CHALLENGE) \n➢ Duration: 1–2 Hours \n➢ Objective \n• Participants will design a 2D/3D model based on the given problem statement using CAD \nsoftware. The event evaluates design accuracy, creativity, and adherence to technical \nspecifications. \nRules \n• Participants must work individually. \n• The problem statement will be provided at the start of the event. \n• Only approved CAD software (such as AutoCAD, SolidWorks, Fusion 360, or similar) may be \nused. \n• Internet usage is not permitted during the contest. \n• Designs must be original and created within the event duration. \n• Final models must be saved and submitted in the required file format specified by \norganizers. \nJudging Criteria \n• Accuracy to Problem Requirements (50%): Correct dimensions and feature placement. \n• Design Quality & Detailing (30%): Clean modelling, constraints, and proper use of tools. \n• Presentation/Finish (20%): Naming conventions, neatness, and completeness of view \nrendering.",
   brain_brawl:
-    "Rulebook\n\n12.BRAIN BRAWL: RULES AND GUIDELINES \n• EVENT OVERVIEW \nBrain Brawl is a team-based quiz competition designed to challenge participants across a \nrange of general knowledge and specific topics. Teams will compete to answer questions as \nquickly and accurately as possible, utilizing their collective knowledge and strategy. \n• TEAM STRUCTURE \nEach team must consist of 4 participants. \nTeams will work together to answer questions, but only one designated member can provide the \nfinal answer after discussion. \n• COMPETITION FORMAT \n1. QUIZ ROUND \nQuestions will be asked to all teams simultaneously. \nThe team that raises their hand first will be given the chance to answer. \nOnly one team member may verbally communicate the final answer, after discussing with their \nteammates. Simultaneous answers from multiple team members will not be accepted. The \ndesignated member must say \"lock answer\" after providing the final answer \n• SYLLABUS AND TOPIC COVERED\n\nParticipants should prepare for questions on the following general knowledge topics \n• History (World and Indian History) \n• Geography (World and Indian Geography) \n• Science and Technology (Basic Science, Innovations, and Current Advancements) \n• Sports (Major sports events, players, and records) \n• Entertainment (Movies, Music, TV, and Pop Culture) \n• Current Affairs (Latest news and global events) \n• Literature (Famous authors, books, and literary awards) \n• General Knowledge (Trivia, famous personalities, and events) \nRULES AND REGULATION \n1. No Mobile Phones \nAll participants must submit their phones before the competition starts. Phones will be collected at \nthe registration desk and returned at the end of the event. \n2.Answer Submission \nAll participants must submit their phones before the competition starts. Phones will be collected at \nthe registration desk and returned at the end of the event. \n3.Points and Scoring \n• Teams will accumulate points for each correct answer. The scoring system will follow a \nprogressive format, with points increasing in difficulty (e.g., 1,000 points, 2,000 points, up to \na maximum of 50 lakh points). \n• The team with the highest total points at the end of the competition will be declared the \nwinner. Second and third places will be awarded accordingly. \nWINNING CRITERIA \n• The team with the highest points at the end of all rounds will be declared the winner. \n• In the case of a tie, a tiebreaker round will be conducted with a set of additional questions.",
+    'Rulebook\n\n12.BRAIN BRAWL: RULES AND GUIDELINES \n• EVENT OVERVIEW \nBrain Brawl is a team-based quiz competition designed to challenge participants across a \nrange of general knowledge and specific topics. Teams will compete to answer questions as \nquickly and accurately as possible, utilizing their collective knowledge and strategy. \n• TEAM STRUCTURE \nEach team must consist of 4 participants. \nTeams will work together to answer questions, but only one designated member can provide the \nfinal answer after discussion. \n• COMPETITION FORMAT \n1. QUIZ ROUND \nQuestions will be asked to all teams simultaneously. \nThe team that raises their hand first will be given the chance to answer. \nOnly one team member may verbally communicate the final answer, after discussing with their \nteammates. Simultaneous answers from multiple team members will not be accepted. The \ndesignated member must say "lock answer" after providing the final answer \n• SYLLABUS AND TOPIC COVERED\n\nParticipants should prepare for questions on the following general knowledge topics \n• History (World and Indian History) \n• Geography (World and Indian Geography) \n• Science and Technology (Basic Science, Innovations, and Current Advancements) \n• Sports (Major sports events, players, and records) \n• Entertainment (Movies, Music, TV, and Pop Culture) \n• Current Affairs (Latest news and global events) \n• Literature (Famous authors, books, and literary awards) \n• General Knowledge (Trivia, famous personalities, and events) \nRULES AND REGULATION \n1. No Mobile Phones \nAll participants must submit their phones before the competition starts. Phones will be collected at \nthe registration desk and returned at the end of the event. \n2.Answer Submission \nAll participants must submit their phones before the competition starts. Phones will be collected at \nthe registration desk and returned at the end of the event. \n3.Points and Scoring \n• Teams will accumulate points for each correct answer. The scoring system will follow a \nprogressive format, with points increasing in difficulty (e.g., 1,000 points, 2,000 points, up to \na maximum of 50 lakh points). \n• The team with the highest total points at the end of the competition will be declared the \nwinner. Second and third places will be awarded accordingly. \nWINNING CRITERIA \n• The team with the highest points at the end of all rounds will be declared the winner. \n• In the case of a tie, a tiebreaker round will be conducted with a set of additional questions.',
   utility_bot:
     "Rulebook\n\n13. MACHUTILITY EXTREME (UTILITY MACHINE) \n\n➢ Duration: 1–2 Hours (Demonstration + Evaluation) \n\n➢ Objective \n• Participants will design and present a robot capable of performing a useful real-\nworld task such as lifting, sorting, transporting, cleaning, or assistance-based \noperations. The event evaluates creativity, practicality, engineering design, and \noperational efficiency. \nRules \n\n• Teams may consist of 2–4 members with one robot. \n• The robot must be battery-powered and self-contained (no external power or wired \nremote).\n\n• The task demonstration will be based on a given scenario or the team’s chosen \nutility function (which must be declared before evaluation). \n• Robots must be safe to operate: no sharp edges, fire, or hazardous materials. \n• Any pre-built kits may be used, but innovation and modifications will carry more \npoints. \nJudging Criteria \n• Functionality & Task Completion (50%): How effectively and reliably the robot performs the \nintended task. \n• Design & Innovation (30%): Creativity, mechanism design, and workflow. \n• Build Quality & Safety (20%): Structural strength, wiring neatness, and safe operation.",
 };
@@ -92,7 +102,7 @@ const events = [
   {
     key: "hackathon",
     title: "Dev Conquest (Hackathon)",
-    desc: "An intense hackathon challenging teams to build innovative solutions to real-world problems. Venue: CC-1 / CC-2 (depending on participation).",
+    desc: "An intense hackathon challenging teams to build innovative solutions to real-world problems. Venue: CC-1 / CC-2 (depending on participation). \n Date: 14th Jan, 11:00 AM",
     img: "https://i.ibb.co/20SGzKMv/dev-contest.png",
     participation: "Team (2–4 participants)",
     fee: "₹499 per team",
@@ -266,8 +276,7 @@ export default function Technical() {
     const cardWidth = activeCard.offsetWidth;
     const cardLeft = activeCard.offsetLeft;
 
-    const scrollPosition =
-      cardLeft - sliderWidth / 2 + cardWidth / 2;
+    const scrollPosition = cardLeft - sliderWidth / 2 + cardWidth / 2;
 
     slider.scrollTo({
       left: scrollPosition,
@@ -280,9 +289,7 @@ export default function Technical() {
   };
 
   const prev = () => {
-    setActive((prev) =>
-      prev === 0 ? events.length - 1 : prev - 1
-    );
+    setActive((prev) => (prev === 0 ? events.length - 1 : prev - 1));
   };
 
   return (
@@ -384,9 +391,14 @@ export default function Technical() {
             </div>
 
             <ul className="text-sm text-white/80 space-y-2 mb-8">
-              <li>• {events?.[active]?.participation || "Solo & Team Participation"}</li>
+              <li>
+                •{" "}
+                {events?.[active]?.participation || "Solo & Team Participation"}
+              </li>
               {!!events?.[active]?.fee && <li>• Fee: {events[active].fee}</li>}
-              {!!events?.[active]?.prizePool && <li>• Prize Pool: {events[active].prizePool}</li>}
+              {!!events?.[active]?.prizePool && (
+                <li>• Prize Pool: {events[active].prizePool}</li>
+              )}
               <li>• Certificates & Cash Prizes</li>
               <li>• On-Spot Evaluation</li>
             </ul>
@@ -408,7 +420,9 @@ export default function Technical() {
                       : "bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
                   }
                 >
-                  {registrationPaused ? "Registrations Paused" : "Register Now"}
+                  {registrationPaused && activeEvent?.key !== "hackathon"
+                    ? "Registrations Paused"
+                    : "Register Now"}
                 </button>
                 <p className="text-[10px] text-white/50 mt-1 text-center">
                   *T&C Applied
@@ -476,15 +490,12 @@ export default function Technical() {
 
                 {/* TEXT */}
                 <div className="absolute bottom-0 w-full p-2 bg-black/40">
-                  <h2 className="text-s font-bold text-white">
-                    {event.title}
-                  </h2>
+                  <h2 className="text-s font-bold text-white">{event.title}</h2>
                 </div>
               </div>
             );
           })}
         </div>
-
       </div>
 
       <EventForm
