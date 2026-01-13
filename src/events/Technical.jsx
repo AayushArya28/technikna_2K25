@@ -237,6 +237,7 @@ export default function Technical() {
   const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
 
   const activeEvent = events?.[active];
+  console.log(activeEvent);
   const registrationPaused = !!activeEvent?.registrationPaused;
 
   const openRulebook = () => {
@@ -408,21 +409,23 @@ export default function Technical() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (registrationPaused) {
+                    if (activeEvent?.key === "hackathon") {
+                      popup.info("Registration for this event is closed.");
+                      return;
+                    }
+                    else if (registrationPaused) {
                       popup.info("Registration is temporarily paused.");
                       return;
                     }
                     setFormOpen(true);
                   }}
                   className={
-                    registrationPaused
+                    registrationPaused || activeEvent?.key === "hackathon"
                       ? "bg-white/10 border border-white/15 transition px-6 py-3 rounded-lg text-white/70 font-bold cursor-not-allowed"
                       : "bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
                   }
                 >
-                  {registrationPaused && activeEvent?.key !== "hackathon"
-                    ? "Registrations Paused"
-                    : "Register Now"}
+                  {activeEvent?.key === "hackathon" ? "Registration Closed" : registrationPaused ? "Registrations Paused": "Register Now"}
                 </button>
                 <p className="text-[10px] text-white/50 mt-1 text-center">
                   *T&C Applied
