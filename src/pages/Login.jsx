@@ -9,8 +9,14 @@ import {
   sendPasswordResetEmail,
   signOut,
 } from "firebase/auth";
-import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
-
+import {
+  doc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 
 export default function Login() {
   const [isMobile, setIsMobile] = useState(false);
@@ -61,7 +67,9 @@ export default function Login() {
     setError("");
     setSuccess("");
 
-    const normalizedPhone = String(phone || "").replace(/\D/g, "").trim();
+    const normalizedPhone = String(phone || "")
+      .replace(/\D/g, "")
+      .trim();
 
     if (!signIn) {
       if (!name.trim()) {
@@ -76,7 +84,11 @@ export default function Login() {
         return;
       }
 
-      if (!normalizedPhone || normalizedPhone.length < 10 || normalizedPhone.length > 15) {
+      if (
+        !normalizedPhone ||
+        normalizedPhone.length < 10 ||
+        normalizedPhone.length > 15
+      ) {
         setError("Please enter a valid phone number.");
         setLoading(false);
         return;
@@ -95,21 +107,21 @@ export default function Login() {
       return;
     }
 
-  const key = signIn ? "loginCooldown" : "signupCooldown";
-  const lastTime = localStorage.getItem(key);
+    const key = signIn ? "loginCooldown" : "signupCooldown";
+    const lastTime = localStorage.getItem(key);
 
-  if (lastTime) {
-    const elapsed = Date.now() - Number(lastTime);
+    if (lastTime) {
+      const elapsed = Date.now() - Number(lastTime);
 
-    if (elapsed < 30_000) {
-      const remaining = Math.ceil((30_000 - elapsed) / 1000);
-      setLoading(false);
-      setError(`Please wait ${remaining}s before trying again.`);
-      return;
+      if (elapsed < 30_000) {
+        const remaining = Math.ceil((30_000 - elapsed) / 1000);
+        setLoading(false);
+        setError(`Please wait ${remaining}s before trying again.`);
+        return;
+      }
+
+      localStorage.removeItem(key);
     }
-
-    localStorage.removeItem(key);
-  }
 
     try {
       if (signIn) {
@@ -139,30 +151,65 @@ export default function Login() {
       } else {
         localStorage.setItem("signupCooldown", Date.now());
 
+        setSuccess("Creating account...");
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
           password
         );
 
-        await sendEmailVerification(userCredential.user);
+        // IMMEDIATE ACTION: Handle Verification Email
+        // We use the auth.currentUser to be absolutely sure we have the active user instance
+        const user = auth.currentUser || userCredential.user;
 
-        await setDoc(doc(db, "auth", userCredential.user.uid), {
-          name,
-          college,
-          email,
-          phone: normalizedPhone,
-          password,
-          createdAt: new Date(),
-        });
+        setSuccess("Account created! Sending verification email...");
+        console.log("Acc created. processing verification for:", user.email);
+
+        try {
+          // 1. Force a reload to ensure fresh state (good practice)
+          await user.reload();
+
+          // 2. Send the email and AWAIT it
+          await sendEmailVerification(user);
+
+          console.log("Verification email command completed successfully.");
+          setSuccess("Verification email sent! Saving profile...");
+        } catch (emailError) {
+          console.error(
+            "CRITICAL: Error sending verification email:",
+            emailError
+          );
+          // Don't stop, just warn.
+        }
+
+        // 3. Save the user document to Firestore
+        try {
+          await setDoc(doc(db, "auth", user.uid), {
+            name,
+            college,
+            email,
+            phone: normalizedPhone,
+            password,
+            createdAt: new Date(),
+          });
+        } catch (docError) {
+          console.error("Error saving auth doc:", docError);
+        }
+
+        // 4. CRITICAL DELAY: Give the backend/network time to actually dispatch the email
+        // before we kill the session with signOut().
+        setSuccess("Finalizing registration...");
+        await new Promise((resolve) => setTimeout(resolve, 3000));
 
         await signOut(auth);
+
         setSuccess(
           "Account created! Please verify your email (we sent you a link), then sign in."
         );
       }
     } catch (err) {
-      if (signIn) localStorage.setItem("loginCooldown", Date.now()); else localStorage.setItem("signupCooldown", Date.now());
+      if (signIn) localStorage.setItem("loginCooldown", Date.now());
+      else localStorage.setItem("signupCooldown", Date.now());
       if (err.code === "auth/invalid-credential") {
         setError("Wrong password, try again.");
       } else {
@@ -176,46 +223,43 @@ export default function Login() {
   const handleForgotPassword = async (e) => {
     e.preventDefault();
 
-  setError("");
-  setSuccess("");
+    setError("");
+    setSuccess("");
 
     if (!email || !email.includes("@")) {
       setError("Please enter your email above to reset password.");
       return;
     }
 
-  const lastTime = localStorage.getItem("lastResetRequest");
+    const lastTime = localStorage.getItem("lastResetRequest");
 
-  if (lastTime) {
-    const elapsed = Date.now() - Number(lastTime);
+    if (lastTime) {
+      const elapsed = Date.now() - Number(lastTime);
 
-    if (elapsed < 30_000) {
-      const remaining = Math.ceil((30_000 - elapsed) / 1000);
-      setError(`Please wait ${remaining}s before trying again.`);
-      return;
+      if (elapsed < 30_000) {
+        const remaining = Math.ceil((30_000 - elapsed) / 1000);
+        setError(`Please wait ${remaining}s before trying again.`);
+        return;
+      }
+      localStorage.removeItem("lastResetRequest");
     }
-    localStorage.removeItem("lastResetRequest");
-  }
 
     try {
+      setSuccess("Generating reset link... Please wait a moment.");
 
-      setSuccess(
-        "Generating reset link... Please wait a moment."
-      );
-      
       localStorage.setItem("lastResetRequest", Date.now());
       const q = query(
-      collection(db, "auth"),
-      where("email", "==", email.trim())
-    );
+        collection(db, "auth"),
+        where("email", "==", email.trim())
+      );
 
-    const snapshot = await getDocs(q);
+      const snapshot = await getDocs(q);
 
-    if (snapshot.empty) {
-      setSuccess("");
-      setError("No account found with this email. Create an account first.");
-      return;
-    }
+      if (snapshot.empty) {
+        setSuccess("");
+        setError("No account found with this email. Create an account first.");
+        return;
+      }
       await sendPasswordResetEmail(auth, email);
       setSuccess(
         "Password reset link sent to your email. Check spam folder if not found"
@@ -223,163 +267,179 @@ export default function Login() {
     } catch (err) {
       console.error("sendPasswordResetEmail error:", err);
       setSuccess("");
-      setError(err?.message || "Failed to send reset link. Please check your email.");
+      setError(
+        err?.message || "Failed to send reset link. Please check your email."
+      );
     }
   };
 
   if (isMobile) {
     return (
-<div className="md:hidden mt-[120px] max-w-sm mx-auto bg-[#141414] border border-red-500/40 rounded-2xl p-6 backdrop-blur-xl text-gray-100 flex flex-col"
-style={{ width: "clamp(200px, 90vw, 700px)"
- }}>
+      <div
+        className="md:hidden mt-[120px] max-w-sm mx-auto bg-[#141414] border border-red-500/40 rounded-2xl p-6 backdrop-blur-xl text-gray-100 flex flex-col"
+        style={{ width: "clamp(200px, 90vw, 700px)" }}
+      >
+        {/* SIGN IN VIEW */}
+        {signIn ? (
+          <>
+            <h1 className="font-bold text-3xl jp-font text-center underline decoration-1 underline-offset-4 tracking-[2px] mb-6">
+              SIGN IN
+            </h1>
 
-  {/* SIGN IN VIEW */}
-  {signIn ? (
-    <>
-      <h1 className="font-bold text-3xl jp-font text-center underline decoration-1 underline-offset-4 tracking-[2px] mb-6">SIGN IN</h1>
+            {/* Email */}
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
+            />
 
-      {/* Email */}
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
-      />
+            {/* Password */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-300"
+              >
+                {showPassword ? "hide" : "show"}
+              </button>
+            </div>
 
-      {/* Password */}
-      <div className="relative">
-        <input
-          type={showPassword ? "text" : "password"}
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-300"
-        >
-          {showPassword ? "hide" : "show"}
-        </button>
+            <button
+              className="text-xs text-gray-300 mt-2 underline"
+              type="button"
+              onClick={handleForgotPassword}
+            >
+              Forgot your password?
+            </button>
+
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-red-600 text-white font-bold py-3 rounded-full mt-6"
+            >
+              Sign In
+            </button>
+
+            <p className="text-center text-sm mt-4">
+              Don’t have an account?{" "}
+              <button
+                onClick={() => {
+                  setSignIn(false);
+                  setError("");
+                  setSuccess("");
+                }}
+                className="underline text-blue-300"
+              >
+                Create an account
+              </button>
+            </p>
+          </>
+        ) : (
+          /* SIGN UP VIEW */
+          <>
+            <h1 className="font-bold text-3xl jp-font tracking-[2px] underline decoration-1 underline-offset-4 text-center mb-6">
+              SIGN UP
+            </h1>
+
+            {/* Name */}
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
+            />
+
+            {/* College */}
+            <input
+              type="text"
+              placeholder="College"
+              value={college}
+              onChange={(e) => setCollege(e.target.value)}
+              className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
+            />
+
+            {/* Phone */}
+            <input
+              type="tel"
+              placeholder="Phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
+            />
+
+            {/* Email */}
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
+            />
+
+            {/* Password */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-300"
+              >
+                {showPassword ? "hide" : "show"}
+              </button>
+            </div>
+
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-red-600 text-white font-bold py-3 rounded-full mt-6"
+            >
+              Sign Up
+            </button>
+
+            <p className="text-center text-sm mt-4">
+              Already have an account?{" "}
+              <button
+                onClick={() => {
+                  setSignIn(true);
+                  setError("");
+                  setSuccess("");
+                }}
+                className="underline text-blue-300"
+              >
+                Sign In instead
+              </button>
+            </p>
+          </>
+        )}
+
+        {/* Error / Success Messages */}
+        {error && (
+          <p className="text-red-300 text-xs bg-red-900/60 border border-red-500/40 px-3 py-2 rounded w-full my-3">
+            {error}
+          </p>
+        )}
+        {success && (
+          <p className="text-emerald-300 text-xs bg-emerald-900/60 border border-emerald-500/40 px-3 py-2 rounded w-full my-3">
+            {success}
+          </p>
+        )}
       </div>
-
-      <button
-        className="text-xs text-gray-300 mt-2 underline"
-        type="button"
-        onClick={handleForgotPassword}
-      >
-        Forgot your password?
-      </button>
-
-      <button
-        onClick={handleSubmit}
-        className="w-full bg-red-600 text-white font-bold py-3 rounded-full mt-6"
-      >
-        Sign In
-      </button>
-
-      <p className="text-center text-sm mt-4">
-        Don’t have an account?{" "}
-        <button
-          onClick={() => { setSignIn(false); setError(""); setSuccess(""); }}
-          className="underline text-blue-300"
-        >
-          Create an account
-        </button>
-      </p>
-    </>
-  ) : (
-    /* SIGN UP VIEW */
-    <>
-      <h1 className="font-bold text-3xl jp-font tracking-[2px] underline decoration-1 underline-offset-4 text-center mb-6">SIGN UP</h1>
-
-      {/* Name */}
-      <input
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
-      />
-
-      {/* College */}
-      <input
-        type="text"
-        placeholder="College"
-        value={college}
-        onChange={(e) => setCollege(e.target.value)}
-        className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
-      />
-
-      {/* Phone */}
-      <input
-        type="tel"
-        placeholder="Phone"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
-      />
-
-      {/* Email */}
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
-      />
-
-      {/* Password */}
-      <div className="relative">
-        <input
-          type={showPassword ? "text" : "password"}
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="bg-slate-900/60 w-full rounded-md p-3 my-2 border border-white/10"
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-300"
-        >
-          {showPassword ? "hide" : "show"}
-        </button>
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        className="w-full bg-red-600 text-white font-bold py-3 rounded-full mt-6"
-      >
-        Sign Up
-      </button>
-
-      <p className="text-center text-sm mt-4">
-        Already have an account?{" "}
-        <button
-          onClick={() => { setSignIn(true); setError(""); setSuccess(""); }}
-          className="underline text-blue-300"
-        >
-          Sign In instead
-        </button>
-      </p>
-    </>
-  )}
-
-  {/* Error / Success Messages */}
-  {error && (
-    <p className="text-red-300 text-xs bg-red-900/60 border border-red-500/40 px-3 py-2 rounded w-full my-3">
-      {error}
-    </p>
-  )}
-  {success && (
-    <p className="text-emerald-300 text-xs bg-emerald-900/60 border border-emerald-500/40 px-3 py-2 rounded w-full my-3">
-      {success}
-    </p>
-  )}
-</div>)};
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#050509] bg-[url('/images/login-samurai-bg.jpg')] bg-cover bg-center bg-fixed px-4 py-10 pt-[100px]">
@@ -555,16 +615,18 @@ style={{ width: "clamp(200px, 90vw, 700px)"
                 !signIn ? "translate-x-0" : "-translate-x-1/5"
               }`}
             >
-              <h1 className="font-bold text-2xl sm:text-3xl">
-                Welcome Back!
-              </h1>
+              <h1 className="font-bold text-2xl sm:text-3xl">Welcome Back!</h1>
               <p className="text-xs sm:text-sm font-bold leading-5 tracking-wide my-4 sm:my-6  text-red-100 max-w-xs">
                 To keep connected with us please login with your personal info.
               </p>
               <button
                 type="button"
                 className="rounded-full border border-white/80 bg-transparent text-white text-xs sm:text-sm font-bold py-2.5 sm:py-3 px-10 sm:px-12 uppercase tracking-wider active:scale-95 focus:outline-none hover:bg-white/10 cursor-pointer"
-                onClick={() => {setSignIn(true); setError(""); setSuccess("");}}
+                onClick={() => {
+                  setSignIn(true);
+                  setError("");
+                  setSuccess("");
+                }}
               >
                 Sign In
               </button>
@@ -576,16 +638,18 @@ style={{ width: "clamp(200px, 90vw, 700px)"
                 !signIn ? "translate-x-1/5" : "translate-x-0"
               }`}
             >
-              <h1 className="font-bold text-2xl sm:text-3xl">
-                HELP SAMURAI!!
-              </h1>
+              <h1 className="font-bold text-2xl sm:text-3xl">HELP SAMURAI!!</h1>
               <p className="text-xs sm:text-sm font-bold leading-5 tracking-wide my-4 sm:my-6 text-red-100 max-w-xs">
                 Enter your personal details and start journey with us.
               </p>
               <button
                 type="button"
                 className="rounded-full border border-white/80 bg-transparent text-white text-xs sm:text-sm font-bold py-2.5 sm:py-3 px-10 sm:px-12 uppercase tracking-wider active:scale-95 focus:outline-none hover:bg-white/10 cursor-pointer"
-                onClick={() => {setSignIn(false); setError(""); setSuccess("");}}
+                onClick={() => {
+                  setSignIn(false);
+                  setError("");
+                  setSuccess("");
+                }}
               >
                 Sign Up
               </button>
