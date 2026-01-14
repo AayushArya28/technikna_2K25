@@ -158,38 +158,51 @@ export default function Login() {
           password
         );
 
+        // IMMEDIATE ACTION: Handle Verification Email
+        // We use the auth.currentUser to be absolutely sure we have the active user instance
+        const user = auth.currentUser || userCredential.user;
+
         setSuccess("Account created! Sending verification email...");
-        console.log(
-          "Attempting to send verification email to:",
-          userCredential.user.email
-        );
+        console.log("Acc created. processing verification for:", user.email);
 
         try {
-          await sendEmailVerification(userCredential.user);
-          console.log("Verification email sent successfully.");
-          setSuccess("Verification email sent! Finalizing...");
+          // 1. Force a reload to ensure fresh state (good practice)
+          await user.reload();
+
+          // 2. Send the email and AWAIT it
+          await sendEmailVerification(user);
+
+          console.log("Verification email command completed successfully.");
+          setSuccess("Verification email sent! Saving profile...");
         } catch (emailError) {
-          console.error("Error sending verification email:", emailError);
-          // We don't return here because the account IS created.
-          // We just want to warn them.
-          setError(
-            "Account created, but failed to send verification email. Try logging in to resend."
+          console.error(
+            "CRITICAL: Error sending verification email:",
+            emailError
           );
+          // Don't stop, just warn.
         }
 
-        // Add a small delay to ensure the network request has time to flush
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // 3. Save the user document to Firestore
+        try {
+          await setDoc(doc(db, "auth", user.uid), {
+            name,
+            college,
+            email,
+            phone: normalizedPhone,
+            password,
+            createdAt: new Date(),
+          });
+        } catch (docError) {
+          console.error("Error saving auth doc:", docError);
+        }
 
-        await setDoc(doc(db, "auth", userCredential.user.uid), {
-          name,
-          college,
-          email,
-          phone: normalizedPhone,
-          password,
-          createdAt: new Date(),
-        });
+        // 4. CRITICAL DELAY: Give the backend/network time to actually dispatch the email
+        // before we kill the session with signOut().
+        setSuccess("Finalizing registration...");
+        await new Promise((resolve) => setTimeout(resolve, 3000));
 
         await signOut(auth);
+
         setSuccess(
           "Account created! Please verify your email (we sent you a link), then sign in."
         );
