@@ -13,7 +13,7 @@ const events = [
   {
     key: "real_cricket",
     title: "Real Cricket 24",
-    desc: "Online & On-site event — Organized directly by Krafton. Experience the thrill of cricket on your mobile screen. Registrations available on the website as well as on-site. Venue: As per schedule.",
+    desc: "Online & On-site event — Organized directly by Krafton. Experience the thrill of cricket on your mobile screen. On-spot registration available. Venue: As per schedule.",
     img: "https://i.ibb.co/TxYBp5RS/real-cricket.png",
     participation: "Solo",
     fee: "Free to Register",
@@ -22,7 +22,7 @@ const events = [
   {
     key: "bgmi",
     title: "BGMI",
-    desc: "Online & On-site event — Organized directly by Krafton. Battle it out with your squad. Registrations available on the website as well as on-site. Venue: As per schedule.",
+    desc: "Online & On-site event — Organized directly by Krafton. Battle it out with your squad. On-spot registration available. Venue: As per schedule.",
     img: "https://i.ibb.co/TDFZ0Ynh/bgmi.png",
     participation: "Team (2–4 participants)",
     fee: "Free to Register",
@@ -72,6 +72,9 @@ export default function Esports() {
   const cardRef = useRef(null);
   const popup = usePopup();
   const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
+
+  const activeEvent = events?.[active];
+  const registrationPaused = !!activeEvent?.registrationPaused;
 
   const openRulebook = () => {
     if (typeof RULEBOOK_PDF_URL === "string" && RULEBOOK_PDF_URL.trim()) {
@@ -215,14 +218,29 @@ export default function Esports() {
                 <div className="flex flex-col items-center">
                   <button
                     type="button"
-                    onClick={() => setFormOpen(true)}
-                    className="bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
+                    onClick={() => {
+                      if (registrationPaused) {
+                        popup.info("Registration is closed. On-spot registration available.");
+                        return;
+                      }
+                      setFormOpen(true);
+                    }}
+                    className={
+                      registrationPaused
+                        ? "bg-white/10 border border-white/15 transition px-6 py-3 rounded-lg text-white/70 font-bold cursor-not-allowed"
+                        : "bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
+                    }
                   >
-                    Register Now
+                    {registrationPaused ? "Registration Closed" : "Register Now"}
                   </button>
                   <p className="text-[10px] text-white/50 mt-1 text-center">
                     *T&C Applied
                   </p>
+                  {registrationPaused && (
+                    <p className="text-xs text-white/60 mt-2 text-center">
+                      Registration is closed for this event. On-spot registration is available at the venue.
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -303,6 +321,7 @@ export default function Esports() {
         allowedModes={events?.[active]?.allowedModes}
         groupMinTotal={events?.[active]?.groupMinTotal}
         groupMaxTotal={events?.[active]?.groupMaxTotal}
+        registrationPaused={!!events?.[active]?.registrationPaused}
       />
     </div>
   );

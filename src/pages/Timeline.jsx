@@ -6,27 +6,39 @@ gsap.registerPlugin(ScrollTrigger);
 
 function Timeline() {
   const items = [
-    {
-      title: "Opening Ceremony",
-      subtitle: "Auditorium",
-      desc: "Inauguration and welcome address",
-    },
-    {
-      title: "Technical Events",
-      subtitle: "Labs & CC",
-      desc: "Hackathons, coding contests, robotics",
-    },
-    {
-      title: "Cultural Night",
-      subtitle: "Main Stage",
-      desc: "Dance, music, drama performances",
-    },
-    {
-      title: "Closing Ceremony",
-      subtitle: "Auditorium",
-      desc: "Winners announcement and farewell",
-    },
-  ];
+  {
+    day: 0,
+    title: "Dev Conquest",
+    subtitle: "Hackathon",
+    desc: "24-hour flagship hackathon",
+    pdf: null,
+    status: "closed",
+  },
+  {
+    day: 1,
+    title: "Opening Ceremony",
+    subtitle: "",
+    desc: "Inauguration and welcome address",
+    pdf: "/day1.pdf",
+    status: "open",
+  },
+  {
+    day: 2,
+    title: "Technical Events",
+    subtitle: "",
+    desc: "Coding contests, robotics, E-Sports, etc.",
+    pdf: "/day2.pdf",
+    status: "open",
+  },
+  {
+    day: 3,
+    title: "Closing Ceremony",
+    subtitle: "",
+    desc: "Key Artist - Mohammed Irfan",
+    pdf: "/day3.pdf",
+    status: "open",
+  },
+];
 
   const desktopFillRef = useRef(null);
   const mobileFillRef = useRef(null);
@@ -111,7 +123,7 @@ function Timeline() {
 
 /*Timeline Item */
 
-function TimelineItem({ title, subtitle, desc, isLeft }) {
+function TimelineItem({ title, subtitle, desc, isLeft, day, pdf, status }) {
   const cardRef = useRef(null);
 
   useEffect(() => {
@@ -151,23 +163,35 @@ function TimelineItem({ title, subtitle, desc, isLeft }) {
 
       <div className="absolute left-3 top-8 h-[1px] w-6 bg-white/30 md:hidden" />
 
-      <EventBox title={title} subtitle={subtitle} desc={desc} />
+      <EventBox
+  title={title}
+  subtitle={subtitle}
+  desc={desc}
+  day={day}
+  pdf={pdf}
+  status={status}
+/>
+
     </div>
   );
 }
 
-function EventBox({ title, subtitle, desc }) {
+function EventBox({ title, subtitle, desc, day, pdf, status }) {
   return (
-    <div className="group relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 will-change-transform hover:-translate-y-1 hover:border-red-500/40 hover:bg-white/10 hover:shadow-[0_22px_80px_rgba(255,0,48,0.22)]">
+    <div className="group relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-8 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-red-500/40 hover:bg-white/10 hover:shadow-[0_22px_80px_rgba(255,0,48,0.22)]">
+
+      {/* Glow layers (unchanged) */}
       <div className="pointer-events-none absolute inset-[-70%] opacity-30 blur-2xl animate-[spin_10s_linear_infinite] bg-[conic-gradient(from_90deg,rgba(255,23,68,0.0),rgba(255,23,68,0.35),rgba(91,44,255,0.35),rgba(255,23,68,0.0))]" />
-
       <div className="pointer-events-none absolute inset-0 bg-black/20" />
-
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,0,48,0.22),_transparent_60%)]" />
 
-      <div className="pointer-events-none absolute -top-20 right-0 h-48 w-48 rounded-full bg-[#ff0030]/10 blur-[120px] transition-all duration-500 group-hover:bg-[#ff0030]/30" />
-
       <div className="relative z-10">
+
+        {/* Day badge */}
+        <span className="inline-block mb-3 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs uppercase tracking-widest text-white/70">
+          Day {day}
+        </span>
+
         <h3 className="text-lg font-semibold uppercase tracking-wide">
           {title}
         </h3>
@@ -179,11 +203,35 @@ function EventBox({ title, subtitle, desc }) {
         )}
 
         {desc && (
-          <p className="mt-4 text-sm text-white/70 leading-relaxed">{desc}</p>
+          <p className="mt-4 text-sm text-white/70 leading-relaxed">
+            {desc}
+          </p>
         )}
+
+        {/* Action button */}
+        <div className="mt-6">
+          {status === "open" && pdf ? (
+            <a
+              href={pdf}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-full bg-red-600 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-red-500"
+            >
+              Open Schedule
+            </a>
+          ) : (
+            <button
+              disabled
+              className="inline-flex cursor-not-allowed items-center justify-center rounded-full border border-white/20 bg-white/5 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-white/40"
+            >
+              Closed
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
 }
+
 
 export default Timeline;
