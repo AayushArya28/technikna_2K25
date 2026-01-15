@@ -89,7 +89,6 @@ const events = [
     participation: "Solo",
     fee: "₹149",
     allowedModes: ["solo"],
-    registrationPaused: true,
   },
   {
     key: "synced_showdown",
@@ -114,7 +113,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 3,
     groupMaxTotal: 14,
-    registrationPaused: true,
   },
   {
     key: "street_dance",
@@ -149,7 +147,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 6,
-    registrationPaused: true,
   },
   {
     key: "musical_marvel",
@@ -184,7 +181,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 8,
     groupMaxTotal: 10,
-    registrationPaused: true,
   },
   {
     key: "hulchul",

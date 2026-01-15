@@ -141,7 +141,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
-    registrationPaused: true,
   },
   {
     key: "robo_soccer",
@@ -184,7 +183,6 @@ const events = [
     participation: "Solo",
     fee: "₹199",
     allowedModes: ["solo"],
-    registrationPaused: true,
   },
   {
     key: "utility_bot",
@@ -214,7 +212,6 @@ const events = [
     participation: "Solo",
     fee: "₹199",
     allowedModes: ["solo"],
-    registrationPaused: true,
   },
   {
     key: "robo_race",

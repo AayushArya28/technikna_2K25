@@ -55,7 +55,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 3,
     groupMaxTotal: 5,
-    registrationPaused: true,
   },
 ];
 
