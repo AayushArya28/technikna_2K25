@@ -141,6 +141,7 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 3,
+    registrationPaused: true,
   },
   {
     key: "robo_soccer",
@@ -183,6 +184,7 @@ const events = [
     participation: "Solo",
     fee: "₹199",
     allowedModes: ["solo"],
+    registrationPaused: true,
   },
   {
     key: "utility_bot",
@@ -212,6 +214,7 @@ const events = [
     participation: "Solo",
     fee: "₹199",
     allowedModes: ["solo"],
+    registrationPaused: true,
   },
   {
     key: "robo_race",
@@ -409,27 +412,32 @@ export default function Technical() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (activeEvent?.key === "hackathon") {
-                      popup.info("Registration for this event is closed.");
-                      return;
-                    }
-                    else if (registrationPaused) {
-                      popup.info("Registration is temporarily paused.");
-                      return;
-                    }
-                    setFormOpen(true);
-                  }}
+                      if (activeEvent?.key === "hackathon") {
+                        popup.info("Registration is closed.Event is over");
+                        return;
+                      }
+                      else if (registrationPaused) {
+                        popup.info("Registration is closed. Event is over.");
+                        return;
+                      }
+                      setFormOpen(true);
+                    }}
                   className={
                     registrationPaused || activeEvent?.key === "hackathon"
                       ? "bg-white/10 border border-white/15 transition px-6 py-3 rounded-lg text-white/70 font-bold cursor-not-allowed"
                       : "bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
                   }
                 >
-                  {activeEvent?.key === "hackathon" ? "Registration Closed" : registrationPaused ? "Registrations Paused": "Register Now"}
+                  {activeEvent?.key === "hackathon" ? "Registration Closed" : registrationPaused ? "Registration Closed": "Register Now"}
                 </button>
                 <p className="text-[10px] text-white/50 mt-1 text-center">
                   *T&C Applied
                 </p>
+                {(activeEvent?.key === "hackathon" || registrationPaused) && (
+                  <p className="text-xs text-white/60 mt-2 text-center">
+                    Registration is closed for this event. On-spot registration is available at the venue.
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-between gap-6 w-full sm:w-auto">

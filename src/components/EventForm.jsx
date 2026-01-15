@@ -233,7 +233,7 @@ export default function EventForm({
     if (submitLockRef.current) return;
     submitLockRef.current = true;
     if (registrationPaused) {
-      popup.info("Hackathon registration is temporarily paused.");
+      popup.info("Registration is closed. On-spot registration available.");
       submitLockRef.current = false;
       return;
     }
@@ -449,7 +449,7 @@ export default function EventForm({
         <div className="mt-4 space-y-3 sm:mt-5 sm:space-y-4">
           {registrationPaused && (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-sm text-white/80 sm:p-4">
-              Hackathon registration is temporarily paused.
+              Registration is closed. On-spot registration available.
             </div>
           )}
           <div className="rounded-2xl border border-white/10 bg-black/40 p-3 sm:p-4">
@@ -605,7 +605,7 @@ export default function EventForm({
             onClick={submit}
             className="w-full rounded-full bg-[#ff0045]/90 px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.30em] text-white transition hover:bg-[#ff0045]/80 disabled:opacity-60 sm:py-3 sm:tracking-[0.35em]"
           >
-            {registrationPaused ? "Registration Paused" : submitting ? "Submitting..." : "Submit"}
+            {registrationPaused ? "Registration Closed" : submitting ? "Submitting..." : "Submit"}
           </button>
 
           <div className="text-xs text-white/50">

@@ -89,6 +89,7 @@ const events = [
     participation: "Solo",
     fee: "₹149",
     allowedModes: ["solo"],
+    registrationPaused: true,
   },
   {
     key: "synced_showdown",
@@ -113,6 +114,7 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 3,
     groupMaxTotal: 14,
+    registrationPaused: true,
   },
   {
     key: "street_dance",
@@ -147,6 +149,7 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 6,
+    registrationPaused: true,
   },
   {
     key: "musical_marvel",
@@ -181,6 +184,7 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 8,
     groupMaxTotal: 10,
+    registrationPaused: true,
   },
   {
     key: "hulchul",
@@ -213,6 +217,7 @@ const events = [
     participation: "Solo",
     fee: "₹149",
     allowedModes: ["solo"],
+    registrationPaused: true,
   },
   {
     key: "poetry_hindi",
@@ -223,6 +228,7 @@ const events = [
     participation: "Solo",
     fee: "₹149",
     allowedModes: ["solo"],
+    registrationPaused: true,
   },
   {
     key: "kavi_sammelan",
@@ -257,6 +263,9 @@ export default function Cultural() {
   const cardRef = useRef(null);
   const popup = usePopup();
   const { loading: entitlementsLoading, canAccessEvents } = useEntitlements();
+
+  const activeEvent = events?.[active];
+  const registrationPaused = !!activeEvent?.registrationPaused;
 
   const openRulebook = () => {
     if (typeof RULEBOOK_PDF_URL === "string" && RULEBOOK_PDF_URL.trim()) {
@@ -426,14 +435,29 @@ export default function Cultural() {
               <div className="flex flex-col items-center">
                 <button
                   type="button"
-                  onClick={() => setFormOpen(true)}
-                  className="bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
+                  onClick={() => {
+                    if (registrationPaused) {
+                      popup.info("Registration is closed. On-spot registration available.");
+                      return;
+                    }
+                    setFormOpen(true);
+                  }}
+                  className={
+                    registrationPaused
+                      ? "bg-white/10 border border-white/15 transition px-6 py-3 rounded-lg text-white/70 font-bold cursor-not-allowed"
+                      : "bg-red-600 hover:shadow-[0_0_18px_rgba(255,0,64,0.55)] transition px-6 py-3 rounded-lg text-white font-bold cursor-pointer active:scale-95 active:opacity-90 duration-250"
+                  }
                 >
-                  Register Now
+                  {registrationPaused ? "Registration Closed" : "Register Now"}
                 </button>
                 <p className="text-[10px] text-white/50 mt-1 text-center">
                   *T&C Applied
                 </p>
+                {registrationPaused && (
+                  <p className="text-xs text-white/60 mt-2 text-center">
+                    Registration is closed for this event. On-spot registration is available at the venue.
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-between gap-6 w-full sm:w-auto">
@@ -513,6 +537,7 @@ export default function Cultural() {
         allowedModes={events?.[active]?.allowedModes}
         groupMinTotal={events?.[active]?.groupMinTotal}
         groupMaxTotal={events?.[active]?.groupMaxTotal}
+        registrationPaused={!!events?.[active]?.registrationPaused}
       />
     </div>
   );
