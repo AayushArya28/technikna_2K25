@@ -18,7 +18,6 @@ const events = [
     participation: "Solo",
     fee: "Free to Register",
     allowedModes: ["solo"],
-    registrationPaused: true,
   },
   {
     key: "bgmi",
@@ -30,7 +29,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 4,
-    registrationPaused: true,
   },
   {
     key: "valorant",
@@ -42,7 +40,6 @@ const events = [
     allowedModes: ["group"],
     groupMinTotal: 2,
     groupMaxTotal: 5,
-    registrationPaused: true,
   },
   {
     key: "fifa",
