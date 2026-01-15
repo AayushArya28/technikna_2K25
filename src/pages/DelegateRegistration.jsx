@@ -464,12 +464,12 @@ const DelegateRegistration = () => {
                                 <div className="mt-10 border-t border-white pt-6">
                                     <div className="mb-2 flex items-center justify-between text-lg font-mono md:text-xl">
                                         <span>Delegate Reg. Fee:</span>
-                                        <span>₹599</span>
+                                        <span>₹499</span>
                                     </div>
                                     <div className="my-2 h-px w-full bg-white/20"></div>
                                     <div className="flex items-center justify-between font-mono text-xl font-bold md:text-2xl">
                                         <span>Total Amount Payable:</span>
-                                        <span>₹599</span>
+                                        <span>₹499</span>
                                     </div>
                                     <p className="mb-6 mt-1 text-[10px] uppercase tracking-wider text-gray-400">
                                         (incl. of convenience fee & GST)
