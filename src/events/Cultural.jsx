@@ -217,7 +217,6 @@ const events = [
     participation: "Solo",
     fee: "₹149",
     allowedModes: ["solo"],
-    registrationPaused: true,
   },
   {
     key: "poetry_hindi",
@@ -228,7 +227,6 @@ const events = [
     participation: "Solo",
     fee: "₹149",
     allowedModes: ["solo"],
-    registrationPaused: true,
   },
   {
     key: "kavi_sammelan",
