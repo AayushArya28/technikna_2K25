@@ -10,8 +10,8 @@ const DAY_DATES = {
 
 // ---- EVENT DATA ----
 const EVENTS = [
-  { day: "day1", time: "07:30 - 08:30", title: "Multism Mavericks(Multism Simulation)", location: "EM Lab" },
-  { day: "day1", time: "08:30 - 12:30", title: "Bridge the Gap (Bridge Making)", location: "Civil Lab" },
+  { day: "day1", time: "09:30 - 10:30", title: "Multism Mavericks(Multism Simulation)", location: "EM Lab" },
+  { day: "day1", time: "10:30 - 12:30", title: "Bridge the Gap (Bridge Making)", location: "Civil Lab" },
   { day: "day1", time: "12:30 - 13:30", title: "Wall Painting", location: "Lawn Tennis Court Area" },
   { day: "day1", time: "12:00 - 14:00", title: "Algo Apex (Competitive Programming)", location: "Online" },
   { day: "day1", time: "12:00 - 15:00", title: "BGMI (LAN), Real Cricket", location: "Gaming Arena" },
@@ -171,7 +171,7 @@ export default function EventTimelineAutoScroll() {
                   return (
                     <motion.div
   key={i}
-  className={`grid grid-cols-[3fr_2fr_1fr] items-center gap-4 p-5 rounded-2xl border 
+  className={`grid grid-cols-[3fr_2fr_1fr] items-center gap-4 p-3 rounded-2xl border 
     ${
       status === "completed"
         ? "bg-zinc-900/50 border-zinc-700/40 opacity-60 line-through decoration-zinc-500"
@@ -193,7 +193,7 @@ export default function EventTimelineAutoScroll() {
   {/* LEFT: name + location */}
   <div className={isCompleted ? "line-through decoration-zinc-500" : ""}>
     <h3
-      className={`text-2xl font-bold tracking-wide ${
+      className={`text-sm md:text-2xl font-bold tracking-normal ${
         status === "ongoing"
           ? "text-green-400"
           : "text-white"
@@ -202,7 +202,7 @@ export default function EventTimelineAutoScroll() {
       {e.title}
     </h3>
     <p
-      className={`text-md ${
+      className={`text-[12px] md:text-[18px] ${
         status === "ongoing"
           ? "text-green-300"
           : status === "upcoming"
@@ -216,7 +216,7 @@ export default function EventTimelineAutoScroll() {
 
   {/* CENTER: time */}
   <div
-    className={`text-center text-xl ${
+    className={`text-center text-sm min-[1200px]:text-xl ${
       isCompleted ? "line-through text-zinc-500" : "text-white"
     }`}
   >
@@ -226,7 +226,7 @@ export default function EventTimelineAutoScroll() {
   {/* RIGHT: status */}
   <div className="text-right">
     <span
-      className={`text-xl text-center px-6 pt-1 pb-2 rounded-full font-semibold
+      className={`text-sm min-[1200px]:text-xl text-center px-4 pt-1 pb-2 rounded-full font-semibold
         ${
           status === "ongoing"
             ? "bg-green-500/20 text-green-400"
