@@ -44,7 +44,7 @@ const Sponsors = () => {
             Collaborating with the best
           </p>
           <h1 className="text-5xl md:text-7xl font-black tracking-tighter italic uppercase">
-            Technika <span className="text-red-700">2K25</span>
+            Technika <span className="text-red-700">2K26</span>
           </h1>
         </div>
 
@@ -53,14 +53,26 @@ const Sponsors = () => {
           <h3 className="text-white/40 text-[10px] font-bold tracking-[0.5em] uppercase mb-6">
             — Powered By —
           </h3>
-          <div className="w-full md:w-1/3 py-10 px-12 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl flex flex-col items-center group hover:bg-white/[0.07] transition-all duration-300 shadow-2xl">
-            <span className="text-white text-2xl font-black tracking-tight group-hover:scale-105 transition-transform uppercase text-center">
+          <div className="flex justify-center w-full">
+            <div className="h-40 py-0 px-0 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl flex flex-col items-center group hover:bg-white/[0.07] transition-all duration-300 shadow-2xl justify-center" style={{ minWidth: '220px', maxWidth: '300px', width: '100%' }}>
+              <div className="flex flex-col items-center justify-center h-full w-full">
+                <img
+                  src="https://i.ibb.co/6RD2V7K8/3.png"
+                  alt="Bank of Baroda Logo"
+                  className="object-contain mx-auto"
+                  style={{ width: '200%', height: '250%', maxWidth: '300px', maxHeight: '300px' }}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-center w-full">
+            <span className="text-white text-2xl font-black tracking-tight uppercase text-center mt-2">
               Bank of Baroda
             </span>
-            <span className="text-white/40 text-[9px] mt-2 uppercase tracking-[0.2em] font-semibold">
-              Official Banking Partner
-            </span>
           </div>
+          <span className="text-white/40 text-[9px] mt-2 uppercase tracking-[0.2em] font-semibold">
+            Official Banking Partner
+          </span>
         </div>
 
         {/* Tier 2: Homogenous Grid System */}
@@ -99,6 +111,6 @@ const Sponsors = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Sponsors;
