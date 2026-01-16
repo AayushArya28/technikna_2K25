@@ -9,6 +9,7 @@ import RollingGallery from "../components/RollingGallery";
 import { AboutTechnika, AboutPatna } from "../components/AboutSections";
 import { motion as Motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import SponsorSection from "../components/SponsorsSection";
 
 const Home = () => {
   const isFirstLoad = useFirstLoad();
@@ -125,35 +126,9 @@ const Home = () => {
       </div>
 
       {/* Sponsors Section */}
-      {/* <div className="relative z-0 mt-20 mb-20">
-        <Fade
-          triggerOnce={true}
-          direction="up"
-          delay={100}
-          duration={800}
-          fraction={0.3}
-        >
-          <div className="m-10 flex flex-col items-center text-center mb-8">
-            <h1 className="text-5xl lg:text-6xl font-bold leading-tight mb-3 bg-gradient-to-r from-red-500 to-rose-400 bg-clip-text text-transparent">
-              Our Sponsors
-            </h1>
-            <p className="text-base tracking-wider text-gray-300 max-w-2xl">
-              Proudly supported by our amazing partners who make Technika
-              possible
-            </p>
-          </div>
-        </Fade>
-        <Fade
-          triggerOnce={true}
-          direction="up"
-          delay={300}
-          duration={1000}
-          cascade
-          damping={0.1}
-        >
-          <RollingGallery autoplay={true} pauseOnHover={true} />
-        </Fade>
-      </div> */}
+      <div className="relative z-0">
+        <SponsorSection />
+      </div>
 
       {/* <div style={{ width: "98vw", height: "100vh" }}>
         <PreTechnika />
