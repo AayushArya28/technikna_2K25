@@ -3,10 +3,10 @@ import React from 'react';
 const partnerGrid = [
   { name: "Jio Saavn", icon: "https://i.ibb.co/0y3ph0Vh/1.png" },
   { name: "CERAMIC Junction", icon: "https://i.ibb.co/Q39SzLVv/2.png" },
-  { name: "Bank of Baroda", icon: "https://i.ibb.co/6RD2V7K8/3.png", label: "Official Partner", sub: "Official Banking Partner" },
+  { name: "Bank of Baroda", icon: "https://i.ibb.co/6RD2V7K8/3.png", },
   { name: "VENUS STAR", icon: "https://i.ibb.co/tMrhNJ0R/4.png" },
   { name: "BSEDCL", icon: "https://i.ibb.co/27X3GXL4/5.png" },
-  { name: "GAIL", icon: "https://i.ibb.co/bMqpwbPQ/6.png" },
+  { name: "GAIL", icon: "https://i.ibb.co/bMqpwbPQ/6.png", label: "Official Partner", sub: "Official Partner" },
   { name: "hii", icon: "https://i.ibb.co/pBXb1nch/7.png" },
   { name: "NSMCH", icon: "https://i.ibb.co/rGkSQvb0/8.png" },
   { name: "Plum Body lovin'", icon: "https://i.ibb.co/HTvrvPj4/9.png" },
@@ -57,7 +57,7 @@ const Sponsors = () => {
             <div className="h-40 py-0 px-0 bg-white/[0.03] backdrop-blur-md border border-white/10 rounded-2xl flex flex-col items-center group hover:bg-white/[0.07] transition-all duration-300 shadow-2xl justify-center" style={{ minWidth: '220px', maxWidth: '300px', width: '100%' }}>
               <div className="flex flex-col items-center justify-center h-full w-full">
                 <img
-                  src="https://i.ibb.co/6RD2V7K8/3.png"
+                  src="https://i.ibb.co/bMqpwbPQ/6.png"
                   alt="Bank of Baroda Logo"
                   className="object-contain mx-auto"
                   style={{ width: '200%', height: '250%', maxWidth: '300px', maxHeight: '300px' }}
@@ -67,11 +67,11 @@ const Sponsors = () => {
           </div>
           <div className="flex justify-center w-full">
             <span className="text-white text-2xl font-black tracking-tight uppercase text-center mt-2">
-              Bank of Baroda
+              GAIL
             </span>
           </div>
           <span className="text-white/40 text-[9px] mt-2 uppercase tracking-[0.2em] font-semibold">
-            Official Banking Partner
+            Official Partner
           </span>
         </div>
 
