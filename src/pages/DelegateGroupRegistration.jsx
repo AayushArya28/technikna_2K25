@@ -419,7 +419,7 @@ const DelegateGroupRegistration = () => {
 
             const data = await resp.json().catch(() => ({}));
             const statusVal = String(data?.status || "").toLowerCase();
-            const registered = ["success", "paid", "confirmed", "pending", "pending_payment"].includes(statusVal);
+            const registered = ["success", "paid", "confirmed"].includes(statusVal);
             setSelfRegistered(registered);
         } catch (err) {
             console.error(err);
