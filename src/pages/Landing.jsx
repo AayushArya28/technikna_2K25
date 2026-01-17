@@ -284,7 +284,7 @@ const Landing = ({ animate }) => {
   data-depth="0.30"
 >
   {/* REGISTER BUTTON */}
-    <Link to={user ? "/event-timeline-autoscroll" : "/login"}>
+    <Link to={user ? "/event-timeline" : "/login"}>
       {/* Mobile Button */}
       <div className="relative block md:hidden w-auto justify-center mb-3">
         <button className="mb-3 bg-[#ff001e] border-2 border-red-900 text-white text-[1.3rem] ks-font tracking-[1.2px] 

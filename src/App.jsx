@@ -29,7 +29,7 @@ import { AuthProvider } from "./context/auth.jsx";
 import { PopupProvider } from "./context/popup.jsx";
 import { EntitlementsProvider } from "./context/EntitlementsProvider.jsx";
 import Lenis from "@studio-freight/lenis";
-import EventTimelineAutoScroll from "./components/EventTimelineAutoscroll.jsx";
+import EventTimeline from "./components/EventTimeline.jsx";
 
 
 function App() {
@@ -54,12 +54,15 @@ function App() {
     { path: "/delegate-group-registration", Component: DelegateGroupRegistration },
     { path: "/accommodation", Component: Accommodation },
     { path: "/profile", Component: Profile },
-    { path: "/event-timeline-autoscroll", Component: EventTimelineAutoScroll },
+    { path: "/event-timeline", Component: EventTimeline },
   ];
 
   // Skipping loading screen in development mode, comment this line and uncomment the next to enable loading screen while working on it
   // const [loadingDone, setLoadingDone] = useState(import.meta.env.DEV);
   const [loadingDone, setLoadingDone] = useState(false);
+
+  const hideLayoutRoutes = ["/event-timeline"];
+  const hideLayout = hideLayoutRoutes.includes(location.pathname);
 
   useEffect(() => {
     const lenis = new Lenis({
@@ -97,7 +100,7 @@ function App() {
         <AuthProvider>
           <PopupProvider>
             <EntitlementsProvider>
-              <Nav />
+              {!hideLayout && <Nav />}
               <TransitionProvider>
                 <Routes>
                   {routes.map(({ path, Component }) => (
@@ -126,7 +129,7 @@ function App() {
                   ))}
                 </Routes>
               </TransitionProvider>
-              <Footer />
+              {!hideLayout && <Footer />}
             </EntitlementsProvider>
           </PopupProvider>
         </AuthProvider>
