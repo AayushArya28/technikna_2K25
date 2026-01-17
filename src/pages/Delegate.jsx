@@ -142,7 +142,10 @@ const Delegate = () => {
                             <div className="text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
                                 Investment
                             </div>
-                            <div className="mt-3 text-3xl font-semibold text-white">INR 599</div>
+                            <div className="mt-3 flex items-center justify-center gap-3 text-3xl font-semibold text-white md:justify-end">
+                                <span className="text-2xl text-gray-400 line-through">INR 599</span>
+                                <span>INR 499</span>
+                            </div>
                             <div className="mt-2 text-xs uppercase tracking-[0.35em] text-white/60">
                                 inclusive of gst & fees
                             </div>
