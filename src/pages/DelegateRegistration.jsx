@@ -40,6 +40,7 @@ const DelegateRegistration = () => {
     const [checkingStatus, setCheckingStatus] = useState(false);
     const [checkingGroupStatus, setCheckingGroupStatus] = useState(false);
     const [inGroupDelegate, setInGroupDelegate] = useState(false);
+    const [hasRegisteredEvents, setHasRegisteredEvents] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [agreed, setAgreed] = useState(false);
     const [didShowProfileHint, setDidShowProfileHint] = useState(false);
@@ -134,6 +135,46 @@ const DelegateRegistration = () => {
         }
     };
 
+    const checkRegisteredEvents = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
+
+        try {
+            const token = await user.getIdToken();
+            const response = await fetch(`${BASE_API_URL}/event/registered`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                let hasAny = false;
+
+                // Check object format: { events: { ... } }
+                if (data?.events && typeof data.events === "object" && !Array.isArray(data.events)) {
+                    hasAny = Object.values(data.events).some((val) => {
+                        const status = (
+                            typeof val === "string" ? val : val?.status || val?.paymentStatus || ""
+                        ).toLowerCase();
+                        return ["confirmed", "success", "paid", "registered"].includes(status);
+                    });
+                }
+                // Check array format
+                else if (Array.isArray(data)) {
+                    hasAny = data.some((val) => {
+                        const status = (
+                            typeof val === "string" ? val : val?.status || val?.paymentStatus || ""
+                        ).toLowerCase();
+                        return ["confirmed", "success", "paid", "registered"].includes(status);
+                    });
+                }
+
+                setHasRegisteredEvents(hasAny);
+            }
+        } catch (e) {
+            console.error("Failed to check registered events", e);
+        }
+    };
+
     useEffect(() => {
         if (!authReady) return;
         if (!authUser) return;
@@ -164,6 +205,7 @@ const DelegateRegistration = () => {
         hydrateProfile();
         checkStatus();
         checkGroupDelegateStatus();
+        checkRegisteredEvents();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [authReady, authUser]);
 
@@ -529,7 +571,7 @@ const DelegateRegistration = () => {
                                                     <span>Delegate Reg. Fee:</span>
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-base text-gray-400 line-through">₹599</span>
-                                                        <span>₹499</span>
+                                                        <span>₹{hasRegisteredEvents ? 399 : 499}</span>
                                                     </div>
                                                 </div>
                                                 <div className="my-2 h-px w-full bg-white/20"></div>
@@ -537,7 +579,7 @@ const DelegateRegistration = () => {
                                                     <span>Total Amount Payable:</span>
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-lg font-normal text-gray-400 line-through">₹599</span>
-                                                        <span>₹499</span>
+                                                        <span>₹{hasRegisteredEvents ? 399 : 499}</span>
                                                     </div>
                                                 </div>
                                                 <p className="mb-6 mt-1 text-[10px] uppercase tracking-wider text-gray-400">
