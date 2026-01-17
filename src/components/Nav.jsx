@@ -64,7 +64,7 @@ function Nav() {
         { label: "Developers", link: "/devs" },
       ],
     },
-    { label: "Delegates", link: "/delegate" },
+    { label: "Concert Pass", link: "/delegate" },
     {
       label: "Alumni",
       dropdown: [{ label: "Alumni Registration", link: "/alumni" }],
@@ -75,7 +75,7 @@ function Nav() {
   /* ---------- MOBILE MENU (EXACT ORDER YOU ASKED) ---------- */
   const mobileMenuItems = [
     { label: "Home", link: "/" },
-    { label: "Delegates", link: "/delegate" },
+    { label: "Concert Pass", link: "/delegate" },
     { label: "Events", link: "/events" },
     { label: "Merchandise", link: "/merchandise" },
     { label: "Core Team", link: "/core" },

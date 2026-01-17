@@ -14,6 +14,7 @@ const Delegate = () => {
     const [checkingAccess, setCheckingAccess] = useState(true);
     const [groupStatus, setGroupStatus] = useState({ isOwner: false, isMember: false });
     const [selfStatus, setSelfStatus] = useState({ registered: false });
+    const [hasRegisteredEvents, setHasRegisteredEvents] = useState(false);
 
     const inGroup = useMemo(() => Boolean(groupStatus.isOwner || groupStatus.isMember), [groupStatus]);
     const inSelf = useMemo(() => Boolean(selfStatus.registered), [selfStatus]);
@@ -21,7 +22,7 @@ const Delegate = () => {
     useEffect(() => {
         if (entitlementsLoading) return;
         if (canAccessDelegate) return;
-        popup.info("BIT Mesra email detected. Delegate pages are locked for BIT students.");
+        popup.info("BIT Mesra email detected. Concert Pass pages are locked for BIT students.");
         navigate("/", { replace: true });
     }, [canAccessDelegate, entitlementsLoading, navigate, popup]);
 
@@ -56,6 +57,29 @@ const Delegate = () => {
                     setGroupStatus({ isOwner: false, isMember: false });
                 }
 
+                // Check for registered events to discount price
+                try {
+                    const eventResp = await fetch(`${BASE_API_URL}/event/registered`, { headers });
+                    if (eventResp.ok) {
+                        const eventData = await eventResp.json();
+                        let hasAny = false;
+                        if (eventData?.events && typeof eventData.events === "object" && !Array.isArray(eventData.events)) {
+                            hasAny = Object.values(eventData.events).some((val) => {
+                                const status = (typeof val === "string" ? val : val?.status || val?.paymentStatus || "").toLowerCase();
+                                return ["confirmed", "success", "paid", "registered"].includes(status);
+                            });
+                        } else if (Array.isArray(eventData)) {
+                            hasAny = eventData.some((val) => {
+                                const status = (typeof val === "string" ? val : val?.status || val?.paymentStatus || "").toLowerCase();
+                                return ["confirmed", "success", "paid", "registered"].includes(status);
+                            });
+                        }
+                        setHasRegisteredEvents(hasAny);
+                    }
+                } catch {
+                    // ignore
+                }
+
                 // Self status: if backend returns a status that indicates pending/paid/etc, treat as registered
                 try {
                     const resp = await fetch(`${BASE_API_URL}/delegate/status/user`, { headers });
@@ -80,7 +104,7 @@ const Delegate = () => {
     const highlights = [
         {
             title: "Pronight Access + Free Events",
-            description: "Get Pronight access and full entry to all events — completely free with the Delegate Pass.",
+            description: "Get Pronight access and full entry to all events — completely free with the Concert Pass.",
             featured: true,
         },
         {
@@ -89,11 +113,11 @@ const Delegate = () => {
         },
         {
             title: "Seamless Transit",
-            description: "Delegates-only bus transportation on designated BIT Patna routes throughout the fest.",
+            description: "Concert Pass-only bus transportation on designated BIT Patna routes throughout the fest.",
         },
         {
             title: "Stay On Campus",
-            description: "Eligibility for in-campus accommodation with curated delegate hosting support.",
+            description: "Eligibility for in-campus accommodation with curated concert pass hosting support.",
         },
         {
             title: "After-Hours Entry",
@@ -113,7 +137,7 @@ const Delegate = () => {
                 <div className="absolute -top-24 right-16 h-[420px] w-[420px] rounded-full bg-[#ff0030]/12 blur-[150px]" />
                 <div className="absolute bottom-0 left-8 h-80 w-80 rounded-full bg-[#4100ff]/12 blur-[150px]" />
                 <div className="absolute top-[15%] left-[10%] text-9xl font-black uppercase tracking-[0.3em] text-white/5 select-none">
-                    Delegate
+                    Concert Pass
                 </div>
                 <div className="absolute bottom-[18%] right-[12%] text-7xl font-black text-white/5 select-none">
                     *
@@ -129,7 +153,7 @@ const Delegate = () => {
                                 Technika 2K26
                             </span>
                             <h1 className="text-4xl font-semibold uppercase tracking-[0.22em] text-white md:text-5xl">
-                                Delegate Access Pass
+                                Concert Pass
                             </h1>
                             <p className="max-w-xl text-sm text-white/70 md:text-base">
                                 Step into the premium lane for Technika. One pass unlocks immersive showcases, curated networking, and effortless movement across campus.
@@ -144,8 +168,13 @@ const Delegate = () => {
                             </div>
                             <div className="mt-3 flex items-center justify-center gap-3 text-3xl font-semibold text-white md:justify-end">
                                 <span className="text-2xl text-gray-400 line-through">INR 599</span>
-                                <span>INR 499</span>
+                                <span>INR {hasRegisteredEvents ? 399 : 499}</span>
                             </div>
+                            {hasRegisteredEvents && (
+                                <div className="mt-1 text-xs text-emerald-400 uppercase tracking-wider font-semibold">
+                                    Event Registration Discount Applied
+                                </div>
+                            )}
                             <div className="mt-2 text-xs uppercase tracking-[0.35em] text-white/60">
                                 inclusive of gst & fees
                             </div>
@@ -227,7 +256,7 @@ const Delegate = () => {
                                 Choose Your Flow
                             </h2>
                             <p className="max-w-xl text-sm text-white/70 md:text-base">
-                                Register solo in minutes or pool in as a crew. Either way, you unlock the same premium delegate advantages from day one.
+                                Register solo in minutes or pool in as a crew. Either way, you unlock the same premium concert pass advantages from day one.
                             </p>
                         </div>
                         <div className="flex w-full flex-col gap-4 md:w-auto md:flex-row">
@@ -239,7 +268,7 @@ const Delegate = () => {
                                     disabled={checkingAccess || inGroup}
                                     onClick={() => {
                                         if (inGroup) {
-                                            popup.info("You are already a part of group delegate.");
+                                            popup.info("You are already a part of group concert pass.");
                                             return;
                                         }
                                         navigate("/delegate-registration");
@@ -249,7 +278,7 @@ const Delegate = () => {
                                     Individual Pass
                                 </button>
                                 <p className="text-xs uppercase tracking-[0.35em] text-white/60">
-                                    {inGroup ? "already in group delegate" : checkingAccess ? "checking status" : "instant checkout"}
+                                    {inGroup ? "already in group concert pass" : checkingAccess ? "checking status" : "instant checkout"}
                                 </p>
                             </div>
                             <div className="group relative overflow-hidden flex flex-col gap-3 rounded-3xl border border-white/12 bg-white/5 p-5 backdrop-blur-lg transition will-change-transform hover:-translate-y-1 hover:border-white/30 hover:bg-white/10 hover:shadow-[0_18px_70px_rgba(255,0,48,0.12)]">
@@ -260,7 +289,7 @@ const Delegate = () => {
                                     disabled={checkingAccess || inSelf}
                                     onClick={() => {
                                         if (inSelf) {
-                                            popup.info("You are already registered as an individual delegate.");
+                                            popup.info("You are already registered for an individual concert pass.");
                                             return;
                                         }
                                         navigate("/delegate-group-registration");
