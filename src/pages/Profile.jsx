@@ -901,7 +901,7 @@ export default function Profile() {
                           <Award className="h-5 w-5 text-white/70" />
                         </div>
                         <div className="text-sm text-white/60 mb-2">
-                          Delegate Pass
+                          Concert Pass
                         </div>
                         <StatusBadge status={statuses.delegate?.status} />
                       </div>

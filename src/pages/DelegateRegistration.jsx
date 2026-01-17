@@ -55,7 +55,7 @@ const DelegateRegistration = () => {
         if (entitlementsLoading) return;
         if (canAccessDelegate) return;
         popup.info(
-            "BIT Mesra email detected. Delegate pages are locked for BIT students."
+            "BIT Mesra email detected. Concert Pass pages are locked for BIT students."
         );
         navigate("/", { replace: true });
     }, [canAccessDelegate, entitlementsLoading, navigate, popup]);
@@ -253,7 +253,7 @@ const DelegateRegistration = () => {
         e.preventDefault();
 
         if (inGroupDelegate) {
-            popup.info("You are already a part of group delegate.");
+            popup.info("You are already a part of group concert pass.");
             return;
         }
 
@@ -304,7 +304,7 @@ const DelegateRegistration = () => {
 
             setSubmitted(true);
         } catch (error) {
-            console.error("Error registering delegate: ", error);
+            console.error("Error registering concert pass: ", error);
             popup.error("Registration failed. Please try again.");
         } finally {
             setLoading(false);
@@ -410,7 +410,7 @@ const DelegateRegistration = () => {
                     <div className="absolute -top-10 left-10 h-64 w-64 rounded-full bg-[#ff0030]/15 blur-[120px]" />
                     <div className="absolute bottom-0 right-16 h-72 w-72 rounded-full bg-[#4100ff]/10 blur-[140px]" />
                     <div className="absolute top-[12%] right-[12%] text-8xl font-black opacity-[0.06] select-none">
-                        DELEGATE
+                        CONCERT PASS
                     </div>
                     <div className="absolute bottom-[16%] left-[14%] text-7xl font-black opacity-[0.05] select-none">
                         *
@@ -432,7 +432,7 @@ const DelegateRegistration = () => {
                                     You’re not logged in
                                 </div>
                                 <div className="text-white/60 mb-4">
-                                    Please sign in to register for Delegate Pass.
+                                    Please sign in to register for Concert Pass.
                                 </div>
                                 <button
                                     type="button"
@@ -451,7 +451,7 @@ const DelegateRegistration = () => {
                                         type="button"
                                         onClick={() => navigate("/delegate")}
                                         className="group flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/10 text-lg text-white transition hover:bg-white/20"
-                                        aria-label="Back to delegate overview"
+                                        aria-label="Back to concert pass overview"
                                     >
                                         <svg
                                             width="18"
@@ -469,10 +469,10 @@ const DelegateRegistration = () => {
                                     </button>
                                     <div>
                                         <h2 className="text-3xl font-semibold tracking-[0.25em] text-white drop-shadow-[0_0_18px_rgba(255,0,48,0.55)] md:text-4xl">
-                                            Delegate Registration
+                                            Concert Pass Registration
                                         </h2>
                                         <p className="mt-2 text-sm font-medium uppercase tracking-[0.3em] text-white/60">
-                                            register as an individual delegate
+                                            register for an individual concert pass
                                         </p>
                                     </div>
                                 </div>
@@ -568,7 +568,7 @@ const DelegateRegistration = () => {
 
                                             <div className="mt-10 border-t border-white pt-6">
                                                 <div className="mb-2 flex items-center justify-between text-lg font-mono md:text-xl">
-                                                    <span>Delegate Reg. Fee:</span>
+                                                    <span>Concert Pass Reg. Fee:</span>
                                                     <div className="flex items-center gap-3">
                                                         <span className="text-base text-gray-400 line-through">₹599</span>
                                                         <span>₹{hasRegisteredEvents ? 399 : 499}</span>
@@ -667,7 +667,7 @@ const DelegateRegistration = () => {
                                                     <span className="font-semibold uppercase tracking-[0.25em] text-white/60">
                                                         Notice:
                                                     </span>{" "}
-                                                    You are already a part of group delegate.
+                                                    You are already a part of group concert pass.
                                                 </>
                                             )}
                                         </div>
@@ -778,7 +778,7 @@ const DelegateRegistration = () => {
                                             {checkingGroupStatus
                                                 ? "Checking..."
                                                 : inGroupDelegate
-                                                    ? "Already In Group Delegate"
+                                                    ? "Already In Group Concert Pass"
                                                     : loading
                                                         ? "Registering..."
                                                         : "Register Now"}

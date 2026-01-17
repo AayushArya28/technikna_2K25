@@ -253,7 +253,7 @@ const UserProfileModal = ({ onClose }) => {
                                         <div className="mb-3 flex items-center justify-between">
                                             <Award className="h-5 w-5 text-white/70" />
                                         </div>
-                                        <div className="text-sm text-white/60 mb-2">Delegate Pass</div>
+                                        <div className="text-sm text-white/60 mb-2">Concert Pass</div>
                                         <StatusBadge status={statuses.delegate?.status} />
                                     </div>
 

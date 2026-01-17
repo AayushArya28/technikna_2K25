@@ -44,7 +44,7 @@ const DelegateGroupRegistration = () => {
     useEffect(() => {
         if (entitlementsLoading) return;
         if (canAccessDelegate) return;
-        popup.info("BIT Mesra email detected. Delegate pages are locked for BIT students.");
+        popup.info("BIT Mesra email detected. Concert Pass pages are locked for BIT students.");
         navigate("/", { replace: true });
     }, [canAccessDelegate, entitlementsLoading, navigate, popup]);
 
@@ -538,7 +538,7 @@ const DelegateGroupRegistration = () => {
             return;
         }
         if (selfRegistered) {
-            popup.error("You are already registered as an individual delegate.");
+            popup.error("You are already registered as an individual concert pass holder.");
             return;
         }
         setApiError("");
@@ -628,7 +628,7 @@ const DelegateGroupRegistration = () => {
             return;
         }
         if (selfRegistered) {
-            popup.error("You are already registered as an individual delegate.");
+            popup.error("You are already registered as an individual concert pass holder.");
             return;
         }
         setApiError("");
@@ -827,7 +827,7 @@ const DelegateGroupRegistration = () => {
             const isConfirmed = ["success", "paid", "confirmed"].includes(statusVal);
 
             if (isConfirmed) {
-                popup.success("Group delegate registration confirmed.");
+                popup.success("Group concert pass registration confirmed.");
                 await refreshSelfDelegateStatus();
                 await refreshStatusWithRetry();
                 closePaymentTab();
@@ -876,11 +876,11 @@ const DelegateGroupRegistration = () => {
 
     const shareRoomId = async () => {
         if (!status.roomId) return;
-        const shareText = `Join my Technika delegate room: ${status.roomId}`;
+        const shareText = `Join my Technika concert pass room: ${status.roomId}`;
         if (navigator.share) {
             try {
                 await navigator.share({
-                    title: "Technika Delegate Room",
+                    title: "Technika Concert Pass Room",
                     text: shareText,
                 });
             } catch {
@@ -988,13 +988,13 @@ const DelegateGroupRegistration = () => {
                         type="button"
                         onClick={() => navigate('/delegate')}
                         className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/10 text-lg text-white transition hover:bg-white/20"
-                        aria-label="Back to delegate overview"
+                        aria-label="Back to concert pass overview"
                     >
                         ←
                     </button>
                     <div>
                         <h2 className="text-3xl font-semibold tracking-[0.25em] text-white drop-shadow-[0_0_18px_rgba(255,0,48,0.55)] md:text-4xl">
-                            Group Delegate Registration
+                            Group Concert Pass Registration
                         </h2>
                         <p className="mt-2 text-sm font-medium uppercase tracking-[0.3em] text-white/60">
                             organise & manage your team in one place
@@ -1039,7 +1039,7 @@ const DelegateGroupRegistration = () => {
                                 ) : (
                                     <>
                                         <span className="font-semibold uppercase tracking-[0.25em] text-white/60">Notice:</span>{" "}
-                                        You are already registered as an individual delegate.
+                                        You are already registered for an individual concert pass.
                                     </>
                                 )}
                             </div>
